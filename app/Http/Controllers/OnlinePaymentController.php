@@ -49,7 +49,7 @@ class OnlinePaymentController extends BaseController
      * OnlinePaymentController constructor.
      *
      * @param PaymentService $paymentService
-     * @param UserMailer     $userMailer
+     * @param UserMailer $userMailer
      */
     public function __construct(PaymentService $paymentService, UserMailer $userMailer, InvoiceRepository $invoiceRepo)
     {
@@ -60,35 +60,35 @@ class OnlinePaymentController extends BaseController
 
     /**
      * @param $invitationKey
-     * @param bool  $gatewayType
-     * @param bool  $sourceId
+     * @param bool $gatewayType
+     * @param bool $sourceId
      * @param mixed $gatewayTypeAlias
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function showPayment($invitationKey, $gatewayTypeAlias = false, $sourceId = false)
     {
-        if (! $invitation = $this->invoiceRepo->findInvoiceByInvitation($invitationKey)) {
+        if (!$invitation = $this->invoiceRepo->findInvoiceByInvitation($invitationKey)) {
             return response()->view('error', [
                 'error' => trans('texts.invoice_not_found'),
                 'hideHeader' => true,
             ]);
         }
 
-        if (! $invitation->invoice->canBePaid()) {
+        if (!$invitation->invoice->canBePaid()) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
         $invitation = $invitation->load('invoice.client.company.company_gateways.gateway');
         $company = $invitation->company;
 
-        if ($company->requiresAuthorization($invitation->invoice) && ! session('authorized:' . $invitation->invitation_key)) {
+        if ($company->requiresAuthorization($invitation->invoice) && !session('authorized:' . $invitation->invitation_key)) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
         $company->loadLocalizationSettings($invitation->invoice->client);
 
-        if (! $gatewayTypeAlias) {
+        if (!$gatewayTypeAlias) {
             $gatewayTypeId = Session::get($invitation->id . 'gateway_type');
         } elseif ($gatewayTypeAlias != GATEWAY_TYPE_TOKEN) {
             $gatewayTypeId = GatewayType::getIdFromAlias($gatewayTypeAlias);
@@ -116,7 +116,7 @@ class OnlinePaymentController extends BaseController
         $gatewayTypeId = Session::get($invitation->id . 'gateway_type');
         $paymentDriver = $invitation->company->paymentDriver($invitation, $gatewayTypeId);
 
-        if (! $invitation->invoice->canBePaid()) {
+        if (!$invitation->invoice->canBePaid()) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
@@ -136,7 +136,7 @@ class OnlinePaymentController extends BaseController
     }
 
     /**
-     * @param bool  $invitationKey
+     * @param bool $invitationKey
      * @param mixed $gatewayTypeAlias
      *
      * @return \Illuminate\Http\RedirectResponse
@@ -145,9 +145,9 @@ class OnlinePaymentController extends BaseController
     {
         $invitationKey = $invitationKey ?: Session::get('invitation_key');
         $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.company.company_gateways.gateway')
-                        ->where('invitation_key', '=', $invitationKey)->firstOrFail();
+            ->where('invitation_key', '=', $invitationKey)->firstOrFail();
 
-        if (! $gatewayTypeAlias) {
+        if (!$gatewayTypeAlias) {
             $gatewayTypeId = Session::get($invitation->id . 'gateway_type');
         } elseif ($gatewayTypeAlias != GATEWAY_TYPE_TOKEN) {
             $gatewayTypeId = GatewayType::getIdFromAlias($gatewayTypeAlias);
@@ -223,7 +223,7 @@ class OnlinePaymentController extends BaseController
      */
     public function getBankInfo($routingNumber)
     {
-        if (strlen($routingNumber) != 9 || ! preg_match('/\d{9}/', $routingNumber)) {
+        if (strlen($routingNumber) != 9 || !preg_match('/\d{9}/', $routingNumber)) {
             return response()->json([
                 'message' => 'Invalid routing number',
             ], 400);
@@ -235,7 +235,7 @@ class OnlinePaymentController extends BaseController
             return response()->json([
                 'message' => $data,
             ], 500);
-        } elseif (! empty($data)) {
+        } elseif (!empty($data)) {
             return response()->json($data);
         }
 
@@ -256,7 +256,7 @@ class OnlinePaymentController extends BaseController
 
         $company = Company::where('companies.company_key', '=', $companyKey)->first();
 
-        if (! $company) {
+        if (!$company) {
             return response()->json([
                 'message' => 'Unknown company',
             ], 404);
@@ -264,7 +264,7 @@ class OnlinePaymentController extends BaseController
 
         $companyGateway = $company->getGatewayConfig(intval($gatewayId));
 
-        if (! $companyGateway) {
+        if (!$companyGateway) {
             return response()->json([
                 'message' => 'Unknown gateway',
             ], 404);
@@ -293,14 +293,14 @@ class OnlinePaymentController extends BaseController
         $redirectUrl = Input::get('redirect_url');
         $failureUrl = URL::previous();
 
-        if (! $company || ! $company->enable_buy_now_buttons || ! $company->hasFeature(FEATURE_BUY_NOW_BUTTONS)) {
+        if (!$company || !$company->enable_buy_now_buttons || !$company->hasFeature(FEATURE_BUY_NOW_BUTTONS)) {
             return redirect()->to("{$failureUrl}/?error=invalid company");
         }
 
         Auth::onceUsingId($company->users[0]->id);
         $product = Product::scope(Input::get('product_id'))->first();
 
-        if (! $product) {
+        if (!$product) {
             return redirect()->to("{$failureUrl}/?error=invalid product");
         }
 
@@ -311,7 +311,7 @@ class OnlinePaymentController extends BaseController
                 $query->where('contact_key', $contactKey);
             })->first();
         }
-        if (! $client) {
+        if (!$client) {
             $rules = [
                 'first_name' => 'string|max:100',
                 'last_name' => 'string|max:100',

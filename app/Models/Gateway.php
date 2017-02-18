@@ -92,7 +92,7 @@ class Gateway extends Eloquent
      */
     public function getLogoUrl()
     {
-        return '/images/gateways/logo_'.$this->provider.'.png';
+        return '/images/gateways/logo_' . $this->provider . '.png';
     }
 
     /**
@@ -172,7 +172,7 @@ class Gateway extends Eloquent
             $link = 'https://applications.sagepay.com/apply/2C02C252-0F8A-1B84-E10D-CF933EFCAA99';
         }
 
-        $key = 'texts.gateway_help_'.$this->id;
+        $key = 'texts.gateway_help_' . $this->id;
         $str = trans($key, [
             'link' => "<a href='$link' target='_blank'>Click here</a>",
             'complete_link' => url('/complete'),

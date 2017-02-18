@@ -27,7 +27,7 @@ class HandleUserSignedUp
      * Create the event handler.
      *
      * @param CompanyRepository $companyRepo
-     * @param UserMailer        $userMailer
+     * @param UserMailer $userMailer
      */
     public function __construct(CompanyRepository $companyRepo, UserMailer $userMailer)
     {

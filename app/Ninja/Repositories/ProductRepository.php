@@ -15,33 +15,33 @@ class ProductRepository extends BaseRepository
     public function all()
     {
         return Product::scope()
-                ->withTrashed()
-                ->get();
+            ->withTrashed()
+            ->get();
     }
 
     public function find($companyId, $filter = null)
     {
         $query = DB::table('products')
-                ->leftJoin('tax_rates', function ($join) {
-                    $join->on('tax_rates.id', '=', 'products.default_tax_rate_id')
-                         ->whereNull('tax_rates.deleted_at');
-                })
-                ->where('products.company_id', '=', $companyId)
-                ->select(
-                    'products.public_id',
-                    'products.product_key',
-                    'products.notes',
-                    'products.cost',
-                    'tax_rates.name as tax_name',
-                    'tax_rates.rate as tax_rate',
-                    'products.deleted_at',
-                    'products.is_deleted'
-                );
+            ->leftJoin('tax_rates', function ($join) {
+                $join->on('tax_rates.id', '=', 'products.default_tax_rate_id')
+                    ->whereNull('tax_rates.deleted_at');
+            })
+            ->where('products.company_id', '=', $companyId)
+            ->select(
+                'products.public_id',
+                'products.product_key',
+                'products.notes',
+                'products.cost',
+                'tax_rates.name as tax_name',
+                'tax_rates.rate as tax_rate',
+                'products.deleted_at',
+                'products.is_deleted'
+            );
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('products.product_key', 'like', '%'.$filter.'%')
-                      ->orWhere('products.notes', 'like', '%'.$filter.'%');
+                $query->where('products.product_key', 'like', '%' . $filter . '%')
+                    ->orWhere('products.notes', 'like', '%' . $filter . '%');
             });
         }
 
@@ -78,11 +78,11 @@ class ProductRepository extends BaseRepository
         $productId = 0;
 
         $products = Product::scope()
-                        ->with('default_tax_rate')
-                        ->get();
+            ->with('default_tax_rate')
+            ->get();
 
         foreach ($products as $product) {
-            if (! $product->product_key) {
+            if (!$product->product_key) {
                 continue;
             }
 

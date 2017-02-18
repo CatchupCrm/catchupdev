@@ -26,7 +26,7 @@ class UpdateClientRequest extends ClientRequest
         ];
 
         if ($this->user()->company->client_number_counter) {
-            $rules['id_number'] = 'unique:clients,id_number,'.$this->entity()->id.',id,company_id,' . $this->user()->company_id;
+            $rules['id_number'] = 'unique:clients,id_number,' . $this->entity()->id . ',id,company_id,' . $this->user()->company_id;
         }
 
         return $rules;

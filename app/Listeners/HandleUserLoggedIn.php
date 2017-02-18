@@ -60,7 +60,7 @@ class HandleUserLoggedIn
 
         // if they're using Stripe make sure they're using Stripe.js
         $companyGateway = $company->getGatewayConfig(GATEWAY_STRIPE);
-        if ($companyGateway && ! $companyGateway->getPublishableStripeKey()) {
+        if ($companyGateway && !$companyGateway->getPublishableStripeKey()) {
             Session::flash('warning', trans('texts.missing_publishable_key'));
         } elseif ($company->isLogoTooLarge()) {
             Session::flash('warning', trans('texts.logo_too_large', ['size' => $company->getLogoSize() . 'KB']));

@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
             return false;
         }
 
-        if (Utils::isNinja() && ! Utils::isTravis()) {
+        if (Utils::isNinja() && !Utils::isTravis()) {
             Utils::logError(Utils::getErrorString($e));
 
             return false;
@@ -65,12 +65,13 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
+     * @param \Exception $e
      *
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e) {
-        if (config('app.debug') && ! $request->ajax()) {
+    public function render($request, Exception $e)
+    {
+        if (config('app.debug') && !$request->ajax()) {
             $whoops = new \Whoops\Run;
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 
@@ -84,12 +85,9 @@ class Handler extends ExceptionHandler
     {
         if (config('app.debug')) {
             $whoops = new \Whoops\Run;
-            if(request()->wantsJson())
-            {
+            if (request()->wantsJson()) {
                 $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler());
-            }
-            else
-            {
+            } else {
                 $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
             }
 

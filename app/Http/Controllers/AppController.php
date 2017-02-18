@@ -73,7 +73,7 @@ class AppController extends BaseController
 
         if ($test == 'db') {
             return $valid === true ? 'Success' : $valid;
-        } elseif (! $valid) {
+        } elseif (!$valid) {
             return Redirect::to('/setup')->withInput();
         }
 
@@ -116,7 +116,7 @@ class AppController extends BaseController
         }
 
         // Write Config Settings
-        $fp = fopen(base_path().'/.env', 'w');
+        $fp = fopen(base_path() . '/.env', 'w');
         fwrite($fp, $config);
         fclose($fp);
 
@@ -142,11 +142,11 @@ class AppController extends BaseController
             return Redirect::to('/');
         }
 
-        if (! Auth::check() && Utils::isDatabaseSetup() && Company::count() > 0) {
+        if (!Auth::check() && Utils::isDatabaseSetup() && Company::count() > 0) {
             return Redirect::to('/');
         }
 
-        if (! $canUpdateEnv = @fopen(base_path().'/.env', 'w')) {
+        if (!$canUpdateEnv = @fopen(base_path() . '/.env', 'w')) {
             Session::flash('error', 'Warning: Permission denied to write to .env config file, try running <code>sudo chown www-data:www-data /path/to/ninja/.env</code>');
 
             return Redirect::to('/settings/system_settings');
@@ -190,7 +190,7 @@ class AppController extends BaseController
             $config .= "{$key}={$val}\n";
         }
 
-        $fp = fopen(base_path().'/.env', 'w');
+        $fp = fopen(base_path() . '/.env', 'w');
         fwrite($fp, $config);
         fclose($fp);
 
@@ -231,7 +231,7 @@ class AppController extends BaseController
 
         $data = [
             'text' => 'Test email',
-            'fromEmail' =>  $email
+            'fromEmail' => $email
         ];
 
         try {
@@ -245,7 +245,7 @@ class AppController extends BaseController
 
     public function install()
     {
-        if (! Utils::isNinjaProd() && ! Utils::isDatabaseSetup()) {
+        if (!Utils::isNinjaProd() && !Utils::isDatabaseSetup()) {
             try {
                 set_time_limit(60 * 5); // shouldn't take this long but just in case
                 Artisan::call('migrate', ['--force' => true]);
@@ -265,7 +265,7 @@ class AppController extends BaseController
 
     public function update()
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             try {
                 set_time_limit(60 * 5);
                 Artisan::call('clear-compiled');
@@ -282,8 +282,8 @@ class AppController extends BaseController
                 Event::fire(new UserSettingsChanged());
 
                 // legacy fix: check cipher is in .env file
-                if (! env('APP_CIPHER')) {
-                    $fp = fopen(base_path().'/.env', 'a');
+                if (!env('APP_CIPHER')) {
+                    $fp = fopen(base_path() . '/.env', 'a');
                     fwrite($fp, "\nAPP_CIPHER=AES-256-CBC");
                     fclose($fp);
                 }
@@ -322,7 +322,7 @@ class AppController extends BaseController
 
     public function stats()
     {
-        if (! hash_equals(Input::get('password'), env('RESELLER_PASSWORD'))) {
+        if (!hash_equals(Input::get('password'), env('RESELLER_PASSWORD'))) {
             sleep(3);
 
             return '';
@@ -330,16 +330,16 @@ class AppController extends BaseController
 
         if (Utils::getResllerType() == RESELLER_REVENUE_SHARE) {
             $data = DB::table('companies')
-                            ->leftJoin('payments', 'payments.company_id', '=', 'companies.id')
-                            ->leftJoin('clients', 'clients.id', '=', 'payments.client_id')
-                            ->where('companies.company_key', '=', NINJA_COMPANY_KEY)
-                            ->where('payments.is_deleted', '=', false)
-                            ->get([
-                                'clients.public_id as client_id',
-                                'payments.public_id as payment_id',
-                                'payments.payment_date',
-                                'payments.amount',
-                            ]);
+                ->leftJoin('payments', 'payments.company_id', '=', 'companies.id')
+                ->leftJoin('clients', 'clients.id', '=', 'payments.client_id')
+                ->where('companies.company_key', '=', NINJA_COMPANY_KEY)
+                ->where('payments.is_deleted', '=', false)
+                ->get([
+                    'clients.public_id as client_id',
+                    'payments.public_id as payment_id',
+                    'payments.payment_date',
+                    'payments.amount',
+                ]);
         } else {
             $data = DB::table('users')->count();
         }

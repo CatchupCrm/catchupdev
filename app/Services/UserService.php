@@ -23,7 +23,7 @@ class UserService extends BaseService
     /**
      * UserService constructor.
      *
-     * @param UserRepository   $userRepo
+     * @param UserRepository $userRepo
      * @param DatatableService $datatableService
      */
     public function __construct(UserRepository $userRepo, DatatableService $datatableService)

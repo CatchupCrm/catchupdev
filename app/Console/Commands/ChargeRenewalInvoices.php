@@ -42,9 +42,9 @@ class ChargeRenewalInvoices extends Command
     /**
      * ChargeRenewalInvoices constructor.
      *
-     * @param Mailer            $mailer
+     * @param Mailer $mailer
      * @param CompanyRepository $repo
-     * @param PaymentService    $paymentService
+     * @param PaymentService $paymentService
      */
     public function __construct(Mailer $mailer, CompanyRepository $repo, PaymentService $paymentService)
     {
@@ -57,34 +57,34 @@ class ChargeRenewalInvoices extends Command
 
     public function fire()
     {
-        $this->info(date('Y-m-d').' ChargeRenewalInvoices...');
+        $this->info(date('Y-m-d') . ' ChargeRenewalInvoices...');
 
         $ninjaCompany = $this->companyRepo->getNinjaCompany();
         $invoices = Invoice::whereCompanyId($ninjaCompany->id)
-                        ->whereDueDate(date('Y-m-d'))
-                        ->where('balance', '>', 0)
-                        ->with('client')
-                        ->orderBy('id')
-                        ->get();
+            ->whereDueDate(date('Y-m-d'))
+            ->where('balance', '>', 0)
+            ->with('client')
+            ->orderBy('id')
+            ->get();
 
-        $this->info(count($invoices).' invoices found');
+        $this->info(count($invoices) . ' invoices found');
 
         foreach ($invoices as $invoice) {
 
             // check if company has switched to free since the invoice was created
             $company = Company::find($invoice->client->public_id);
 
-            if (! $company) {
+            if (!$company) {
                 continue;
             }
 
             $corporation = $company->corporation;
-            if (! $corporation->plan || $corporation->plan == PLAN_FREE) {
+            if (!$corporation->plan || $corporation->plan == PLAN_FREE) {
                 continue;
             }
 
             $this->info("Charging invoice {$invoice->invoice_number}");
-            if (! $this->paymentService->autoBillInvoice($invoice)) {
+            if (!$this->paymentService->autoBillInvoice($invoice)) {
                 $this->info('Failed to auto-bill, emailing invoice');
                 $this->mailer->sendInvoice($invoice);
             }
@@ -95,8 +95,8 @@ class ChargeRenewalInvoices extends Command
         if ($errorEmail = env('ERROR_EMAIL')) {
             \Mail::raw('EOM', function ($message) use ($errorEmail) {
                 $message->to($errorEmail)
-                        ->from(CONTACT_EMAIL)
-                        ->subject('ChargeRenewalInvoices: Finished successfully');
+                    ->from(CONTACT_EMAIL)
+                    ->subject('ChargeRenewalInvoices: Finished successfully');
             });
         }
     }

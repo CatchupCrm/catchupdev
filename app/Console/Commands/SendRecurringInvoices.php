@@ -42,9 +42,9 @@ class SendRecurringInvoices extends Command
     /**
      * SendRecurringInvoices constructor.
      *
-     * @param Mailer            $mailer
+     * @param Mailer $mailer
      * @param InvoiceRepository $invoiceRepo
-     * @param PaymentService    $paymentService
+     * @param PaymentService $paymentService
      */
     public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, PaymentService $paymentService)
     {
@@ -57,27 +57,27 @@ class SendRecurringInvoices extends Command
 
     public function fire()
     {
-        $this->info(date('Y-m-d').' Running SendRecurringInvoices...');
+        $this->info(date('Y-m-d') . ' Running SendRecurringInvoices...');
         $today = new DateTime();
 
         $invoices = Invoice::with('company.timezone', 'invoice_items', 'client', 'user')
             ->whereRaw('is_deleted IS FALSE AND deleted_at IS NULL AND is_recurring IS TRUE AND is_public IS TRUE AND frequency_id > 0 AND start_date <= ? AND (end_date IS NULL OR end_date >= ?)', [$today, $today])
             ->orderBy('id', 'asc')
             ->get();
-        $this->info(count($invoices).' recurring invoice(s) found');
+        $this->info(count($invoices) . ' recurring invoice(s) found');
 
         foreach ($invoices as $recurInvoice) {
             $shouldSendToday = $recurInvoice->shouldSendToday();
-            $this->info('Processing Invoice '.$recurInvoice->id.' - Should send '.($shouldSendToday ? 'YES' : 'NO'));
+            $this->info('Processing Invoice ' . $recurInvoice->id . ' - Should send ' . ($shouldSendToday ? 'YES' : 'NO'));
 
-            if (! $shouldSendToday) {
+            if (!$shouldSendToday) {
                 continue;
             }
 
             $recurInvoice->company->loadLocalizationSettings($recurInvoice->client);
             $invoice = $this->invoiceRepo->createRecurringInvoice($recurInvoice);
 
-            if ($invoice && ! $invoice->isPaid()) {
+            if ($invoice && !$invoice->isPaid()) {
                 $this->info('Sending Invoice');
                 $this->mailer->sendInvoice($invoice);
             }
@@ -89,7 +89,7 @@ class SendRecurringInvoices extends Command
                 [$today->format('Y-m-d')])
             ->orderBy('invoices.id', 'asc')
             ->get();
-        $this->info(count($delayedAutoBillInvoices).' due recurring invoice instance(s) found');
+        $this->info(count($delayedAutoBillInvoices) . ' due recurring invoice instance(s) found');
 
         /** @var Invoice $invoice */
         foreach ($delayedAutoBillInvoices as $invoice) {

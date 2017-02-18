@@ -83,7 +83,7 @@ class GenericEntityPolicy
 
     private static function className($entityType)
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             if ($module = \Module::find($entityType)) {
                 return "Modules\\{$module->getName()}\\Policies\\{$module->getName()}Policy";
             }

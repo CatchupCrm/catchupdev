@@ -42,7 +42,7 @@ class MakeModule extends Command
         $fields = $this->argument('fields');
         $migrate = $this->option('migrate');
         $lower = strtolower($name);
-        
+
         // convert 'name:string,description:text' to 'name,description'
         $fillable = explode(',', $fields);
         $fillable = array_map(function ($item) {

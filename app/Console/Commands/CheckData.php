@@ -61,14 +61,14 @@ class CheckData extends Command
     {
         $this->logMessage(date('Y-m-d') . ' Running CheckData...');
 
-        if (! $this->option('client_id')) {
+        if (!$this->option('client_id')) {
             $this->checkPaidToDate();
             $this->checkBlankInvoiceHistory();
         }
 
         $this->checkBalances();
 
-        if (! $this->option('client_id')) {
+        if (!$this->option('client_id')) {
             $this->checkCompanyData();
         }
 
@@ -79,8 +79,8 @@ class CheckData extends Command
         if ($errorEmail) {
             Mail::raw($this->log, function ($message) use ($errorEmail) {
                 $message->to($errorEmail)
-                        ->from(CONTACT_EMAIL)
-                        ->subject('Check-Data');
+                    ->from(CONTACT_EMAIL)
+                    ->subject('Check-Data');
             });
         }
     }
@@ -93,10 +93,10 @@ class CheckData extends Command
     private function checkBlankInvoiceHistory()
     {
         $count = DB::table('activities')
-                    ->where('activity_type_id', '=', 5)
-                    ->where('json_backup', '=', '')
-                    ->where('id', '>', 858720)
-                    ->count();
+            ->where('activity_type_id', '=', 5)
+            ->where('json_backup', '=', '')
+            ->where('id', '>', 858720)
+            ->count();
 
         if ($count > 0) {
             $this->isValid = false;
@@ -158,9 +158,9 @@ class CheckData extends Command
             foreach ($entityTypes as $entityType) {
                 $tableName = Utils::pluralizeEntityType($entityType);
                 $records = DB::table($table)
-                                ->join($tableName, "{$tableName}.id", '=', "{$table}.{$entityType}_id")
-                                ->where("{$table}.company_id", '!=', DB::raw("{$tableName}.company_id"))
-                                ->get(["{$table}.id"]);
+                    ->join($tableName, "{$tableName}.id", '=', "{$table}.{$entityType}_id")
+                    ->where("{$table}.company_id", '!=', DB::raw("{$tableName}.company_id"))
+                    ->get(["{$table}.id"]);
 
                 if (count($records)) {
                     $this->isValid = false;
@@ -185,15 +185,15 @@ class CheckData extends Command
     {
         // update client paid_to_date value
         $clients = DB::table('clients')
-                    ->join('payments', 'payments.client_id', '=', 'clients.id')
-                    ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
-                    ->where('payments.is_deleted', '=', 0)
-                    ->where('payments.payment_status_id', '!=', 2)
-                    ->where('payments.payment_status_id', '!=', 3)
-                    ->where('invoices.is_deleted', '=', 0)
-                    ->groupBy('clients.id')
-                    ->havingRaw('clients.paid_to_date != sum(payments.amount - payments.refunded) and clients.paid_to_date != 999999999.9999')
-                    ->get(['clients.id', 'clients.paid_to_date', DB::raw('sum(payments.amount) as amount')]);
+            ->join('payments', 'payments.client_id', '=', 'clients.id')
+            ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
+            ->where('payments.is_deleted', '=', 0)
+            ->where('payments.payment_status_id', '!=', 2)
+            ->where('payments.payment_status_id', '!=', 3)
+            ->where('invoices.is_deleted', '=', 0)
+            ->groupBy('clients.id')
+            ->havingRaw('clients.paid_to_date != sum(payments.amount - payments.refunded) and clients.paid_to_date != 999999999.9999')
+            ->get(['clients.id', 'clients.paid_to_date', DB::raw('sum(payments.amount) as amount')]);
         $this->logMessage(count($clients) . ' clients with incorrect paid to date');
 
         if (count($clients) > 0) {
@@ -213,23 +213,23 @@ class CheckData extends Command
     {
         // find all clients where the balance doesn't equal the sum of the outstanding invoices
         $clients = DB::table('clients')
-                    ->join('invoices', 'invoices.client_id', '=', 'clients.id')
-                    ->join('companies', 'companies.id', '=', 'clients.company_id')
-                    ->where('companies.id', '!=', 20432)
-                    ->where('clients.is_deleted', '=', 0)
-                    ->where('invoices.is_deleted', '=', 0)
-                    ->where('invoices.is_public', '=', 1)
-                    ->where('invoices.invoice_type_id', '=', INVOICE_TYPE_STANDARD)
-                    ->where('invoices.is_recurring', '=', 0)
-                    ->havingRaw('abs(clients.balance - sum(invoices.balance)) > .01 and clients.balance != 999999999.9999');
+            ->join('invoices', 'invoices.client_id', '=', 'clients.id')
+            ->join('companies', 'companies.id', '=', 'clients.company_id')
+            ->where('companies.id', '!=', 20432)
+            ->where('clients.is_deleted', '=', 0)
+            ->where('invoices.is_deleted', '=', 0)
+            ->where('invoices.is_public', '=', 1)
+            ->where('invoices.invoice_type_id', '=', INVOICE_TYPE_STANDARD)
+            ->where('invoices.is_recurring', '=', 0)
+            ->havingRaw('abs(clients.balance - sum(invoices.balance)) > .01 and clients.balance != 999999999.9999');
 
         if ($this->option('client_id')) {
             $clients->where('clients.id', '=', $this->option('client_id'));
         }
 
         $clients = $clients->groupBy('clients.id', 'clients.balance', 'clients.created_at')
-                ->orderBy('companies.company_id', 'DESC')
-                ->get(['companies.company_id', 'clients.company_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
+            ->orderBy('companies.company_id', 'DESC')
+            ->get(['companies.company_id', 'clients.company_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
         $this->logMessage(count($clients) . ' clients with incorrect balance/activities');
 
         if (count($clients) > 0) {
@@ -244,9 +244,9 @@ class CheckData extends Command
             $lastCreatedAt = null;
             $clientFix = false;
             $activities = DB::table('activities')
-                        ->where('client_id', '=', $client->id)
-                        ->orderBy('activities.id')
-                        ->get(['activities.id', 'activities.created_at', 'activities.activity_type_id', 'activities.adjustment', 'activities.balance', 'activities.invoice_id']);
+                ->where('client_id', '=', $client->id)
+                ->orderBy('activities.id')
+                ->get(['activities.id', 'activities.created_at', 'activities.activity_type_id', 'activities.adjustment', 'activities.balance', 'activities.invoice_id']);
             //$this->logMessage(var_dump($activities));
 
             foreach ($activities as $activity) {
@@ -254,13 +254,14 @@ class CheckData extends Command
 
                 if ($activity->invoice_id) {
                     $invoice = DB::table('invoices')
-                                ->where('id', '=', $activity->invoice_id)
-                                ->first(['invoices.amount', 'invoices.is_recurring', 'invoices.invoice_type_id', 'invoices.deleted_at', 'invoices.id', 'invoices.is_deleted']);
+                        ->where('id', '=', $activity->invoice_id)
+                        ->first(['invoices.amount', 'invoices.is_recurring', 'invoices.invoice_type_id', 'invoices.deleted_at', 'invoices.id', 'invoices.is_deleted']);
 
                     // Check if this invoice was once set as recurring invoice
-                    if ($invoice && ! $invoice->is_recurring && DB::table('invoices')
+                    if ($invoice && !$invoice->is_recurring && DB::table('invoices')
                             ->where('recurring_invoice_id', '=', $activity->invoice_id)
-                            ->first(['invoices.id'])) {
+                            ->first(['invoices.id'])
+                    ) {
                         $invoice->is_recurring = 1;
 
                         // **Fix for enabling a recurring invoice to be set as non-recurring**
@@ -273,14 +274,15 @@ class CheckData extends Command
                 }
 
                 if ($activity->activity_type_id == ACTIVITY_TYPE_CREATE_INVOICE
-                    || $activity->activity_type_id == ACTIVITY_TYPE_CREATE_QUOTE) {
+                    || $activity->activity_type_id == ACTIVITY_TYPE_CREATE_QUOTE
+                ) {
 
                     // Get original invoice amount
                     $update = DB::table('activities')
-                                ->where('invoice_id', '=', $activity->invoice_id)
-                                ->where('activity_type_id', '=', ACTIVITY_TYPE_UPDATE_INVOICE)
-                                ->orderBy('id')
-                                ->first(['json_backup']);
+                        ->where('invoice_id', '=', $activity->invoice_id)
+                        ->where('activity_type_id', '=', ACTIVITY_TYPE_UPDATE_INVOICE)
+                        ->orderBy('id')
+                        ->first(['json_backup']);
                     if ($update) {
                         $backup = json_decode($update->json_backup);
                         $invoice->amount = floatval($backup->amount);
@@ -296,13 +298,13 @@ class CheckData extends Command
                         $foundProblem = true;
                         $clientFix += $invoice->amount;
                         $activityFix = $invoice->amount;
-                    // **Fix for allowing converting a recurring invoice to a normal one without updating the balance**
-                    } elseif ($noAdjustment && $invoice->invoice_type_id == INVOICE_TYPE_STANDARD && ! $invoice->is_recurring) {
+                        // **Fix for allowing converting a recurring invoice to a normal one without updating the balance**
+                    } elseif ($noAdjustment && $invoice->invoice_type_id == INVOICE_TYPE_STANDARD && !$invoice->is_recurring) {
                         $this->logMessage("No adjustment for new invoice:{$activity->invoice_id} amount:{$invoice->amount} invoiceTypeId:{$invoice->invoice_type_id} isRecurring:{$invoice->is_recurring}");
                         $foundProblem = true;
                         $clientFix += $invoice->amount;
                         $activityFix = $invoice->amount;
-                    // **Fix for updating balance when creating a quote or recurring invoice**
+                        // **Fix for updating balance when creating a quote or recurring invoice**
                     } elseif ($activity->adjustment != 0 && ($invoice->invoice_type_id == INVOICE_TYPE_QUOTE || $invoice->is_recurring)) {
                         $this->logMessage("Incorrect adjustment for new invoice:{$activity->invoice_id} adjustment:{$activity->adjustment} invoiceTypeId:{$invoice->invoice_type_id} isRecurring:{$invoice->is_recurring}");
                         $foundProblem = true;
@@ -321,7 +323,7 @@ class CheckData extends Command
                     }
                 } elseif ($activity->activity_type_id == ACTIVITY_TYPE_ARCHIVE_INVOICE) {
                     // **Fix for updating balance when archiving an invoice**
-                    if ($activity->adjustment != 0 && ! $invoice->is_recurring) {
+                    if ($activity->adjustment != 0 && !$invoice->is_recurring) {
                         $this->logMessage("Incorrect adjustment for archiving invoice adjustment:{$activity->adjustment}");
                         $foundProblem = true;
                         $activityFix = 0;
@@ -383,12 +385,12 @@ class CheckData extends Command
                 $this->logMessage("** Creating 'recovered update' activity **");
                 if ($this->option('fix') == 'true') {
                     DB::table('activities')->insert([
-                            'created_at' => new Carbon(),
-                            'updated_at' => new Carbon(),
-                            'company_id' => $client->company_id,
-                            'client_id' => $client->id,
-                            'adjustment' => $client->actual_balance - $activity->balance,
-                            'balance' => $client->actual_balance,
+                        'created_at' => new Carbon(),
+                        'updated_at' => new Carbon(),
+                        'company_id' => $client->company_id,
+                        'client_id' => $client->id,
+                        'adjustment' => $client->actual_balance - $activity->balance,
+                        'balance' => $client->actual_balance,
                     ]);
                 }
             }

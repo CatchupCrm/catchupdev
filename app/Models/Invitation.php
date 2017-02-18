@@ -62,13 +62,13 @@ class Invitation extends EntityModel
 
     /**
      * @param string $type
-     * @param bool   $forceOnsite
+     * @param bool $forceOnsite
      *
      * @return string
      */
     public function getLink($type = 'view', $forceOnsite = false)
     {
-        if (! $this->company) {
+        if (!$this->company) {
             $this->load('company');
         }
 
@@ -81,7 +81,7 @@ class Invitation extends EntityModel
                 $url = $company->present()->clientPortalLink();
             }
 
-            if ($iframe_url && ! $forceOnsite) {
+            if ($iframe_url && !$forceOnsite) {
                 return "{$iframe_url}?{$this->invitation_key}";
             } elseif ($this->company->subdomain) {
                 $url = Utils::replaceSubdomain($url, $company->subdomain);
@@ -151,7 +151,7 @@ class Invitation extends EntityModel
 
     public function signatureDiv()
     {
-        if (! $this->signature_base64) {
+        if (!$this->signature_base64) {
             return false;
         }
 

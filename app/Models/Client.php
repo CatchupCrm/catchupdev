@@ -287,7 +287,7 @@ class Client extends EntityModel
         }
 
         if (Utils::hasFeature(FEATURE_CLIENT_PORTAL_PASSWORD) && $this->company->enable_portal_password) {
-            if (! empty($data['password']) && $data['password'] != '-%unchanged%-') {
+            if (!empty($data['password']) && $data['password'] != '-%unchanged%-') {
                 $contact->password = bcrypt($data['password']);
             } elseif (empty($data['password'])) {
                 $contact->password = null;
@@ -330,9 +330,9 @@ class Client extends EntityModel
     public function getTotalCredit()
     {
         return DB::table('credits')
-                ->where('client_id', '=', $this->id)
-                ->whereNull('deleted_at')
-                ->sum('balance');
+            ->where('client_id', '=', $this->id)
+            ->whereNull('deleted_at')
+            ->sum('balance');
     }
 
     /**
@@ -349,8 +349,8 @@ class Client extends EntityModel
     public function getPrimaryContact()
     {
         return $this->contacts()
-                    ->whereIsPrimary(true)
-                    ->first();
+            ->whereIsPrimary(true)
+            ->first();
     }
 
     /**
@@ -362,7 +362,7 @@ class Client extends EntityModel
             return $this->name;
         }
 
-        if (! count($this->contacts)) {
+        if (!count($this->contacts)) {
             return '';
         }
 
@@ -439,7 +439,7 @@ class Client extends EntityModel
     {
         $companyGateway = $this->company->getGatewayByType(GATEWAY_TYPE_TOKEN);
 
-        if (! $companyGateway) {
+        if (!$companyGateway) {
             return false;
         }
 
@@ -491,7 +491,7 @@ class Client extends EntityModel
             return $this->currency_id;
         }
 
-        if (! $this->company) {
+        if (!$this->company) {
             $this->load('company');
         }
 
@@ -507,7 +507,7 @@ class Client extends EntityModel
             return $this->currency->code;
         }
 
-        if (! $this->company) {
+        if (!$this->company) {
             $this->load('company');
         }
 

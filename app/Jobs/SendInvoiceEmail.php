@@ -40,9 +40,9 @@ class SendInvoiceEmail extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * @param Invoice $invoice
-     * @param string  $pdf
-     * @param bool    $reminder
-     * @param mixed   $pdfString
+     * @param string $pdf
+     * @param bool $reminder
+     * @param mixed $pdfString
      */
     public function __construct(Invoice $invoice, $reminder = false, $pdfString = false, $template = false)
     {
@@ -68,12 +68,12 @@ class SendInvoiceEmail extends Job implements ShouldQueue
      * @param ContactMailer $mailer
      * @param Logger $logger
      */
-     /*
-    public function failed(ContactMailer $mailer, Logger $logger)
-    {
-        $this->jobName = $this->job->getName();
+    /*
+   public function failed(ContactMailer $mailer, Logger $logger)
+   {
+       $this->jobName = $this->job->getName();
 
-        parent::failed($mailer, $logger);
-    }
-    */
+       parent::failed($mailer, $logger);
+   }
+   */
 }

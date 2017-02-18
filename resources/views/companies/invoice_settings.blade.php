@@ -3,21 +3,23 @@
 @section('head')
     @parent
 
-        <style type="text/css">
-            .iframe_url {
-                display: none;
-            }
-            .input-group-addon div.checkbox {
-                display: inline;
-            }
-            .tab-content .pad-checkbox span.input-group-addon {
-                padding-right: 30px;
-            }
-        </style>
+    <style type="text/css">
+        .iframe_url {
+            display: none;
+        }
+
+        .input-group-addon div.checkbox {
+            display: inline;
+        }
+
+        .tab-content .pad-checkbox span.input-group-addon {
+            padding-right: 30px;
+        }
+    </style>
 @stop
 
 @section('content')
-	@parent
+    @parent
     @include('companies.nav', ['selected' => COMPANY_INVOICE_SETTINGS, 'advanced' => true])
 
     {!! Former::open()->rules(['iframe_url' => 'url'])->addClass('warn-on-exit') !!}
@@ -36,16 +38,20 @@
             <div role="tabpanel">
                 <ul class="nav nav-tabs" role="tablist" style="border: none">
                     <li role="presentation" class="active">
-                        <a href="#invoice_number" aria-controls="invoice_number" role="tab" data-toggle="tab">{{ trans('texts.invoice_number') }}</a>
+                        <a href="#invoice_number" aria-controls="invoice_number" role="tab"
+                           data-toggle="tab">{{ trans('texts.invoice_number') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#quote_number" aria-controls="quote_number" role="tab" data-toggle="tab">{{ trans('texts.quote_number') }}</a>
+                        <a href="#quote_number" aria-controls="quote_number" role="tab"
+                           data-toggle="tab">{{ trans('texts.quote_number') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#client_number" aria-controls="client_number" role="tab" data-toggle="tab">{{ trans('texts.client_number') }}</a>
+                        <a href="#client_number" aria-controls="client_number" role="tab"
+                           data-toggle="tab">{{ trans('texts.client_number') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#recurring_invoice_number" aria-controls="recurring_invoice_number" role="tab" data-toggle="tab">{{ trans('texts.recurring_invoice_number') }}</a>
+                        <a href="#recurring_invoice_number" aria-controls="recurring_invoice_number" role="tab"
+                           data-toggle="tab">{{ trans('texts.recurring_invoice_number') }}</a>
                     </li>
                 </ul>
             </div>
@@ -165,19 +171,24 @@
             <div role="tabpanel">
                 <ul class="nav nav-tabs" role="tablist" style="border: none">
                     <li role="presentation" class="active">
-                        <a href="#client_fields" aria-controls="client_fields" role="tab" data-toggle="tab">{{ trans('texts.client_fields') }}</a>
+                        <a href="#client_fields" aria-controls="client_fields" role="tab"
+                           data-toggle="tab">{{ trans('texts.client_fields') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#company_fields" aria-controls="company_fields" role="tab" data-toggle="tab">{{ trans('texts.company_fields') }}</a>
+                        <a href="#company_fields" aria-controls="company_fields" role="tab"
+                           data-toggle="tab">{{ trans('texts.company_fields') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#invoice_fields" aria-controls="invoice_fields" role="tab" data-toggle="tab">{{ trans('texts.invoice_fields') }}</a>
+                        <a href="#invoice_fields" aria-controls="invoice_fields" role="tab"
+                           data-toggle="tab">{{ trans('texts.invoice_fields') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#invoice_item_fields" aria-controls="invoice_item_fields" role="tab" data-toggle="tab">{{ trans('texts.invoice_item_fields') }}</a>
+                        <a href="#invoice_item_fields" aria-controls="invoice_item_fields" role="tab"
+                           data-toggle="tab">{{ trans('texts.invoice_item_fields') }}</a>
                     </li>
                     <li role="presentation">
-                        <a href="#invoice_charges" aria-controls="invoice_charges" role="tab" data-toggle="tab">{{ trans('texts.invoice_charges') }}</a>
+                        <a href="#invoice_charges" aria-controls="invoice_charges" role="tab"
+                           data-toggle="tab">{{ trans('texts.invoice_charges') }}</a>
                     </li>
                 </ul>
             </div>
@@ -267,16 +278,21 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">{!! trans('texts.default_messages') !!}</h3>
-      </div>
+        <div class="panel-heading">
+            <h3 class="panel-title">{!! trans('texts.default_messages') !!}</h3>
+        </div>
         <div class="panel-body form-padding-right">
 
             <div role="tabpanel">
                 <ul class="nav nav-tabs" role="tablist" style="border: none">
-                    <li role="presentation" class="active"><a href="#invoice_terms" aria-controls="invoice_terms" role="tab" data-toggle="tab">{{ trans('texts.invoice_terms') }}</a></li>
-                    <li role="presentation"><a href="#invoice_footer" aria-controls="invoice_footer" role="tab" data-toggle="tab">{{ trans('texts.invoice_footer') }}</a></li>
-                    <li role="presentation"><a href="#quote_terms" aria-controls="quote_terms" role="tab" data-toggle="tab">{{ trans('texts.quote_terms') }}</a></li>
+                    <li role="presentation" class="active"><a href="#invoice_terms" aria-controls="invoice_terms"
+                                                              role="tab"
+                                                              data-toggle="tab">{{ trans('texts.invoice_terms') }}</a>
+                    </li>
+                    <li role="presentation"><a href="#invoice_footer" aria-controls="invoice_footer" role="tab"
+                                               data-toggle="tab">{{ trans('texts.invoice_footer') }}</a></li>
+                    <li role="presentation"><a href="#quote_terms" aria-controls="quote_terms" role="tab"
+                                               data-toggle="tab">{{ trans('texts.quote_terms') }}</a></li>
                 </ul>
             </div>
             <div class="tab-content">
@@ -313,7 +329,8 @@
         </center>
     @endif
 
-    <div class="modal fade" id="patternHelpModal" tabindex="-1" role="dialog" aria-labelledby="patternHelpModalLabel" aria-hidden="true">
+    <div class="modal fade" id="patternHelpModal" tabindex="-1" role="dialog" aria-labelledby="patternHelpModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" style="min-width:150px">
             <div class="modal-content">
                 <div class="modal-header">
@@ -327,7 +344,8 @@
                     <ul>
                         @foreach (\App\Models\Invoice::$patternFields as $field)
                             @if ($field == 'date:')
-                                <li>{$date:format} - {!! link_to(PHP_DATE_FORMATS, trans('texts.see_options'), ['target' => '_blank']) !!}</li>
+                                <li>{$date:format}
+                                    - {!! link_to(PHP_DATE_FORMATS, trans('texts.see_options'), ['target' => '_blank']) !!}</li>
                             @else
                                 <li>{${{ $field }}}</li>
                             @endif
@@ -340,7 +358,8 @@
                 </div>
 
                 <div class="modal-footer" style="margin-top: 0px">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">{{ trans('texts.close') }}</button>
+                    <button type="button" class="btn btn-primary"
+                            data-dismiss="modal">{{ trans('texts.close') }}</button>
                 </div>
 
             </div>
@@ -348,74 +367,74 @@
     </div>
 
 
-	{!! Former::close() !!}
+    {!! Former::close() !!}
 
 
-	<script type="text/javascript">
+    <script type="text/javascript">
 
-  	function setQuoteNumberEnabled() {
-			var disabled = $('#share_counter').prop('checked');
-			$('#quote_number_counter').prop('disabled', disabled);
-			$('#quote_number_counter').val(disabled ? '' : '{!! $company->quote_number_counter !!}');
-		}
-
-    function onInvoiceNumberTypeChange() {
-        var val = $('input[name=invoice_number_type]:checked').val()
-        if (val == 'prefix') {
-            $('.invoice-prefix').show();
-            $('.invoice-pattern').hide();
-        } else {
-            $('.invoice-prefix').hide();
-            $('.invoice-pattern').show();
+        function setQuoteNumberEnabled() {
+            var disabled = $('#share_counter').prop('checked');
+            $('#quote_number_counter').prop('disabled', disabled);
+            $('#quote_number_counter').val(disabled ? '' : '{!! $company->quote_number_counter !!}');
         }
-    }
 
-    function onQuoteNumberTypeChange() {
-        var val = $('input[name=quote_number_type]:checked').val()
-        if (val == 'prefix') {
-            $('.quote-prefix').show();
-            $('.quote-pattern').hide();
-        } else {
-            $('.quote-prefix').hide();
-            $('.quote-pattern').show();
+        function onInvoiceNumberTypeChange() {
+            var val = $('input[name=invoice_number_type]:checked').val()
+            if (val == 'prefix') {
+                $('.invoice-prefix').show();
+                $('.invoice-pattern').hide();
+            } else {
+                $('.invoice-prefix').hide();
+                $('.invoice-pattern').show();
+            }
         }
-    }
 
-    function onClientNumberTypeChange() {
-        var val = $('input[name=client_number_type]:checked').val()
-        if (val == 'prefix') {
-            $('.client-prefix').show();
-            $('.client-pattern').hide();
-        } else {
-            $('.client-prefix').hide();
-            $('.client-pattern').show();
+        function onQuoteNumberTypeChange() {
+            var val = $('input[name=quote_number_type]:checked').val()
+            if (val == 'prefix') {
+                $('.quote-prefix').show();
+                $('.quote-pattern').hide();
+            } else {
+                $('.quote-prefix').hide();
+                $('.quote-pattern').show();
+            }
         }
-    }
 
-    function onClientNumberEnabled() {
-        var enabled = $('#client_number_enabled').is(':checked');
-        if (enabled) {
-            $('#clientNumberDiv').show();
-            $('#client_number_counter').val({{ $company->client_number_counter ?: 1 }});
-        } else {
-            $('#clientNumberDiv').hide();
-            $('#client_number_counter').val(0);
+        function onClientNumberTypeChange() {
+            var val = $('input[name=client_number_type]:checked').val()
+            if (val == 'prefix') {
+                $('.client-prefix').show();
+                $('.client-pattern').hide();
+            } else {
+                $('.client-prefix').hide();
+                $('.client-pattern').show();
+            }
         }
-    }
 
-    $('.number-pattern .input-group-addon').click(function() {
-        $('#patternHelpModal').modal('show');
-    });
+        function onClientNumberEnabled() {
+            var enabled = $('#client_number_enabled').is(':checked');
+            if (enabled) {
+                $('#clientNumberDiv').show();
+                $('#client_number_counter').val({{ $company->client_number_counter ?: 1 }});
+            } else {
+                $('#clientNumberDiv').hide();
+                $('#client_number_counter').val(0);
+            }
+        }
 
-    $(function() {
-    	setQuoteNumberEnabled();
-        onInvoiceNumberTypeChange();
-        onQuoteNumberTypeChange();
-        onClientNumberTypeChange();
-        onClientNumberEnabled();
-    });
+        $('.number-pattern .input-group-addon').click(function () {
+            $('#patternHelpModal').modal('show');
+        });
 
-	</script>
+        $(function () {
+            setQuoteNumberEnabled();
+            onInvoiceNumberTypeChange();
+            onQuoteNumberTypeChange();
+            onClientNumberTypeChange();
+            onClientNumberEnabled();
+        });
+
+    </script>
 
 
 @stop

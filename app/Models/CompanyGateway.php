@@ -75,7 +75,7 @@ class CompanyGateway extends EntityModel
     }
 
     /**
-     * @param bool  $invitation
+     * @param bool $invitation
      * @param mixed $gatewayTypeId
      *
      * @return mixed
@@ -128,7 +128,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPublishableStripeKey()
     {
-        if (! $this->isGateway(GATEWAY_STRIPE)) {
+        if (!$this->isGateway(GATEWAY_STRIPE)) {
             return false;
         }
 
@@ -140,7 +140,7 @@ class CompanyGateway extends EntityModel
      */
     public function getAchEnabled()
     {
-        return ! empty($this->getConfigField('enableAch'));
+        return !empty($this->getConfigField('enableAch'));
     }
 
     /**
@@ -148,7 +148,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPayPalEnabled()
     {
-        return ! empty($this->getConfigField('enablePayPal'));
+        return !empty($this->getConfigField('enablePayPal'));
     }
 
     /**
@@ -156,7 +156,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPlaidSecret()
     {
-        if (! $this->isGateway(GATEWAY_STRIPE)) {
+        if (!$this->isGateway(GATEWAY_STRIPE)) {
             return false;
         }
 
@@ -168,7 +168,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPlaidClientId()
     {
-        if (! $this->isGateway(GATEWAY_STRIPE)) {
+        if (!$this->isGateway(GATEWAY_STRIPE)) {
             return false;
         }
 
@@ -180,7 +180,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPlaidPublicKey()
     {
-        if (! $this->isGateway(GATEWAY_STRIPE)) {
+        if (!$this->isGateway(GATEWAY_STRIPE)) {
             return false;
         }
 
@@ -192,7 +192,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPlaidEnabled()
     {
-        return ! empty($this->getPlaidClientId()) && $this->getAchEnabled();
+        return !empty($this->getPlaidClientId()) && $this->getAchEnabled();
     }
 
     /**
@@ -200,7 +200,7 @@ class CompanyGateway extends EntityModel
      */
     public function getPlaidEnvironment()
     {
-        if (! $this->getPlaidClientId()) {
+        if (!$this->getPlaidClientId()) {
             return null;
         }
 
@@ -216,6 +216,6 @@ class CompanyGateway extends EntityModel
     {
         $company = $this->company ? $this->company : Company::find($this->company_id);
 
-        return \URL::to(env('WEBHOOK_PREFIX', '').'payment_hook/'.$company->company_key.'/'.$this->gateway_id.env('WEBHOOK_SUFFIX', ''));
+        return \URL::to(env('WEBHOOK_PREFIX', '') . 'payment_hook/' . $company->company_key . '/' . $this->gateway_id . env('WEBHOOK_SUFFIX', ''));
     }
 }

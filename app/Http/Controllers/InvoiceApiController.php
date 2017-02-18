@@ -58,9 +58,9 @@ class InvoiceApiController extends BaseAPIController
     public function index()
     {
         $invoices = Invoice::scope()
-                        ->withTrashed()
-                        ->with('invoice_items', 'client')
-                        ->orderBy('created_at', 'desc');
+            ->withTrashed()
+            ->with('invoice_items', 'client')
+            ->orderBy('created_at', 'desc');
 
         return $this->listResponse($invoices);
     }
@@ -118,7 +118,7 @@ class InvoiceApiController extends BaseAPIController
                 $query->where('email', '=', $email);
             })->first();
 
-            if (! $client) {
+            if (!$client) {
                 $validator = Validator::make(['email' => $email], ['email' => 'email']);
                 if ($validator->fails()) {
                     $messages = $validator->messages();
@@ -128,25 +128,25 @@ class InvoiceApiController extends BaseAPIController
 
                 $clientData = ['contact' => ['email' => $email]];
                 foreach ([
-                    'name',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'postal_code',
-                    'country_id',
-                    'private_notes',
-                    'currency_code',
-                ] as $field) {
+                             'name',
+                             'address1',
+                             'address2',
+                             'city',
+                             'state',
+                             'postal_code',
+                             'country_id',
+                             'private_notes',
+                             'currency_code',
+                         ] as $field) {
                     if (isset($data[$field])) {
                         $clientData[$field] = $data[$field];
                     }
                 }
                 foreach ([
-                    'first_name',
-                    'last_name',
-                    'phone',
-                ] as $field) {
+                             'first_name',
+                             'last_name',
+                             'phone',
+                         ] as $field) {
                     if (isset($data[$field])) {
                         $clientData['contact'][$field] = $data[$field];
                     }
@@ -189,15 +189,15 @@ class InvoiceApiController extends BaseAPIController
             if ($payment) {
                 app('App\Ninja\Mailers\ContactMailer')->sendPaymentConfirmation($payment);
                 //$this->dispatch(new SendPaymentEmail($payment));
-            } elseif (! $invoice->is_recurring) {
+            } elseif (!$invoice->is_recurring) {
                 app('App\Ninja\Mailers\ContactMailer')->sendInvoice($invoice);
                 //$this->dispatch(new SendInvoiceEmail($invoice));
             }
         }
 
         $invoice = Invoice::scope($invoice->public_id)
-                        ->with('client', 'invoice_items', 'invitations')
-                        ->first();
+            ->with('client', 'invoice_items', 'invitations')
+            ->first();
 
         if (isset($data['download_invoice']) && boolval($data['download_invoice'])) {
             return $this->fileReponse($invoice->getFileName(), $invoice->getPDFString());
@@ -228,19 +228,19 @@ class InvoiceApiController extends BaseAPIController
             'partial' => 0,
         ];
 
-        if (! isset($data['invoice_status_id']) || $data['invoice_status_id'] == 0) {
+        if (!isset($data['invoice_status_id']) || $data['invoice_status_id'] == 0) {
             $data['invoice_status_id'] = INVOICE_STATUS_DRAFT;
         }
 
-        if (! isset($data['invoice_date'])) {
+        if (!isset($data['invoice_date'])) {
             $fields['invoice_date_sql'] = date_create()->format('Y-m-d');
         }
-        if (! isset($data['due_date'])) {
+        if (!isset($data['due_date'])) {
             $fields['due_date_sql'] = false;
         }
 
         foreach ($fields as $key => $val) {
-            if (! isset($data[$key])) {
+            if (!isset($data[$key])) {
                 $data[$key] = $val;
             }
         }
@@ -265,7 +265,7 @@ class InvoiceApiController extends BaseAPIController
     private function prepareItem($item)
     {
         // if only the product key is set we'll load the cost and notes
-        if (! empty($item['product_key']) && empty($item['cost']) && empty($item['notes'])) {
+        if (!empty($item['product_key']) && empty($item['cost']) && empty($item['notes'])) {
             $product = Product::findProductByKey($item['product_key']);
             if ($product) {
                 if (empty($item['cost'])) {
@@ -285,7 +285,7 @@ class InvoiceApiController extends BaseAPIController
         ];
 
         foreach ($fields as $key => $val) {
-            if (! isset($item[$key])) {
+            if (!isset($item[$key])) {
                 $item[$key] = $val;
             }
         }
@@ -344,8 +344,8 @@ class InvoiceApiController extends BaseAPIController
         $this->invoiceService->save($data, $request->entity());
 
         $invoice = Invoice::scope($publicId)
-                        ->with('client', 'invoice_items', 'invitations')
-                        ->firstOrFail();
+            ->with('client', 'invoice_items', 'invitations')
+            ->firstOrFail();
 
         return $this->itemResponse($invoice);
     }

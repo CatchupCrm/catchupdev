@@ -27,7 +27,7 @@ class ClientService extends BaseService
      *
      * @param ClientRepository $clientRepo
      * @param DatatableService $datatableService
-     * @param NinjaRepository  $ninjaRepo
+     * @param NinjaRepository $ninjaRepo
      */
     public function __construct(ClientRepository $clientRepo, DatatableService $datatableService, NinjaRepository $ninjaRepo)
     {

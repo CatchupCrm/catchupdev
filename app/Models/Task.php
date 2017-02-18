@@ -127,7 +127,7 @@ class Task extends EntityModel
         $parts = json_decode($task->time_log) ?: [];
 
         foreach ($parts as $part) {
-            if (count($part) == 1 || ! $part[1]) {
+            if (count($part) == 1 || !$part[1]) {
                 $duration += time() - $part[0];
             } else {
                 $duration += $part[1] - $part[0];
@@ -153,7 +153,7 @@ class Task extends EntityModel
         $parts = json_decode($this->time_log) ?: [];
         $part = $parts[count($parts) - 1];
 
-        if (count($part) == 1 || ! $part[1]) {
+        if (count($part) == 1 || !$part[1]) {
             return time() - $part[0];
         } else {
             return 0;

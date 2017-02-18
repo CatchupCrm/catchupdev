@@ -24,25 +24,25 @@ class ClientPortalHeaderComposer
     {
         $contactKey = session('contact_key');
 
-        if (! $contactKey) {
+        if (!$contactKey) {
             return false;
         }
 
         $contact = Contact::where('contact_key', '=', $contactKey)
-                        ->with('client')
-                        ->first();
+            ->with('client')
+            ->first();
 
-        if (! $contact || $contact->is_deleted) {
+        if (!$contact || $contact->is_deleted) {
             return false;
         }
 
         $client = $contact->client;
 
         $hasDocuments = DB::table('invoices')
-                            ->where('invoices.client_id', '=', $client->id)
-                            ->whereNull('invoices.deleted_at')
-                            ->join('documents', 'documents.invoice_id', '=', 'invoices.id')
-                            ->count();
+            ->where('invoices.client_id', '=', $client->id)
+            ->whereNull('invoices.deleted_at')
+            ->join('documents', 'documents.invoice_id', '=', 'invoices.id')
+            ->count();
 
         $view->with('hasQuotes', $client->publicQuotes->count());
         $view->with('hasCredits', $client->creditsWithBalance->count());

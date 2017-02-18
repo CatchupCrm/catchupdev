@@ -71,7 +71,7 @@ class Utils
 
     public static function isSelfHost()
     {
-        return ! static::isNinjaProd();
+        return !static::isNinjaProd();
     }
 
     public static function isNinjaProd()
@@ -102,45 +102,45 @@ class Utils
         return self::getResllerType() ? true : false;
     }
 
-	public static function clientViewCSS()
-	{
-		$company = false;
+    public static function clientViewCSS()
+    {
+        $company = false;
 
-		if (Auth::check()) {
-			$company = Auth::user()->company;
-		} elseif ($contactKey = session('contact_key')) {
-			if ($contact = \App\Models\Contact::whereContactKey($contactKey)->first()) {
-				$company = $contact->company;
-			}
-		}
+        if (Auth::check()) {
+            $company = Auth::user()->company;
+        } elseif ($contactKey = session('contact_key')) {
+            if ($contact = \App\Models\Contact::whereContactKey($contactKey)->first()) {
+                $company = $contact->company;
+            }
+        }
 
-		if ( !$company && ! self::isNinja()) {
-			// For self-hosted companies, pick the first company
-			$company = \App\Models\Company::first();
-		}
+        if (!$company && !self::isNinja()) {
+            // For self-hosted companies, pick the first company
+            $company = \App\Models\Company::first();
+        }
 
-		return $company ? $company->clientViewCSS() : '';
-	}
+        return $company ? $company->clientViewCSS() : '';
+    }
 
-	public static function getCompanyFontsUrl($protocol = '')
-	{
-		$company = false;
+    public static function getCompanyFontsUrl($protocol = '')
+    {
+        $company = false;
 
-		if (Auth::check()) {
-			$company = Auth::user()->company;
-		} elseif ($contactKey = session('contact_key')) {
-			if ($contact = \App\Models\Contact::whereContactKey($contactKey)->first()) {
-				$company = $contact->company;
-			}
-		}
+        if (Auth::check()) {
+            $company = Auth::user()->company;
+        } elseif ($contactKey = session('contact_key')) {
+            if ($contact = \App\Models\Contact::whereContactKey($contactKey)->first()) {
+                $company = $contact->company;
+            }
+        }
 
-		if ( !$company && ! self::isNinja()) {
-			// For self-hosted companies, pick the first company
-			$company = \App\Models\Company::first();
-		}
+        if (!$company && !self::isNinja()) {
+            // For self-hosted companies, pick the first company
+            $company = \App\Models\Company::first();
+        }
 
-		return $company ? $company->getFontsUrl($protocol) : false;
-	}
+        return $company ? $company->getFontsUrl($protocol) : false;
+    }
 
     public static function isWhiteLabel()
     {
@@ -168,7 +168,7 @@ class Utils
 
     public static function getTermsLink()
     {
-        return static::isNinja() ? NINJA_WEB_URL.'/terms' : NINJA_WEB_URL.'/self-hosting-the-invoice-ninja-platform';
+        return static::isNinja() ? NINJA_WEB_URL . '/terms' : NINJA_WEB_URL . '/self-hosting-the-invoice-ninja-platform';
     }
 
     public static function isOAuthEnabled()
@@ -227,7 +227,7 @@ class Utils
 
     public static function isPaidPro()
     {
-        return static::isPro() && ! static::isTrial();
+        return static::isPro() && !static::isTrial();
     }
 
     public static function isEnglish()
@@ -258,7 +258,7 @@ class Utils
 
     public static function getNewsFeedResponse($userType = false)
     {
-        if (! $userType) {
+        if (!$userType) {
             $userType = self::getUserType();
         }
 
@@ -273,8 +273,9 @@ class Utils
     public static function getProLabel($feature)
     {
         if (Auth::check()
-                && ! Auth::user()->isPro()
-                && $feature == COMPANY_ADVANCED_SETTINGS) {
+            && !Auth::user()->isPro()
+            && $feature == COMPANY_ADVANCED_SETTINGS
+        ) {
             return '&nbsp;<sup class="pro-label">PRO</sup>';
         } else {
             return '';
@@ -353,11 +354,11 @@ class Utils
 
     public static function fatalError($message = false, $exception = false)
     {
-        if (! $message) {
+        if (!$message) {
             $message = 'An error occurred, please try again later.';
         }
 
-        static::logError($message.' '.$exception);
+        static::logError($message . ' ' . $exception);
 
         $data = [
             'showBreadcrumbs' => false,
@@ -372,7 +373,7 @@ class Utils
         $class = get_class($exception);
         $code = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode();
 
-        return  "***{$class}*** [{$code}] : {$exception->getFile()} [Line {$exception->getLine()}] => {$exception->getMessage()}";
+        return "***{$class}*** [{$code}] : {$exception->getFile()} [Line {$exception->getLine()}] => {$exception->getMessage()}";
     }
 
     public static function logError($error, $context = 'PHP', $info = false)
@@ -400,9 +401,9 @@ class Utils
         ];
 
         if ($info) {
-            Log::info($error."\n", $data);
+            Log::info($error . "\n", $data);
         } else {
-            Log::error($error."\n", $data);
+            Log::error($error . "\n", $data);
         }
 
         /*
@@ -431,7 +432,7 @@ class Utils
     {
         $cache = Cache::get($type);
 
-        if (! $cache) {
+        if (!$cache) {
             static::logError("Cache for {$type} is not set");
 
             return null;
@@ -448,15 +449,15 @@ class Utils
     {
         $value = floatval($value);
 
-        if (! $currencyId) {
+        if (!$currencyId) {
             $currencyId = Session::get(SESSION_CURRENCY, DEFAULT_CURRENCY);
         }
 
-        if (! $decorator) {
+        if (!$decorator) {
             $decorator = Session::get(SESSION_CURRENCY_DECORATOR, CURRENCY_DECORATOR_SYMBOL);
         }
 
-        if (! $countryId && Auth::check()) {
+        if (!$countryId && Auth::check()) {
             $countryId = Auth::user()->company->country_id;
         }
 
@@ -483,7 +484,7 @@ class Utils
 
         if ($decorator == CURRENCY_DECORATOR_NONE) {
             return $value;
-        } elseif ($decorator == CURRENCY_DECORATOR_CODE || ! $symbol) {
+        } elseif ($decorator == CURRENCY_DECORATOR_CODE || !$symbol) {
             return "{$value} {$code}";
         } elseif ($swapSymbol) {
             return "{$value} " . trim($symbol);
@@ -494,7 +495,7 @@ class Utils
 
     public static function pluralize($string, $count)
     {
-        $field = $count == 1 ? $string : $string.'s';
+        $field = $count == 1 ? $string : $string . 's';
         $string = trans("texts.$field", ['count' => $count]);
 
         return $string;
@@ -502,7 +503,7 @@ class Utils
 
     public static function pluralizeEntityType($type)
     {
-        if (! self::isNinjaProd()) {
+        if (!self::isNinjaProd()) {
             if ($module = \Module::find($type)) {
                 return $module->get('plural', $type);
             }
@@ -551,7 +552,7 @@ class Utils
 
     public static function toArray($data)
     {
-        return json_decode(json_encode((array) $data), true);
+        return json_decode(json_encode((array)$data), true);
     }
 
     public static function toSpaceCase($string)
@@ -592,7 +593,7 @@ class Utils
 
     public static function dateToString($date)
     {
-        if (! $date) {
+        if (!$date) {
             return false;
         }
 
@@ -610,7 +611,7 @@ class Utils
 
     public static function timestampToString($timestamp, $timezone, $format)
     {
-        if (! $timestamp) {
+        if (!$timestamp) {
             return '';
         }
         $date = Carbon::createFromTimeStamp($timestamp);
@@ -626,14 +627,14 @@ class Utils
 
     public static function toSqlDate($date, $formatResult = true)
     {
-        if (! $date) {
+        if (!$date) {
             return;
         }
 
         $format = Session::get(SESSION_DATE_FORMAT, DEFAULT_DATE_FORMAT);
         $dateTime = DateTime::createFromFormat($format, $date);
 
-        if (! $dateTime) {
+        if (!$dateTime) {
             return $date;
         } else {
             return $formatResult ? $dateTime->format('Y-m-d') : $dateTime;
@@ -642,14 +643,14 @@ class Utils
 
     public static function fromSqlDate($date, $formatResult = true)
     {
-        if (! $date || $date == '0000-00-00') {
+        if (!$date || $date == '0000-00-00') {
             return '';
         }
 
         $format = Session::get(SESSION_DATE_FORMAT, DEFAULT_DATE_FORMAT);
         $dateTime = DateTime::createFromFormat('Y-m-d', $date);
 
-        if (! $dateTime) {
+        if (!$dateTime) {
             return $date;
         } else {
             return $formatResult ? $dateTime->format($format) : $dateTime;
@@ -658,7 +659,7 @@ class Utils
 
     public static function fromSqlDateTime($date, $formatResult = true)
     {
-        if (! $date || $date == '0000-00-00 00:00:00') {
+        if (!$date || $date == '0000-00-00 00:00:00') {
             return '';
         }
 
@@ -695,14 +696,14 @@ class Utils
 
     public static function processVariables($str)
     {
-        if (! $str) {
+        if (!$str) {
             return '';
         }
 
         $variables = ['MONTH', 'QUARTER', 'YEAR'];
         for ($i = 0; $i < count($variables); $i++) {
             $variable = $variables[$i];
-            $regExp = '/:'.$variable.'[+-]?[\d]*/';
+            $regExp = '/:' . $variable . '[+-]?[\d]*/';
             preg_match_all($regExp, $str, $matches);
             $matches = $matches[0];
             if (count($matches) == 0) {
@@ -779,7 +780,7 @@ class Utils
             $quarter = 4;
         }
 
-        return 'Q'.$quarter;
+        return 'Q' . $quarter;
     }
 
     private static function getYear($offset)
@@ -799,7 +800,7 @@ class Utils
         if ($model->client_name) {
             return $model->client_name;
         } elseif ($model->first_name || $model->last_name) {
-            return $model->first_name.' '.$model->last_name;
+            return $model->first_name . ' ' . $model->last_name;
         } else {
             return $model->email ?: '';
         }
@@ -821,7 +822,7 @@ class Utils
     public static function getPersonDisplayName($firstName, $lastName, $email)
     {
         if ($firstName || $lastName) {
-            return $firstName.' '.$lastName;
+            return $firstName . ' ' . $lastName;
         } elseif ($email) {
             return $email;
         } else {
@@ -867,7 +868,7 @@ class Utils
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => $jsonEncodedData,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Content-Length: '.strlen($jsonEncodedData)],
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Content-Length: ' . strlen($jsonEncodedData)],
         ];
 
         curl_setopt_array($curl, $opts);
@@ -885,22 +886,22 @@ class Utils
     public static function getApiHeaders($count = 0)
     {
         return [
-          'Content-Type' => 'application/json',
-          //'Access-Control-Allow-Origin' => '*',
-          //'Access-Control-Allow-Methods' => 'GET',
-          //'Access-Control-Allow-Headers' => 'Origin, Content-Type, Accept, Authorization, X-Requested-With',
-          //'Access-Control-Allow-Credentials' => 'true',
-          'X-Total-Count' => $count,
-          'X-Ninja-Version' => NINJA_VERSION,
-          //'X-Rate-Limit-Limit' - The number of allowed requests in the current period
-          //'X-Rate-Limit-Remaining' - The number of remaining requests in the current period
-          //'X-Rate-Limit-Reset' - The number of seconds left in the current period,
+            'Content-Type' => 'application/json',
+            //'Access-Control-Allow-Origin' => '*',
+            //'Access-Control-Allow-Methods' => 'GET',
+            //'Access-Control-Allow-Headers' => 'Origin, Content-Type, Accept, Authorization, X-Requested-With',
+            //'Access-Control-Allow-Credentials' => 'true',
+            'X-Total-Count' => $count,
+            'X-Ninja-Version' => NINJA_VERSION,
+            //'X-Rate-Limit-Limit' - The number of allowed requests in the current period
+            //'X-Rate-Limit-Remaining' - The number of remaining requests in the current period
+            //'X-Rate-Limit-Reset' - The number of seconds left in the current period,
         ];
     }
 
     public static function isEmpty($value)
     {
-        return ! $value || $value == '0' || $value == '0.00' || $value == '0,00';
+        return !$value || $value == '0' || $value == '0.00' || $value == '0,00';
     }
 
     public static function startsWith($haystack, $needle)
@@ -961,7 +962,7 @@ class Utils
     public static function transFlowText($key)
     {
         $str = trans("texts.$key");
-        if (! in_array(App::getLocale(), ['de', 'fr'])) {
+        if (!in_array(App::getLocale(), ['de', 'fr'])) {
             $str = strtolower($str);
         }
 
@@ -1018,7 +1019,7 @@ class Utils
     {
         $name = trim($name);
         $lastName = (strpos($name, ' ') === false) ? '' : preg_replace('#.*\s([\w-]*)$#', '$1', $name);
-        $firstName = trim(preg_replace('#'.$lastName.'#', '', $name));
+        $firstName = trim(preg_replace('#' . $lastName . '#', '', $name));
 
         return [$firstName, $lastName];
     }
@@ -1050,7 +1051,7 @@ class Utils
 
     public static function formatWebsite($website)
     {
-        if (! $website) {
+        if (!$website) {
             return '';
         }
 
@@ -1061,7 +1062,7 @@ class Utils
         if (strlen($link) > 7 && substr($link, 0, 7) === $prefix) {
             $title = substr($title, 7);
         } else {
-            $link = $prefix.$link;
+            $link = $prefix . $link;
         }
 
         return link_to($link, $title, ['target' => '_blank']);
@@ -1077,7 +1078,7 @@ class Utils
 
     public static function copyContext($entity1, $entity2)
     {
-        if (! $entity2) {
+        if (!$entity2) {
             return $entity1;
         }
 
@@ -1103,7 +1104,7 @@ class Utils
 
     public static function addHttp($url)
     {
-        if (! preg_match('~^(?:f|ht)tps?://~i', $url)) {
+        if (!preg_match('~^(?:f|ht)tps?://~i', $url)) {
             $url = 'http://' . $url;
         }
 
@@ -1147,7 +1148,7 @@ class Utils
     public static function getTranslatedWeekdayNames()
     {
         return collect(static::$weekdayNames)->transform(function ($day) {
-            return trans('texts.'.strtolower($day));
+            return trans('texts.' . strtolower($day));
         });
     }
 

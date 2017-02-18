@@ -10,12 +10,12 @@ use App\Models\User;
 class UserMailer extends Mailer
 {
     /**
-     * @param User      $user
+     * @param User $user
      * @param User|null $invitor
      */
     public function sendConfirmation(User $user, User $invitor = null)
     {
-        if (! $user->email) {
+        if (!$user->email) {
             return;
         }
 
@@ -39,7 +39,7 @@ class UserMailer extends Mailer
     }
 
     /**
-     * @param User    $user
+     * @param User $user
      * @param Invoice $invoice
      * @param $notificationType
      * @param Payment|null $payment
@@ -49,8 +49,9 @@ class UserMailer extends Mailer
         Invoice $invoice,
         $notificationType,
         Payment $payment = null
-    ) {
-        if (! $user->email || $user->cannot('view', $invoice)) {
+    )
+    {
+        if (!$user->email || $user->cannot('view', $invoice)) {
             return;
         }
 
@@ -99,7 +100,7 @@ class UserMailer extends Mailer
         $invoice = $invitation->invoice;
         $entityType = $invoice->getEntityType();
 
-        if (! $user->email) {
+        if (!$user->email) {
             return;
         }
 
@@ -118,7 +119,7 @@ class UserMailer extends Mailer
 
     public function sendSecurityCode($user, $code)
     {
-        if (! $user->email) {
+        if (!$user->email) {
             return;
         }
 

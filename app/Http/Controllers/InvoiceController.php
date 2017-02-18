@@ -126,25 +126,25 @@ class InvoiceController extends BaseController
 
         $lastSent = ($invoice->is_recurring && $invoice->last_sent_date) ? $invoice->recurring_invoices->last() : null;
 
-        if (! Auth::user()->hasPermission('view_all')) {
+        if (!Auth::user()->hasPermission('view_all')) {
             $clients = $clients->where('clients.user_id', '=', Auth::user()->id);
         }
 
         $data = [
-                'clients' => $clients->get(),
-                'entityType' => $entityType,
-                'showBreadcrumbs' => $clone,
-                'invoice' => $invoice,
-                'method' => $method,
-                'invitationContactIds' => $contactIds,
-                'url' => $url,
-                'title' => trans("texts.edit_{$entityType}"),
-                'client' => $invoice->client,
-                'isRecurring' => $invoice->is_recurring,
-                'lastSent' => $lastSent, ];
+            'clients' => $clients->get(),
+            'entityType' => $entityType,
+            'showBreadcrumbs' => $clone,
+            'invoice' => $invoice,
+            'method' => $method,
+            'invitationContactIds' => $contactIds,
+            'url' => $url,
+            'title' => trans("texts.edit_{$entityType}"),
+            'client' => $invoice->client,
+            'isRecurring' => $invoice->is_recurring,
+            'lastSent' => $lastSent,];
         $data = array_merge($data, self::getViewModel($invoice));
 
-        if ($invoice->isSent() && $invoice->getAutoBillEnabled() && ! $invoice->isPaid()) {
+        if ($invoice->isSent() && $invoice->getAutoBillEnabled() && !$invoice->isPaid()) {
             $data['autoBillChangeWarning'] = $invoice->client->autoBillLater();
         }
 
@@ -153,7 +153,7 @@ class InvoiceController extends BaseController
         }
 
         // Set the invitation data on the client's contacts
-        if (! $clone) {
+        if (!$clone) {
             $clients = $data['clients'];
             foreach ($clients as $client) {
                 if ($client->id != $invoice->client->id) {
@@ -195,7 +195,7 @@ class InvoiceController extends BaseController
         $invoice->public_id = 0;
 
         $clients = Client::scope()->with('contacts', 'country')->orderBy('name');
-        if (! Auth::user()->hasPermission('view_all')) {
+        if (!Auth::user()->hasPermission('view_all')) {
             $clients = $clients->where('clients.user_id', '=', Auth::user()->id);
         }
 
@@ -228,8 +228,8 @@ class InvoiceController extends BaseController
         foreach (preg_split("/((\r?\n)|(\r\n?))/", trans('texts.recurring_help')) as $line) {
             $parts = explode('=>', $line);
             if (count($parts) > 1) {
-                $line = $parts[0].' => '.Utils::processVariables($parts[0]);
-                $recurringHelp .= '<li>'.strip_tags($line).'</li>';
+                $line = $parts[0] . ' => ' . Utils::processVariables($parts[0]);
+                $recurringHelp .= '<li>' . strip_tags($line) . '</li>';
             } else {
                 $recurringHelp .= $line;
             }
@@ -238,8 +238,8 @@ class InvoiceController extends BaseController
         foreach (preg_split("/((\r?\n)|(\r\n?))/", trans('texts.recurring_due_date_help')) as $line) {
             $parts = explode('=>', $line);
             if (count($parts) > 1) {
-                $line = $parts[0].' => '.Utils::processVariables($parts[0]);
-                $recurringDueDateHelp .= '<li>'.strip_tags($line).'</li>';
+                $line = $parts[0] . ' => ' . Utils::processVariables($parts[0]);
+                $recurringDueDateHelp .= '<li>' . strip_tags($line) . '</li>';
             } else {
                 $recurringDueDateHelp .= $line;
             }
@@ -253,7 +253,7 @@ class InvoiceController extends BaseController
         $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
         for ($i = 1; $i < 31; $i++) {
             if ($i >= 11 && $i <= 13) {
-                $ordinal = $i. 'th';
+                $ordinal = $i . 'th';
             } else {
                 $ordinal = $i . $ends[$i % 10];
             }
@@ -336,7 +336,7 @@ class InvoiceController extends BaseController
         $input = $request->input();
         $clientPublicId = isset($input['client']['public_id']) ? $input['client']['public_id'] : false;
         if ($clientPublicId == '-1') {
-            $message = $message.' '.trans('texts.and_created_client');
+            $message = $message . ' ' . trans('texts.and_created_client');
         }
 
         Session::flash('message', $message);
@@ -391,11 +391,11 @@ class InvoiceController extends BaseController
             $company->setTemplateDefaults(Input::get('template_type'), $template['subject'], $template['body']);
         }
 
-        if (! Auth::user()->confirmed) {
+        if (!Auth::user()->confirmed) {
             $errorMessage = trans(Auth::user()->registered ? 'texts.confirmation_required' : 'texts.registration_required');
             Session::flash('error', $errorMessage);
 
-            return Redirect::to('invoices/'.$invoice->public_id.'/edit');
+            return Redirect::to('invoices/' . $invoice->public_id . '/edit');
         }
 
         if ($invoice->is_recurring) {
@@ -420,7 +420,7 @@ class InvoiceController extends BaseController
 
     private function emailRecurringInvoice(&$invoice)
     {
-        if (! $invoice->shouldSendToday()) {
+        if (!$invoice->shouldSendToday()) {
             if ($date = $invoice->getNextSendDate()) {
                 $date = $invoice->company->formatDate($date);
                 $date .= ' ' . DEFAULT_SEND_RECURRING_HOUR . ':00 am ' . $invoice->company->getTimezone();
@@ -451,7 +451,7 @@ class InvoiceController extends BaseController
     /**
      * Display the specified resource.
      *
-     * @param int   $id
+     * @param int $id
      * @param mixed $publicId
      *
      * @return Response
@@ -466,15 +466,14 @@ class InvoiceController extends BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int   $id
+     * @param int $id
      * @param mixed $entityType
      *
      * @return Response
      */
     public function bulk($entityType = ENTITY_INVOICE)
     {
-        $action = Input::get('bulk_action') ?: Input::get('action');
-        ;
+        $action = Input::get('bulk_action') ?: Input::get('action');;
         $ids = Input::get('bulk_public_id') ?: (Input::get('public_id') ?: Input::get('ids'));
         $count = $this->invoiceService->bulk($ids, $action);
 
@@ -527,13 +526,13 @@ class InvoiceController extends BaseController
         $activities = Activity::scope(false, $invoice->company_id);
         if ($paymentId) {
             $activities->whereIn('activity_type_id', [ACTIVITY_TYPE_CREATE_PAYMENT])
-                       ->where('payment_id', '=', $paymentId);
+                ->where('payment_id', '=', $paymentId);
         } else {
             $activities->whereIn('activity_type_id', [ACTIVITY_TYPE_UPDATE_INVOICE, ACTIVITY_TYPE_UPDATE_QUOTE])
-                       ->where('invoice_id', '=', $invoice->id);
+                ->where('invoice_id', '=', $invoice->id);
         }
         $activities = $activities->orderBy('id', 'desc')
-                                 ->get(['id', 'created_at', 'user_id', 'json_backup', 'activity_type_id', 'payment_id']);
+            ->get(['id', 'created_at', 'user_id', 'json_backup', 'activity_type_id', 'payment_id']);
 
         $versionsJson = [];
         $versionsSelect = [];
@@ -561,7 +560,7 @@ class InvoiceController extends BaseController
         }
 
         // Show the current version as the last in the history
-        if (! $paymentId) {
+        if (!$paymentId) {
             $versionsSelect[$lastId] = Utils::timestampToDateTimeString(strtotime($invoice->created_at)) . ' - ' . $invoice->user->getDisplayName();
         }
 
@@ -582,8 +581,8 @@ class InvoiceController extends BaseController
         $invoiceNumber = request()->invoice_number;
 
         $query = Invoice::scope()
-                    ->whereInvoiceNumber($invoiceNumber)
-                    ->withTrashed();
+            ->whereInvoiceNumber($invoiceNumber)
+            ->withTrashed();
 
         if ($invoicePublicId) {
             $query->where('public_id', '!=', $invoicePublicId);

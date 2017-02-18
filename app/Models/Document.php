@@ -150,7 +150,7 @@ class Document extends EntityModel
      */
     public function getDisk()
     {
-        return Storage::disk(! empty($this->disk) ? $this->disk : env('DOCUMENT_FILESYSTEM', 'documents'));
+        return Storage::disk(!empty($this->disk) ? $this->disk : env('DOCUMENT_FILESYSTEM', 'documents'));
     }
 
     /**
@@ -198,9 +198,10 @@ class Document extends EntityModel
                 'Key' => $fullPath,
             ]);
 
-            return (string) $client->createPresignedRequest($command, '+10 minutes')->getUri();
-        } elseif (! $prioritizeSpeed // Rackspace temp URLs are slow, so we don't use them for previews
-                   && $adapter instanceof \League\Flysystem\Rackspace\RackspaceAdapter) {
+            return (string)$client->createPresignedRequest($command, '+10 minutes')->getUri();
+        } elseif (!$prioritizeSpeed // Rackspace temp URLs are slow, so we don't use them for previews
+            && $adapter instanceof \League\Flysystem\Rackspace\RackspaceAdapter
+        ) {
             $secret = env('RACKSPACE_TEMP_URL_SECRET');
             if ($secret) {
                 $object = $adapter->getContainer()->getObject($fullPath);
@@ -258,7 +259,7 @@ class Document extends EntityModel
      */
     public function getUrl()
     {
-        return url('documents/'.$this->public_id.'/'.$this->name);
+        return url('documents/' . $this->public_id . '/' . $this->name);
     }
 
     /**
@@ -268,7 +269,7 @@ class Document extends EntityModel
      */
     public function getClientUrl($invitation)
     {
-        return url('client/documents/'.$invitation->invitation_key.'/'.$this->public_id.'/'.$this->name);
+        return url('client/documents/' . $invitation->invitation_key . '/' . $this->public_id . '/' . $this->name);
     }
 
     /**
@@ -284,11 +285,11 @@ class Document extends EntityModel
      */
     public function getVFSJSUrl()
     {
-        if (! $this->isPDFEmbeddable()) {
+        if (!$this->isPDFEmbeddable()) {
             return null;
         }
 
-        return url('documents/js/'.$this->public_id.'/'.$this->name.'.js');
+        return url('documents/js/' . $this->public_id . '/' . $this->name . '.js');
     }
 
     /**
@@ -296,11 +297,11 @@ class Document extends EntityModel
      */
     public function getClientVFSJSUrl()
     {
-        if (! $this->isPDFEmbeddable()) {
+        if (!$this->isPDFEmbeddable()) {
             return null;
         }
 
-        return url('client/documents/js/'.$this->public_id.'/'.$this->name.'.js');
+        return url('client/documents/js/' . $this->public_id . '/' . $this->name . '.js');
     }
 
     /**
@@ -308,7 +309,7 @@ class Document extends EntityModel
      */
     public function getPreviewUrl()
     {
-        return $this->preview ? url('documents/preview/'.$this->public_id.'/'.$this->name.'.'.pathinfo($this->preview, PATHINFO_EXTENSION)) : null;
+        return $this->preview ? url('documents/preview/' . $this->public_id . '/' . $this->name . '.' . pathinfo($this->preview, PATHINFO_EXTENSION)) : null;
     }
 
     /**
@@ -355,7 +356,7 @@ Document::deleted(function ($document) {
         ->where('documents.disk', '=', $document->disk)
         ->count();
 
-    if (! $same_path_count) {
+    if (!$same_path_count) {
         $document->getDisk()->delete($document->path);
     }
 
@@ -365,7 +366,7 @@ Document::deleted(function ($document) {
             ->where('documents.preview', '=', $document->preview)
             ->where('documents.disk', '=', $document->disk)
             ->count();
-        if (! $same_preview_count) {
+        if (!$same_preview_count) {
             $document->getDisk()->delete($document->preview);
         }
     }

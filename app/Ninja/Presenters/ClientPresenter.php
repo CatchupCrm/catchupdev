@@ -29,7 +29,7 @@ class ClientPresenter extends EntityPresenter
     {
         $client = $this->entity;
 
-        if (! $client->payment_terms) {
+        if (!$client->payment_terms) {
             return '';
         }
 

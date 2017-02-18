@@ -75,13 +75,13 @@ class ProductController extends BaseController
         $product = Product::scope($publicId)->withTrashed()->firstOrFail();
 
         $data = [
-          'company' => $company,
-          'taxRates' => $company->invoice_item_taxes ? TaxRate::scope()->whereIsInclusive(false)->get(['id', 'name', 'rate']) : null,
-          'product' => $product,
-          'entity' => $product,
-          'method' => 'PUT',
-          'url' => 'products/'.$publicId,
-          'title' => trans('texts.edit_product'),
+            'company' => $company,
+            'taxRates' => $company->invoice_item_taxes ? TaxRate::scope()->whereIsInclusive(false)->get(['id', 'name', 'rate']) : null,
+            'product' => $product,
+            'entity' => $product,
+            'method' => 'PUT',
+            'url' => 'products/' . $publicId,
+            'title' => trans('texts.edit_product'),
         ];
 
         return View::make('companies.product', $data);
@@ -95,12 +95,12 @@ class ProductController extends BaseController
         $company = Auth::user()->company;
 
         $data = [
-          'company' => $company,
-          'taxRates' => $company->invoice_item_taxes ? TaxRate::scope()->whereIsInclusive(false)->get(['id', 'name', 'rate']) : null,
-          'product' => null,
-          'method' => 'POST',
-          'url' => 'products',
-          'title' => trans('texts.create_product'),
+            'company' => $company,
+            'taxRates' => $company->invoice_item_taxes ? TaxRate::scope()->whereIsInclusive(false)->get(['id', 'name', 'rate']) : null,
+            'product' => null,
+            'method' => 'POST',
+            'url' => 'products',
+            'title' => trans('texts.create_product'),
         ];
 
         return View::make('companies.product', $data);
@@ -159,7 +159,7 @@ class ProductController extends BaseController
         $ids = Input::get('public_id') ? Input::get('public_id') : Input::get('ids');
         $count = $this->productService->bulk($ids, $action);
 
-        $message = Utils::pluralize($action.'d_product', $count);
+        $message = Utils::pluralize($action . 'd_product', $count);
         Session::flash('message', $message);
 
         return $this->returnBulk(ENTITY_PRODUCT, $action, $ids);

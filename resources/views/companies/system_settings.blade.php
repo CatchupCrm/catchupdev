@@ -1,6 +1,6 @@
 @extends('header')
 
-@section('content') 
+@section('content')
     @parent
 
     @include('companies.nav', ['selected' => COMPANY_SYSTEM_SETTINGS])

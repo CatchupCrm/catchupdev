@@ -21,11 +21,11 @@ class ProfitAndLossReport extends AbstractReport
         $company = Auth::user()->company;
 
         $payments = Payment::scope()
-                        ->with('client.contacts')
-                        ->withArchived()
-                        ->excludeFailed()
-                        ->where('payment_date', '>=', $this->startDate)
-                        ->where('payment_date', '<=', $this->endDate);
+            ->with('client.contacts')
+            ->withArchived()
+            ->excludeFailed()
+            ->where('payment_date', '>=', $this->startDate)
+            ->where('payment_date', '<=', $this->endDate);
 
         foreach ($payments->get() as $payment) {
             $client = $payment->client;
@@ -43,10 +43,10 @@ class ProfitAndLossReport extends AbstractReport
         }
 
         $expenses = Expense::scope()
-                        ->with('client.contacts')
-                        ->withArchived()
-                        ->where('expense_date', '>=', $this->startDate)
-                        ->where('expense_date', '<=', $this->endDate);
+            ->with('client.contacts')
+            ->withArchived()
+            ->where('expense_date', '>=', $this->startDate)
+            ->where('expense_date', '<=', $this->endDate);
 
         foreach ($expenses->get() as $expense) {
             $client = $expense->client;

@@ -23,7 +23,7 @@ class TokenService extends BaseService
     /**
      * TokenService constructor.
      *
-     * @param TokenRepository  $tokenRepo
+     * @param TokenRepository $tokenRepo
      * @param DatatableService $datatableService
      */
     public function __construct(TokenRepository $tokenRepo, DatatableService $datatableService)

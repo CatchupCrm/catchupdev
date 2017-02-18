@@ -20,14 +20,14 @@ class BaseController extends Controller
      */
     protected function setupLayout()
     {
-        if (! is_null($this->layout)) {
+        if (!is_null($this->layout)) {
             $this->layout = View::make($this->layout);
         }
     }
 
     protected function returnBulk($entityType, $action, $ids)
     {
-        if (! is_array($ids)) {
+        if (!is_array($ids)) {
             $ids = [$ids];
         }
 
@@ -38,12 +38,12 @@ class BaseController extends Controller
         // when restoring redirect to entity
         if ($action == 'restore' && count($ids) == 1) {
             return redirect("{$entityTypes}/" . $ids[0]);
-        // when viewing from a datatable list
+            // when viewing from a datatable list
         } elseif (strpos($referer, '/clients/')) {
             return redirect($referer);
         } elseif ($isDatatable || ($action == 'archive' || $action == 'delete')) {
             return redirect("{$entityTypes}");
-        // when viewing individual entity
+            // when viewing individual entity
         } elseif (count($ids)) {
             return redirect("{$entityTypes}/" . $ids[0]);
         } else {

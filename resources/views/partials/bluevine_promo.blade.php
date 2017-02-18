@@ -15,42 +15,42 @@
             </div>
 
             <div class="modal-body">
-            <div class="panel-body">
-                {!! Former::open('/bluevine/signup')->id('bluevineSignup') !!}
-                {!! trans('texts.bluevine_modal_text') !!}<br/>
-                <h3>{!! trans('texts.bluevine_create_company') !!}</h3>
-                {!! Former::text('name')->id('bluevine_name')->placeholder(trans('texts.name'))->value($user->first_name . ' ' . $user->last_name)->required() !!}
-                {!! Former::text('email')->id('bluevine_email')->placeholder(trans('texts.email'))->value($user->email)->required() !!}
-                {!! Former::text('phone')->id('bluevine_phone')->placeholder(trans('texts.phone'))->value(!empty($user->phone) ? $user->phone : '')->required() !!}
-                {!! Former::number('fico_score')->min(300)->max(850)->placeholder(trans('texts.fico_score'))->required() !!}
-                {!! Former::text('business_inception')->append('<span class="glyphicon glyphicon-calendar"></span>')->placeholder(trans('texts.business_inception'))->required() !!}
-                {!! Former::number('annual_revenue')->prepend('$')->append('.00')->placeholder(trans('texts.annual_revenue'))->value(floor($usdLast12Months))->required() !!}
-                {!! Former::number('average_bank_balance')->prepend('$')->append('.00')->placeholder(trans('texts.average_bank_balance'))->required() !!}
-                {!! Former::checkboxes('quote_types')
-                        ->onchange('bluevineQuoteTypesChanged()')
+                <div class="panel-body">
+                    {!! Former::open('/bluevine/signup')->id('bluevineSignup') !!}
+                    {!! trans('texts.bluevine_modal_text') !!}<br/>
+                    <h3>{!! trans('texts.bluevine_create_company') !!}</h3>
+                    {!! Former::text('name')->id('bluevine_name')->placeholder(trans('texts.name'))->value($user->first_name . ' ' . $user->last_name)->required() !!}
+                    {!! Former::text('email')->id('bluevine_email')->placeholder(trans('texts.email'))->value($user->email)->required() !!}
+                    {!! Former::text('phone')->id('bluevine_phone')->placeholder(trans('texts.phone'))->value(!empty($user->phone) ? $user->phone : '')->required() !!}
+                    {!! Former::number('fico_score')->min(300)->max(850)->placeholder(trans('texts.fico_score'))->required() !!}
+                    {!! Former::text('business_inception')->append('<span class="glyphicon glyphicon-calendar"></span>')->placeholder(trans('texts.business_inception'))->required() !!}
+                    {!! Former::number('annual_revenue')->prepend('$')->append('.00')->placeholder(trans('texts.annual_revenue'))->value(floor($usdLast12Months))->required() !!}
+                    {!! Former::number('average_bank_balance')->prepend('$')->append('.00')->placeholder(trans('texts.average_bank_balance'))->required() !!}
+                    {!! Former::checkboxes('quote_types')
+                            ->onchange('bluevineQuoteTypesChanged()')
+                            ->required()
+                            ->checkboxes([
+                                trans('texts.invoice_factoring') => ['value' => 'invoice_factoring', 'name' => 'quote_type_factoring', 'id'=>'quote_type_factoring'],
+                                trans('texts.line_of_credit') => ['value' => 'line_of_credit', 'name' => 'quote_type_loc', 'id'=>'quote_type_loc'],
+                            ]) !!}
+                    {!! Former::number('desired_credit_limit_factoring')
+                        ->id('desired_credit_limit_factoring')
+                        ->name('desired_credit_limit[invoice_factoring]')
+                        ->prepend('$')->append('.00')
+                        ->value(5000)
                         ->required()
-                        ->checkboxes([
-                            trans('texts.invoice_factoring') => ['value' => 'invoice_factoring', 'name' => 'quote_type_factoring', 'id'=>'quote_type_factoring'],
-                            trans('texts.line_of_credit') => ['value' => 'line_of_credit', 'name' => 'quote_type_loc', 'id'=>'quote_type_loc'],
-                        ]) !!}
-                {!! Former::number('desired_credit_limit_factoring')
-                    ->id('desired_credit_limit_factoring')
-                    ->name('desired_credit_limit[invoice_factoring]')
-                    ->prepend('$')->append('.00')
-                    ->value(5000)
-                    ->required()
-                    ->placeholder(trans('texts.desired_credit_limit'))
-                    ->label(trans('texts.desired_credit_limit_factoring'))!!}
-                {!! Former::number('desired_credit_limit_loc')
-                    ->id('desired_credit_limit_loc')
-                    ->name('desired_credit_limit[line_of_credit]')
-                    ->prepend('$')->append('.00')
-                    ->value(5000)
-                    ->required()
-                    ->placeholder(trans('texts.desired_credit_limit'))
-                    ->label(trans('texts.desired_credit_limit_loc'))!!}
-                {!! Former::close() !!}
-            </div>
+                        ->placeholder(trans('texts.desired_credit_limit'))
+                        ->label(trans('texts.desired_credit_limit_factoring'))!!}
+                    {!! Former::number('desired_credit_limit_loc')
+                        ->id('desired_credit_limit_loc')
+                        ->name('desired_credit_limit[line_of_credit]')
+                        ->prepend('$')->append('.00')
+                        ->value(5000)
+                        ->required()
+                        ->placeholder(trans('texts.desired_credit_limit'))
+                        ->label(trans('texts.desired_credit_limit_loc'))!!}
+                    {!! Former::close() !!}
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -65,7 +65,7 @@
 <script type="text/javascript">
     function hideBlueVineMessage() {
         jQuery('#bluevinePromo').fadeOut();
-        $.get('/bluevine/hide_message', function(response) {
+        $.get('/bluevine/hide_message', function (response) {
             console.log('Reponse: %s', response);
         });
         return false;

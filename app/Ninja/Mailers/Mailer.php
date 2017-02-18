@@ -30,11 +30,11 @@ class Mailer
         }
 
         if (isset($_ENV['POSTMARK_API_TOKEN'])) {
-            $views = 'emails.'.$view.'_html';
+            $views = 'emails.' . $view . '_html';
         } else {
             $views = [
-                'emails.'.$view.'_html',
-                'emails.'.$view.'_text',
+                'emails.' . $view . '_html',
+                'emails.' . $view . '_text',
             ];
         }
 
@@ -46,27 +46,27 @@ class Mailer
                 //\Log::info("{$toEmail} | {$replyEmail} | $fromEmail");
 
                 // Optionally send for alternate domain
-                if (! empty($data['fromEmail'])) {
+                if (!empty($data['fromEmail'])) {
                     $fromEmail = $data['fromEmail'];
                 }
 
                 $message->to($toEmail)
-                        ->from($fromEmail, $fromName)
-                        ->replyTo($replyEmail, $fromName)
-                        ->subject($subject);
+                    ->from($fromEmail, $fromName)
+                    ->replyTo($replyEmail, $fromName)
+                    ->subject($subject);
 
                 // Optionally BCC the email
-                if (! empty($data['bccEmail'])) {
+                if (!empty($data['bccEmail'])) {
                     $message->bcc($data['bccEmail']);
                 }
 
                 // Attach the PDF to the email
-                if (! empty($data['pdfString']) && ! empty($data['pdfFileName'])) {
+                if (!empty($data['pdfString']) && !empty($data['pdfFileName'])) {
                     $message->attachData($data['pdfString'], $data['pdfFileName']);
                 }
 
                 // Attach documents to the email
-                if (! empty($data['documents'])) {
+                if (!empty($data['documents'])) {
                     foreach ($data['documents'] as $document) {
                         $message->attachData($document['data'], $document['name']);
                     }
@@ -94,7 +94,7 @@ class Mailer
 
             // Track the Postmark message id
             if (isset($_ENV['POSTMARK_API_TOKEN']) && $response) {
-                $json = json_decode((string) $response->getBody());
+                $json = json_decode((string)$response->getBody());
                 $messageId = $json->MessageID;
             }
 
@@ -115,7 +115,7 @@ class Mailer
         if (isset($_ENV['POSTMARK_API_TOKEN']) && method_exists($exception, 'getResponse')) {
             $response = $exception->getResponse();
 
-            if (! $response) {
+            if (!$response) {
                 $error = trans('texts.postmark_error', ['link' => link_to('https://status.postmarkapp.com/')]);
                 Utils::logError($error);
 
@@ -137,7 +137,7 @@ class Mailer
             $invitation = $data['invitation'];
             $invitation->email_error = $emailError;
             $invitation->save();
-        } elseif (! Utils::isNinjaProd()) {
+        } elseif (!Utils::isNinjaProd()) {
             Utils::logError(Utils::getErrorString($exception));
         }
 

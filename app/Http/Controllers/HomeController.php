@@ -43,7 +43,7 @@ class HomeController extends BaseController
     {
         Session::reflash();
 
-        if (! Utils::isNinja() && (! Utils::isDatabaseSetup() || Company::count() == 0)) {
+        if (!Utils::isNinja() && (!Utils::isDatabaseSetup() || Company::count() == 0)) {
             return Redirect::to('/setup');
         } elseif (Auth::check()) {
             return Redirect::to('/dashboard');
@@ -140,13 +140,13 @@ class HomeController extends BaseController
     {
         Mail::raw(request()->contact_us_message, function ($message) {
             $subject = 'Customer Message';
-            if (! Utils::isNinja()) {
+            if (!Utils::isNinja()) {
                 $subject .= ': v' . NINJA_VERSION;
             }
             $message->to(env('CONTACT_EMAIL', 'contact@invoiceninja.com'))
-                    ->from(CONTACT_EMAIL, Auth::user()->present()->fullName)
-                    ->replyTo(Auth::user()->email, Auth::user()->present()->fullName)
-                    ->subject($subject);
+                ->from(CONTACT_EMAIL, Auth::user()->present()->fullName)
+                ->replyTo(Auth::user()->email, Auth::user()->present()->fullName)
+                ->subject($subject);
         });
 
         return RESULT_SUCCESS;

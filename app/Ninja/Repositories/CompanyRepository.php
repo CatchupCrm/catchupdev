@@ -14,7 +14,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Language;
 use App\Models\User;
-use App\Models\UserAccount;
+use App\Models\UserCompany;
 use Auth;
 use Input;
 use Request;
@@ -499,10 +499,10 @@ class CompanyRepository
 
     public function findUsers($user, $with = null)
     {
-        $companies = $this->findUserAccounts($user->id);
+        $companies = $this->findUserCompanies($user->id);
 
         if ($companies) {
-            return $this->getUserAccounts($companies, $with);
+            return $this->getUserCompanies($companies, $with);
         } else {
             return [$user];
         }
@@ -521,13 +521,13 @@ class CompanyRepository
         return false;
     }
 
-    public function findUserAccounts($userId1, $userId2 = false)
+    public function findUserCompanies($userId1, $userId2 = false)
     {
         if (! Schema::hasTable('user_companies')) {
             return false;
         }
 
-        $query = UserAccount::where('user_id1', '=', $userId1)
+        $query = UserCompany::where('user_id1', '=', $userId1)
                                 ->orWhere('user_id2', '=', $userId1)
                                 ->orWhere('user_id3', '=', $userId1)
                                 ->orWhere('user_id4', '=', $userId1)
@@ -544,7 +544,7 @@ class CompanyRepository
         return $query->first(['id', 'user_id1', 'user_id2', 'user_id3', 'user_id4', 'user_id5']);
     }
 
-    public function getUserAccounts($record, $with = null)
+    public function getUserCompanies($record, $with = null)
     {
         if (! $record) {
             return false;
@@ -574,7 +574,7 @@ class CompanyRepository
             return false;
         }
 
-        $users = $this->getUserAccounts($record);
+        $users = $this->getUserCompanies($record);
 
         $data = [];
         foreach ($users as $user) {
@@ -594,14 +594,14 @@ class CompanyRepository
 
     public function loadCompanys($userId)
     {
-        $record = self::findUserAccounts($userId);
+        $record = self::findUserCompanies($userId);
 
         return self::prepareUsersData($record);
     }
 
     public function associateCompanys($userId1, $userId2)
     {
-        $record = self::findUserAccounts($userId1, $userId2);
+        $record = self::findUserCompanies($userId1, $userId2);
 
         if ($record) {
             foreach ([$userId1, $userId2] as $userId) {
@@ -610,14 +610,14 @@ class CompanyRepository
                 }
             }
         } else {
-            $record = new UserAccount();
+            $record = new UserCompany();
             $record->user_id1 = $userId1;
             $record->user_id2 = $userId2;
         }
 
         $record->save();
 
-        $users = $this->getUserAccounts($record);
+        $users = $this->getUserCompanies($record);
 
         // Pick the primary user
         foreach ($users as $user) {
@@ -677,19 +677,19 @@ class CompanyRepository
     public function unlinkCompany($company)
     {
         foreach ($company->users as $user) {
-            if ($userAccount = self::findUserAccounts($user->id)) {
-                $userAccount->removeUserId($user->id);
-                $userAccount->save();
+            if ($userCompany = self::findUserCompanies($user->id)) {
+                $userCompany->removeUserId($user->id);
+                $userCompany->save();
             }
         }
     }
 
-    public function unlinkUser($userAccountId, $userId)
+    public function unlinkUser($userCompanyId, $userId)
     {
-        $userAccount = UserAccount::whereId($userAccountId)->first();
-        if ($userAccount->hasUserId($userId)) {
-            $userAccount->removeUserId($userId);
-            $userAccount->save();
+        $userCompany = UserCompany::whereId($userCompanyId)->first();
+        if ($userCompany->hasUserId($userId)) {
+            $userCompany->removeUserId($userId);
+            $userCompany->save();
         }
 
         $user = User::whereId($userId)->first();
@@ -736,12 +736,12 @@ class CompanyRepository
         }
     }
 
-    public function getUserAccountId($company)
+    public function getUserCompanyId($company)
     {
         $user = $company->users()->first();
-        $userAccount = $this->findUserAccounts($user->id);
+        $userCompany = $this->findUserCompanies($user->id);
 
-        return $userAccount ? $userAccount->id : false;
+        return $userCompany ? $userCompany->id : false;
     }
 
     public function save($data, $company)

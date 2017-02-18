@@ -35,7 +35,8 @@ class InvoiceListener
             $company = Auth::user()->company;
 
             if ($invoice->invoice_design_id
-                    && $company->invoice_design_id != $invoice->invoice_design_id) {
+                && $company->invoice_design_id != $invoice->invoice_design_id
+            ) {
                 $company->invoice_design_id = $invoice->invoice_design_id;
                 $company->save();
             }
@@ -75,8 +76,8 @@ class InvoiceListener
 
         // store a backup of the invoice
         $activity = Activity::wherePaymentId($payment->id)
-                        ->whereActivityTypeId(ACTIVITY_TYPE_CREATE_PAYMENT)
-                        ->first();
+            ->whereActivityTypeId(ACTIVITY_TYPE_CREATE_PAYMENT)
+            ->first();
         $activity->json_backup = $invoice->hidePrivateFields()->toJSON();
         $activity->save();
     }
@@ -138,7 +139,7 @@ class InvoiceListener
      */
     public function restoredPayment(PaymentWasRestored $event)
     {
-        if (! $event->fromDeleted) {
+        if (!$event->fromDeleted) {
             return;
         }
 

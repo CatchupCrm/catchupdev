@@ -20,25 +20,25 @@
             <div class="alert alert-info">
                 {{ session('status') }}
             </div>
-        @endif
+            @endif
 
-        <!-- if there are login errors, show them here -->
-        @if (Session::has('warning'))
-            <div class="alert alert-warning">{{ Session::get('warning') }}</div>
-        @endif
+                    <!-- if there are login errors, show them here -->
+            @if (Session::has('warning'))
+                <div class="alert alert-warning">{{ Session::get('warning') }}</div>
+            @endif
 
-        @if (Session::has('message'))
-            <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
+            @if (Session::has('message'))
+                <div class="alert alert-info">{{ Session::get('message') }}</div>
+            @endif
 
-        @if (Session::has('error'))
-            <div class="alert alert-danger">{{ Session::get('error') }}</div>
-        @endif
+            @if (Session::has('error'))
+                <div class="alert alert-danger">{{ Session::get('error') }}</div>
+            @endif
 
-        {!! Button::success(trans('texts.send_email'))
-                    ->withAttributes(['class' => 'green'])
-                    ->large()->submit()->block() !!}
+            {!! Button::success(trans('texts.send_email'))
+                        ->withAttributes(['class' => 'green'])
+                        ->large()->submit()->block() !!}
 
-        {!! Former::close() !!}
+            {!! Former::close() !!}
     </div>
 @endsection

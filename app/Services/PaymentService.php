@@ -20,13 +20,14 @@ class PaymentService extends BaseService
      *
      * @param PaymentRepository $paymentRepo
      * @param CompanyRepository $companyRepo
-     * @param DatatableService  $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(
         PaymentRepository $paymentRepo,
         CompanyRepository $companyRepo,
         DatatableService $datatableService
-    ) {
+    )
+    {
         $this->datatableService = $datatableService;
         $this->paymentRepo = $paymentRepo;
         $this->companyRepo = $companyRepo;
@@ -47,7 +48,7 @@ class PaymentService extends BaseService
      */
     public function autoBillInvoice(Invoice $invoice)
     {
-        if (! $invoice->canBePaid()) {
+        if (!$invoice->canBePaid()) {
             return false;
         }
 
@@ -60,7 +61,7 @@ class PaymentService extends BaseService
         /** @var \App\Models\Invitation $invitation */
         $invitation = $invoice->invitations->first();
 
-        if (! $invitation) {
+        if (!$invitation) {
             return false;
         }
 
@@ -83,19 +84,19 @@ class PaymentService extends BaseService
 
         $paymentDriver = $company->paymentDriver($invitation, GATEWAY_TYPE_TOKEN);
 
-        if (! $paymentDriver) {
+        if (!$paymentDriver) {
             return false;
         }
 
         $customer = $paymentDriver->customer();
 
-        if (! $customer) {
+        if (!$customer) {
             return false;
         }
 
         $paymentMethod = $customer->default_payment_method;
 
-        if (! $paymentMethod) {
+        if (!$paymentMethod) {
             return false;
         }
 
@@ -145,7 +146,7 @@ class PaymentService extends BaseService
         $datatable = new PaymentDatatable(true, $clientPublicId);
         $query = $this->paymentRepo->find($clientPublicId, $search);
 
-        if (! Utils::hasPermission('view_all')) {
+        if (!Utils::hasPermission('view_all')) {
             $query->where('payments.user_id', '=', Auth::user()->id);
         }
 
@@ -155,7 +156,7 @@ class PaymentService extends BaseService
     public function bulk($ids, $action, $params = [])
     {
         if ($action == 'refund') {
-            if (! $ids) {
+            if (!$ids) {
                 return 0;
             }
 
@@ -164,7 +165,7 @@ class PaymentService extends BaseService
 
             foreach ($payments as $payment) {
                 if (Auth::user()->can('edit', $payment)) {
-                    $amount = ! empty($params['refund_amount']) ? floatval($params['refund_amount']) : null;
+                    $amount = !empty($params['refund_amount']) ? floatval($params['refund_amount']) : null;
                     if ($companyGateway = $payment->company_gateway) {
                         $paymentDriver = $companyGateway->paymentDriver();
                         if ($paymentDriver->refundPayment($payment, $amount)) {

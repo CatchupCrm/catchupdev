@@ -56,7 +56,7 @@ class TaskPresenter extends EntityPresenter
 
         foreach ($parts as $part) {
             $start = $part[0];
-            if (count($part) == 1 || ! $part[1]) {
+            if (count($part) == 1 || !$part[1]) {
                 $end = time();
             } else {
                 $end = $part[1];

@@ -34,7 +34,7 @@ class NinjaController extends BaseController
      * NinjaController constructor.
      *
      * @param CompanyRepository $companyRepo
-     * @param ContactMailer     $contactMailer
+     * @param ContactMailer $contactMailer
      */
     public function __construct(CompanyRepository $companyRepo, ContactMailer $contactMailer)
     {
@@ -43,7 +43,7 @@ class NinjaController extends BaseController
     }
 
     /**
-     * @param array     $input
+     * @param array $input
      * @param Affiliate $affiliate
      *
      * @return array
@@ -102,11 +102,11 @@ class NinjaController extends BaseController
 
         if (Input::has('product_id')) {
             Session::set('product_id', Input::get('product_id'));
-        } elseif (! Session::has('product_id')) {
+        } elseif (!Session::has('product_id')) {
             Session::set('product_id', PRODUCT_ONE_CLICK_INSTALL);
         }
 
-        if (! Session::get('affiliate_id')) {
+        if (!Session::get('affiliate_id')) {
             return Utils::fatalError();
         }
 
@@ -187,12 +187,12 @@ class NinjaController extends BaseController
                 $details = self::getLicensePaymentDetails(Input::all(), $affiliate);
 
                 $gateway = Omnipay::create($companyGateway->gateway->provider);
-                $gateway->initialize((array) $companyGateway->getConfig());
+                $gateway->initialize((array)$companyGateway->getConfig());
                 $response = $gateway->purchase($details)->send();
 
                 $ref = $response->getTransactionReference();
 
-                if (! $response->isSuccessful() || ! $ref) {
+                if (!$response->isSuccessful() || !$ref) {
                     $this->error('License', $response->getMessage(), $companyGateway);
 
                     return redirect()->to('license')->withInput();
@@ -223,7 +223,7 @@ class NinjaController extends BaseController
             $this->contactMailer->sendLicensePaymentConfirmation($name, $license->email, $affiliate->price, $license->license_key, $license->product_id);
 
             if (Session::has('return_url')) {
-                $data['redirectTo'] = Session::get('return_url')."?license_key={$license->license_key}&product_id=".Session::get('product_id');
+                $data['redirectTo'] = Session::get('return_url') . "?license_key={$license->license_key}&product_id=" . Session::get('product_id');
                 $data['message'] = 'Redirecting to ' . Session::get('return_url');
             }
 
@@ -244,9 +244,9 @@ class NinjaController extends BaseController
         $productId = Input::get('product_id', PRODUCT_ONE_CLICK_INSTALL);
 
         $license = License::where('license_key', '=', $licenseKey)
-                    ->where('is_claimed', '<', 10)
-                    ->where('product_id', '=', $productId)
-                    ->first();
+            ->where('is_claimed', '<', 10)
+            ->where('product_id', '=', $productId)
+            ->first();
 
         if ($license) {
             if ($license->transaction_reference != 'TEST_MODE') {

@@ -32,15 +32,16 @@ class InvoiceService extends BaseService
     /**
      * InvoiceService constructor.
      *
-     * @param ClientRepository  $clientRepo
+     * @param ClientRepository $clientRepo
      * @param InvoiceRepository $invoiceRepo
-     * @param DatatableService  $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(
         ClientRepository $clientRepo,
         InvoiceRepository $invoiceRepo,
         DatatableService $datatableService
-    ) {
+    )
+    {
         $this->clientRepo = $clientRepo;
         $this->invoiceRepo = $invoiceRepo;
         $this->datatableService = $datatableService;
@@ -55,7 +56,7 @@ class InvoiceService extends BaseService
     }
 
     /**
-     * @param array        $data
+     * @param array $data
      * @param Invoice|null $invoice
      *
      * @return \App\Models\Invoice|Invoice|mixed
@@ -94,25 +95,25 @@ class InvoiceService extends BaseService
         }
 
         // if no contacts are selected auto-select the first to enusre there's an invitation
-        if (! count($sendInvoiceIds)) {
+        if (!count($sendInvoiceIds)) {
             $sendInvoiceIds[] = $client->contacts[0]->id;
         }
 
         foreach ($client->contacts as $contact) {
             $invitation = Invitation::scope()->whereContactId($contact->id)->whereInvoiceId($invoice->id)->first();
 
-            if (in_array($contact->id, $sendInvoiceIds) && ! $invitation) {
+            if (in_array($contact->id, $sendInvoiceIds) && !$invitation) {
                 $invitation = Invitation::createNew();
                 $invitation->invoice_id = $invoice->id;
                 $invitation->contact_id = $contact->id;
                 $invitation->invitation_key = str_random(RANDOM_KEY_LENGTH);
                 $invitation->save();
-            } elseif (! in_array($contact->id, $sendInvoiceIds) && $invitation) {
+            } elseif (!in_array($contact->id, $sendInvoiceIds) && $invitation) {
                 $invitation->delete();
             }
         }
 
-        if ($invoice->is_public && ! $invoice->areInvitationsSent()) {
+        if ($invoice->is_public && !$invoice->areInvitationsSent()) {
             $invoice->markInvitationsSent();
         }
 
@@ -140,7 +141,7 @@ class InvoiceService extends BaseService
     {
         $company = $quote->company;
 
-        if (! $company->hasFeature(FEATURE_QUOTES) || ! $quote->isType(INVOICE_TYPE_QUOTE) || $quote->quote_invoice_id) {
+        if (!$company->hasFeature(FEATURE_QUOTES) || !$quote->isType(INVOICE_TYPE_QUOTE) || $quote->quote_invoice_id) {
             return null;
         }
 
@@ -167,9 +168,9 @@ class InvoiceService extends BaseService
         $datatable->entityType = $entityType;
 
         $query = $this->invoiceRepo->getInvoices($companyId, $clientPublicId, $entityType, $search)
-                    ->where('invoices.invoice_type_id', '=', $entityType == ENTITY_QUOTE ? INVOICE_TYPE_QUOTE : INVOICE_TYPE_STANDARD);
+            ->where('invoices.invoice_type_id', '=', $entityType == ENTITY_QUOTE ? INVOICE_TYPE_QUOTE : INVOICE_TYPE_STANDARD);
 
-        if (! Utils::hasPermission('view_all')) {
+        if (!Utils::hasPermission('view_all')) {
             $query->where('invoices.user_id', '=', Auth::user()->id);
         }
 

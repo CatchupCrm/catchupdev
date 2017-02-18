@@ -50,7 +50,7 @@ class InvoicePresenter extends EntityPresenter
 
     public function age()
     {
-        if (! $this->entity->due_date || $this->entity->date_date == '0000-00-00') {
+        if (!$this->entity->due_date || $this->entity->date_date == '0000-00-00') {
             return 0;
         }
 
@@ -103,7 +103,7 @@ class InvoicePresenter extends EntityPresenter
     // https://schema.org/PaymentStatusType
     public function paymentStatus()
     {
-        if (! $this->entity->balance) {
+        if (!$this->entity->balance) {
             return 'PaymentComplete';
         } elseif ($this->entity->isOverdue()) {
             return 'PaymentPastDue';
@@ -143,7 +143,7 @@ class InvoicePresenter extends EntityPresenter
         $frequency = $this->entity->frequency ? $this->entity->frequency->name : '';
         $frequency = strtolower($frequency);
 
-        return trans('texts.freq_'.$frequency);
+        return trans('texts.freq_' . $frequency);
     }
 
     public function email()
@@ -158,7 +158,7 @@ class InvoicePresenter extends EntityPresenter
         $client = $this->entity->client;
         $paymentMethod = $client->defaultPaymentMethod();
 
-        if (! $paymentMethod) {
+        if (!$paymentMethod) {
             return false;
         }
 
@@ -225,7 +225,7 @@ class InvoicePresenter extends EntityPresenter
                 $actions[] = ['url' => url("quotes/{$invoice->quote_id}/edit"), 'label' => trans('texts.view_quote')];
             }
 
-            if (! $invoice->is_recurring && $invoice->balance > 0) {
+            if (!$invoice->is_recurring && $invoice->balance > 0) {
                 $actions[] = ['url' => 'javascript:submitBulkAction("markPaid")', 'label' => trans('texts.mark_paid')];
                 $actions[] = ['url' => 'javascript:onPaymentClick()', 'label' => trans('texts.enter_payment')];
             }

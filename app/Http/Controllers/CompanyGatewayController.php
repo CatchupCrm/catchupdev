@@ -57,7 +57,7 @@ class CompanyGatewayController extends BaseController
         }
 
         $data = self::getViewModel($companyGateway);
-        $data['url'] = 'gateways/'.$publicId;
+        $data['url'] = 'gateways/' . $publicId;
         $data['method'] = 'PUT';
         $data['title'] = trans('texts.edit_gateway') . ' - ' . $companyGateway->gateway->name;
         $data['config'] = $config;
@@ -82,7 +82,7 @@ class CompanyGatewayController extends BaseController
      */
     public function create()
     {
-        if (! \Request::secure() && ! Utils::isNinjaDev()) {
+        if (!\Request::secure() && !Utils::isNinjaDev()) {
             Session::flash('warning', trans('texts.enable_https'));
         }
 
@@ -90,7 +90,7 @@ class CompanyGatewayController extends BaseController
         $companyGatewaysIds = $company->gatewayIds();
         $otherProviders = Input::get('other_providers');
 
-        if (! Utils::isNinja() || ! env('WEPAY_CLIENT_ID') || Gateway::hasStandardGateway($companyGatewaysIds)) {
+        if (!Utils::isNinja() || !env('WEPAY_CLIENT_ID') || Gateway::hasStandardGateway($companyGatewaysIds)) {
             $otherProviders = true;
         }
 
@@ -133,7 +133,7 @@ class CompanyGatewayController extends BaseController
 
         foreach ($gateways as $gateway) {
             $fields = $gateway->getFields();
-            if (! $gateway->isCustom()) {
+            if (!$gateway->isCustom()) {
                 asort($fields);
             }
             $gateway->fields = $gateway->id == GATEWAY_WEPAY ? [] : $fields;
@@ -191,7 +191,7 @@ class CompanyGatewayController extends BaseController
 
         if ($gatewayId != GATEWAY_WEPAY) {
             foreach ($fields as $field => $details) {
-                if (! in_array($field, $optional)) {
+                if (!in_array($field, $optional)) {
                     if (strtolower($gateway->name) == 'beanstream') {
                         if (in_array($field, ['merchant_id', 'passCode'])) {
                             $rules[$gateway->id . '_' . $field] = 'required';
@@ -221,8 +221,8 @@ class CompanyGatewayController extends BaseController
                 // check they don't already have an active gateway for this provider
                 // TODO complete this
                 $companyGateway = CompanyGateway::scope()
-                                    ->whereGatewayId($gatewayId)
-                                    ->first();
+                    ->whereGatewayId($gatewayId)
+                    ->first();
                 if ($companyGateway) {
                     Session::flash('error', trans('texts.gateway_exists'));
 
@@ -233,7 +233,7 @@ class CompanyGatewayController extends BaseController
                 $companyGateway->gateway_id = $gatewayId;
 
                 if ($gatewayId == GATEWAY_WEPAY) {
-                    if (! $this->setupWePay($companyGateway, $wepayResponse)) {
+                    if (!$this->setupWePay($companyGateway, $wepayResponse)) {
                         return $wepayResponse;
                     }
                     $oldConfig = $companyGateway->getConfig();
@@ -249,7 +249,7 @@ class CompanyGatewayController extends BaseController
                     if ($oldConfig && $value && $value === str_repeat('*', strlen($value))) {
                         $value = $oldConfig->$field;
                     }
-                    if (! $value && ($field == 'testMode' || $field == 'developerMode')) {
+                    if (!$value && ($field == 'testMode' || $field == 'developerMode')) {
                         // do nothing
                     } elseif ($gatewayId == GATEWAY_CUSTOM) {
                         $config->$field = strip_tags($value);

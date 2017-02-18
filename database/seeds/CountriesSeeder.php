@@ -32,11 +32,11 @@ class CountriesSeeder extends Seeder
                     'name' => $country['name'],
                     'region_code' => $country['region-code'],
                     'sub_region_code' => $country['sub-region-code'],
-                    'eea' => (bool) $country['eea'],
+                    'eea' => (bool)$country['eea'],
                 ]);
             }
         }
-        
+
         // Source: http://www.bitboost.com/ref/international-address-formats.html
         // Source: https://en.wikipedia.org/wiki/Linguistic_issues_concerning_the_euro
         $countries = [

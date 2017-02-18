@@ -355,7 +355,7 @@ class Company extends Eloquent
      */
     public function isGatewayConfigured($gatewayId = 0)
     {
-        if (! $this->relationLoaded('company_gateways')) {
+        if (!$this->relationLoaded('company_gateways')) {
             $this->load('company_gateways');
         }
 
@@ -371,7 +371,7 @@ class Company extends Eloquent
      */
     public function isEnglish()
     {
-        return ! $this->language_id || $this->language_id == DEFAULT_LANGUAGE;
+        return !$this->language_id || $this->language_id == DEFAULT_LANGUAGE;
     }
 
     /**
@@ -379,7 +379,7 @@ class Company extends Eloquent
      */
     public function hasInvoicePrefix()
     {
-        if (! $this->invoice_number_prefix && ! $this->quote_number_prefix) {
+        if (!$this->invoice_number_prefix && !$this->quote_number_prefix) {
             return false;
         }
 
@@ -451,9 +451,9 @@ class Company extends Eloquent
 
     public function getDate($date = 'now')
     {
-        if (! $date) {
+        if (!$date) {
             return null;
-        } elseif (! $date instanceof \DateTime) {
+        } elseif (!$date instanceof \DateTime) {
             $date = new \DateTime($date);
         }
 
@@ -492,8 +492,8 @@ class Company extends Eloquent
 
     /**
      * @param $amount
-     * @param null  $client
-     * @param bool  $hideSymbol
+     * @param null $client
+     * @param bool $hideSymbol
      * @param mixed $decorator
      *
      * @return string
@@ -516,7 +516,7 @@ class Company extends Eloquent
             $countryId = false;
         }
 
-        if (! $decorator) {
+        if (!$decorator) {
             $decorator = $this->show_currency_code ? CURRENCY_DECORATOR_CODE : CURRENCY_DECORATOR_SYMBOL;
         }
 
@@ -540,7 +540,7 @@ class Company extends Eloquent
     {
         $date = $this->getDate($date);
 
-        if (! $date) {
+        if (!$date) {
             return null;
         }
 
@@ -556,7 +556,7 @@ class Company extends Eloquent
     {
         $date = $this->getDateTime($date);
 
-        if (! $date) {
+        if (!$date) {
             return null;
         }
 
@@ -572,7 +572,7 @@ class Company extends Eloquent
     {
         $date = $this->getDateTime($date);
 
-        if (! $date) {
+        if (!$date) {
             return null;
         }
 
@@ -618,13 +618,13 @@ class Company extends Eloquent
      */
     public function getGatewayByType($type = false)
     {
-        if (! $this->relationLoaded('company_gateways')) {
+        if (!$this->relationLoaded('company_gateways')) {
             $this->load('company_gateways');
         }
 
         /** @var CompanyGateway $companyGateway */
         foreach ($this->company_gateways as $companyGateway) {
-            if (! $type) {
+            if (!$type) {
                 return $companyGateway;
             }
 
@@ -643,7 +643,7 @@ class Company extends Eloquent
      */
     public function availableGatewaysIds()
     {
-        if (! $this->relationLoaded('company_gateways')) {
+        if (!$this->relationLoaded('company_gateways')) {
             $this->load('company_gateways');
         }
 
@@ -675,7 +675,7 @@ class Company extends Eloquent
     }
 
     /**
-     * @param bool  $invitation
+     * @param bool $invitation
      * @param mixed $gatewayTypeId
      *
      * @return bool
@@ -729,7 +729,7 @@ class Company extends Eloquent
      */
     public function hasLogo()
     {
-        return ! empty($this->logo);
+        return !empty($this->logo);
     }
 
     /**
@@ -744,13 +744,13 @@ class Company extends Eloquent
     {
         $disk = $this->getLogoDisk();
 
-        if ($disk->exists($this->company_key.'.png')) {
-            $this->logo = $this->company_key.'.png';
-        } elseif ($disk->exists($this->company_key.'.jpg')) {
-            $this->logo = $this->company_key.'.jpg';
+        if ($disk->exists($this->company_key . '.png')) {
+            $this->logo = $this->company_key . '.png';
+        } elseif ($disk->exists($this->company_key . '.jpg')) {
+            $this->logo = $this->company_key . '.jpg';
         }
 
-        if (! empty($this->logo)) {
+        if (!empty($this->logo)) {
             $image = imagecreatefromstring($disk->get($this->logo));
             $this->logo_width = imagesx($image);
             $this->logo_height = imagesy($image);
@@ -766,7 +766,7 @@ class Company extends Eloquent
      */
     public function getLogoRaw()
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -782,7 +782,7 @@ class Company extends Eloquent
      */
     public function getLogoURL($cachebuster = false)
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -794,7 +794,7 @@ class Company extends Eloquent
             $logoUrl = url('/logo/' . $this->logo);
 
             if ($cachebuster) {
-                $logoUrl .= '?no_cache='.time();
+                $logoUrl .= '?no_cache=' . time();
             }
 
             return $logoUrl;
@@ -805,7 +805,7 @@ class Company extends Eloquent
 
     public function getLogoPath()
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -825,8 +825,8 @@ class Company extends Eloquent
     public function getPrimaryUser()
     {
         return $this->users()
-                    ->orderBy('id')
-                    ->first();
+            ->orderBy('id')
+            ->first();
     }
 
     /**
@@ -851,7 +851,7 @@ class Company extends Eloquent
      */
     public function getLogoWidth()
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -863,7 +863,7 @@ class Company extends Eloquent
      */
     public function getLogoHeight()
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -895,14 +895,14 @@ class Company extends Eloquent
                 $invoice->invoice_type_id = INVOICE_TYPE_QUOTE;
             }
 
-            if ($this->hasClientNumberPattern($invoice) && ! $clientId) {
+            if ($this->hasClientNumberPattern($invoice) && !$clientId) {
                 // do nothing, we don't yet know the value
-            } elseif (! $invoice->invoice_number) {
+            } elseif (!$invoice->invoice_number) {
                 $invoice->invoice_number = $this->getNextNumber($invoice);
             }
         }
 
-        if (! $clientId) {
+        if (!$clientId) {
             $invoice->client = Client::createNew();
             $invoice->client->public_id = 0;
         }
@@ -954,7 +954,7 @@ class Company extends Eloquent
      */
     public function startTrial($plan)
     {
-        if (! Utils::isNinja()) {
+        if (!Utils::isNinja()) {
             return;
         }
 
@@ -979,9 +979,9 @@ class Company extends Eloquent
         }
 
         $planDetails = $this->getPlanDetails();
-        $selfHost = ! Utils::isNinjaProd();
+        $selfHost = !Utils::isNinjaProd();
 
-        if (! $selfHost && function_exists('ninja_company_features')) {
+        if (!$selfHost && function_exists('ninja_company_features')) {
             $result = ninja_company_features($this, $feature);
 
             if ($result != null) {
@@ -1010,20 +1010,20 @@ class Company extends Eloquent
             case FEATURE_API:
             case FEATURE_CLIENT_PORTAL_PASSWORD:
             case FEATURE_CUSTOM_URL:
-                return $selfHost || ! empty($planDetails);
+                return $selfHost || !empty($planDetails);
 
             // Pro; No trial allowed, unless they're trialing enterprise with an active pro plan
             case FEATURE_MORE_CLIENTS:
-                return $selfHost || ! empty($planDetails) && (! $planDetails['trial'] || ! empty($this->getPlanDetails(false, false)));
+                return $selfHost || !empty($planDetails) && (!$planDetails['trial'] || !empty($this->getPlanDetails(false, false)));
 
             // White Label
             case FEATURE_WHITE_LABEL:
-                if ($this->isNinjaCompany() || (! $selfHost && $planDetails && ! $planDetails['expires'])) {
+                if ($this->isNinjaCompany() || (!$selfHost && $planDetails && !$planDetails['expires'])) {
                     return false;
                 }
-                // Fallthrough
+            // Fallthrough
             case FEATURE_REMOVE_CREATED_BY:
-                return ! empty($planDetails); // A plan is required even for self-hosted users
+                return !empty($planDetails); // A plan is required even for self-hosted users
 
             // Enterprise; No Trial allowed; grandfathered for old pro users
             case FEATURE_USERS:// Grandfathered for old Pro users
@@ -1032,12 +1032,12 @@ class Company extends Eloquent
                     $planDetails = $this->getPlanDetails(false, false);
                 }
 
-                return $selfHost || ! empty($planDetails) && ($planDetails['plan'] == PLAN_ENTERPRISE || $planDetails['started'] <= date_create(PRO_USERS_GRANDFATHER_DEADLINE));
+                return $selfHost || !empty($planDetails) && ($planDetails['plan'] == PLAN_ENTERPRISE || $planDetails['started'] <= date_create(PRO_USERS_GRANDFATHER_DEADLINE));
 
             // Enterprise; No Trial allowed
             case FEATURE_DOCUMENTS:
             case FEATURE_USER_PERMISSIONS:
-                return $selfHost || ! empty($planDetails) && $planDetails['plan'] == PLAN_ENTERPRISE && ! $planDetails['trial'];
+                return $selfHost || !empty($planDetails) && $planDetails['plan'] == PLAN_ENTERPRISE && !$planDetails['trial'];
 
             default:
                 return false;
@@ -1051,7 +1051,7 @@ class Company extends Eloquent
      */
     public function isPro(&$plan_details = null)
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             return true;
         }
 
@@ -1061,7 +1061,7 @@ class Company extends Eloquent
 
         $plan_details = $this->getPlanDetails();
 
-        return ! empty($plan_details);
+        return !empty($plan_details);
     }
 
     /**
@@ -1071,7 +1071,7 @@ class Company extends Eloquent
      */
     public function isEnterprise(&$plan_details = null)
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             return true;
         }
 
@@ -1092,7 +1092,7 @@ class Company extends Eloquent
      */
     public function getPlanDetails($include_inactive = false, $include_trial = true)
     {
-        if (! $this->corporation) {
+        if (!$this->corporation) {
             return null;
         }
 
@@ -1100,7 +1100,7 @@ class Company extends Eloquent
         $price = $this->corporation->plan_price;
         $trial_plan = $this->corporation->trial_plan;
 
-        if ((! $plan || $plan == PLAN_FREE) && (! $trial_plan || ! $include_trial)) {
+        if ((!$plan || $plan == PLAN_FREE) && (!$trial_plan || !$include_trial)) {
             return null;
         }
 
@@ -1128,22 +1128,22 @@ class Company extends Eloquent
             }
         }
 
-        if (! $include_inactive && ! $plan_active && ! $trial_active) {
+        if (!$include_inactive && !$plan_active && !$trial_active) {
             return null;
         }
 
         // Should we show plan details or trial details?
-        if (($plan && ! $trial_plan) || ! $include_trial) {
+        if (($plan && !$trial_plan) || !$include_trial) {
             $use_plan = true;
-        } elseif (! $plan && $trial_plan) {
+        } elseif (!$plan && $trial_plan) {
             $use_plan = false;
         } else {
             // There is both a plan and a trial
-            if (! empty($plan_active) && empty($trial_active)) {
+            if (!empty($plan_active) && empty($trial_active)) {
                 $use_plan = true;
-            } elseif (empty($plan_active) && ! empty($trial_active)) {
+            } elseif (empty($plan_active) && !empty($trial_active)) {
                 $use_plan = false;
-            } elseif (! empty($plan_active) && ! empty($trial_active)) {
+            } elseif (!empty($plan_active) && !empty($trial_active)) {
                 // Both are active; use whichever is a better plan
                 if ($plan == PLAN_ENTERPRISE) {
                     $use_plan = true;
@@ -1191,7 +1191,7 @@ class Company extends Eloquent
      */
     public function isTrial()
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             return false;
         }
 
@@ -1207,7 +1207,7 @@ class Company extends Eloquent
     {
         $planDetails = $this->getPlanDetails(true);
 
-        if (! $planDetails || ! $planDetails['trial']) {
+        if (!$planDetails || !$planDetails['trial']) {
             return 0;
         }
 
@@ -1239,7 +1239,7 @@ class Company extends Eloquent
      */
     public function getLogoSize()
     {
-        if (! $this->hasLogo()) {
+        if (!$this->hasLogo()) {
             return null;
         }
 
@@ -1306,7 +1306,7 @@ class Company extends Eloquent
                     'public_id',
                     'first_name',
                     'last_name',
-                    'email', ]);
+                    'email',]);
             }
         }
 
@@ -1320,12 +1320,12 @@ class Company extends Eloquent
      */
     public function showTokenCheckbox(&$storage_gateway = null)
     {
-        if (! ($storage_gateway = $this->getTokenGatewayId())) {
+        if (!($storage_gateway = $this->getTokenGatewayId())) {
             return false;
         }
 
         return $this->token_billing_type_id == TOKEN_BILLING_OPT_IN
-                || $this->token_billing_type_id == TOKEN_BILLING_OPT_OUT;
+        || $this->token_billing_type_id == TOKEN_BILLING_OPT_OUT;
     }
 
     /**
@@ -1350,7 +1350,7 @@ class Company extends Eloquent
     public function getTokenGateway()
     {
         $gatewayId = $this->getTokenGatewayId();
-        if (! $gatewayId) {
+        if (!$gatewayId) {
             return;
         }
 
@@ -1389,14 +1389,14 @@ class Company extends Eloquent
      */
     public function checkSubdomain($host)
     {
-        if (! $this->subdomain) {
+        if (!$this->subdomain) {
             return true;
         }
 
         $server = explode('.', $host);
         $subdomain = $server[0];
 
-        if (! in_array($subdomain, ['app', 'www']) && $subdomain != $this->subdomain) {
+        if (!in_array($subdomain, ['app', 'www']) && $subdomain != $this->subdomain) {
             return false;
         }
 
@@ -1415,7 +1415,7 @@ class Company extends Eloquent
             return true;
         }
 
-        if (! $entity) {
+        if (!$entity) {
             return false;
         }
 
@@ -1452,9 +1452,9 @@ class Company extends Eloquent
             $bodyFont = $this->getBodyFontCss();
             $headerFont = $this->getHeaderFontCss();
 
-            $css = 'body{'.$bodyFont.'}';
+            $css = 'body{' . $bodyFont . '}';
             if ($headerFont != $bodyFont) {
-                $css .= 'h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6{'.$headerFont.'}';
+                $css .= 'h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6{' . $headerFont . '}';
             }
 
             $css .= $this->client_view_css;
@@ -1481,7 +1481,7 @@ class Company extends Eloquent
             $google_fonts[] = $headerFontSettings['google_font'];
         }
 
-        return ($protocol ? $protocol.':' : '').'//fonts.googleapis.com/css?family='.implode('|', $google_fonts);
+        return ($protocol ? $protocol . ':' : '') . '//fonts.googleapis.com/css?family=' . implode('|', $google_fonts);
     }
 
     /**
@@ -1524,10 +1524,10 @@ class Company extends Eloquent
     public function getHeaderFontCss($include_weight = true)
     {
         $font_data = Utils::getFromCache($this->getHeaderFontId(), 'fonts');
-        $css = 'font-family:'.$font_data['css_stack'].';';
+        $css = 'font-family:' . $font_data['css_stack'] . ';';
 
         if ($include_weight) {
-            $css .= 'font-weight:'.$font_data['css_weight'].';';
+            $css .= 'font-weight:' . $font_data['css_weight'] . ';';
         }
 
         return $css;
@@ -1541,10 +1541,10 @@ class Company extends Eloquent
     public function getBodyFontCss($include_weight = true)
     {
         $font_data = Utils::getFromCache($this->getBodyFontId(), 'fonts');
-        $css = 'font-family:'.$font_data['css_stack'].';';
+        $css = 'font-family:' . $font_data['css_stack'] . ';';
 
         if ($include_weight) {
-            $css .= 'font-weight:'.$font_data['css_weight'].';';
+            $css .= 'font-weight:' . $font_data['css_weight'] . ';';
         }
 
         return $css;
@@ -1584,14 +1584,15 @@ class Company extends Eloquent
 
     public function isModuleEnabled($entityType)
     {
-        if (! in_array($entityType, [
+        if (!in_array($entityType, [
             ENTITY_RECURRING_INVOICE,
             ENTITY_CREDIT,
             ENTITY_QUOTE,
             ENTITY_TASK,
             ENTITY_EXPENSE,
             ENTITY_VENDOR,
-        ])) {
+        ])
+        ) {
             return true;
         }
 
@@ -1605,7 +1606,7 @@ class Company extends Eloquent
 
     public function showAcceptTerms($invoice)
     {
-        if (! $this->isPro() || ! $invoice->terms) {
+        if (!$this->isPro() || !$invoice->terms) {
             return false;
         }
 
@@ -1614,7 +1615,7 @@ class Company extends Eloquent
 
     public function showSignature($invoice)
     {
-        if (! $this->isPro()) {
+        if (!$this->isPro()) {
             return false;
         }
 
@@ -1623,7 +1624,7 @@ class Company extends Eloquent
 
     public function emailMarkupEnabled()
     {
-        if (! Utils::isNinja()) {
+        if (!Utils::isNinja()) {
             return false;
         }
 
@@ -1659,7 +1660,7 @@ class Company extends Eloquent
 
     public function financialYearStart()
     {
-        if (! $this->financial_year_start) {
+        if (!$this->financial_year_start) {
             return false;
         }
 

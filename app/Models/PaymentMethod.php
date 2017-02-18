@@ -79,7 +79,7 @@ class PaymentMethod extends EntityModel
      */
     public function getBankDataAttribute()
     {
-        if (! $this->routing_number) {
+        if (!$this->routing_number) {
             return null;
         }
 
@@ -152,7 +152,7 @@ class PaymentMethod extends EntityModel
      */
     public static function lookupBankData($routingNumber)
     {
-        $cached = Cache::get('bankData:'.$routingNumber);
+        $cached = Cache::get('bankData:' . $routingNumber);
 
         if ($cached != null) {
             return $cached == false ? null : $cached;
@@ -160,7 +160,7 @@ class PaymentMethod extends EntityModel
 
         $dataPath = base_path('vendor/gatepay/FedACHdir/FedACHdir.txt');
 
-        if (! file_exists($dataPath) || ! $size = filesize($dataPath)) {
+        if (!file_exists($dataPath) || !$size = filesize($dataPath)) {
             return 'Invalid data file';
         }
 
@@ -198,18 +198,18 @@ class PaymentMethod extends EntityModel
                 $data->address = trim(fread($file, 36));
                 $data->city = trim(fread($file, 20));
                 $data->state = fread($file, 2);
-                $data->zip = fread($file, 5).'-'.fread($file, 4);
+                $data->zip = fread($file, 5) . '-' . fread($file, 4);
                 $data->phone = fread($file, 10);
                 break;
             }
         }
 
-        if (! empty($data)) {
-            Cache::put('bankData:'.$routingNumber, $data, 5);
+        if (!empty($data)) {
+            Cache::put('bankData:' . $routingNumber, $data, 5);
 
             return $data;
         } else {
-            Cache::put('bankData:'.$routingNumber, false, 5);
+            Cache::put('bankData:' . $routingNumber, false, 5);
 
             return null;
         }

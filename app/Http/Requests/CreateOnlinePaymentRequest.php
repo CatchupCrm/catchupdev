@@ -26,7 +26,7 @@ class CreateOnlinePaymentRequest extends Request
         $company = $this->invitation->company;
 
         $paymentDriver = $company->paymentDriver($this->invitation, $this->gateway_type);
-        
+
         return $paymentDriver->rules();
     }
 

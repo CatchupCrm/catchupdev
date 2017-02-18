@@ -23,7 +23,7 @@ class UpdateCompanyRequest extends Request
     {
         return [
             'name' => 'required',
-            'logo' => 'sometimes|max:'.MAX_LOGO_FILE_SIZE.'|mimes:jpeg,gif,png',
+            'logo' => 'sometimes|max:' . MAX_LOGO_FILE_SIZE . '|mimes:jpeg,gif,png',
         ];
     }
 }

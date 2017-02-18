@@ -74,7 +74,7 @@ class MakeClass extends GeneratorCommand
     public function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $seederPath = $this->laravel['modules']->config('paths.generator.'  . $this->argument('class'));
+        $seederPath = $this->laravel['modules']->config('paths.generator.' . $this->argument('class'));
 
         return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
@@ -98,12 +98,12 @@ class MakeClass extends GeneratorCommand
         $str = '';
 
         foreach ($fields as $field) {
-            if (! $field) {
+            if (!$field) {
                 continue;
             }
             $field = explode(':', $field)[0];
             $str .= '[
-                \''. $field . '\',
+                \'' . $field . '\',
                 function ($model) {
                     return $model->' . $field . ';
                 }
@@ -120,7 +120,7 @@ class MakeClass extends GeneratorCommand
         $str = '';
 
         foreach ($fields as $field) {
-            if (! $field) {
+            if (!$field) {
                 continue;
             }
             $parts = explode(':', $field);
@@ -144,7 +144,7 @@ class MakeClass extends GeneratorCommand
         $str = '';
 
         foreach ($fields as $field) {
-            if (! $field) {
+            if (!$field) {
                 continue;
             }
             $field = explode(':', $field)[0];
@@ -161,7 +161,7 @@ class MakeClass extends GeneratorCommand
         $str = '';
 
         foreach ($fields as $field) {
-            if (! $field) {
+            if (!$field) {
                 continue;
             }
             $field = explode(':', $field)[0];

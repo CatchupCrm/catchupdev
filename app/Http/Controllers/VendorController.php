@@ -102,7 +102,7 @@ class VendorController extends BaseController
     public function create(VendorRequest $request)
     {
         if (Vendor::scope()->count() > Auth::user()->getMaxNumVendors()) {
-            return View::make('error', ['hideHeader' => true, 'error' => "Sorry, you've exceeded the limit of ".Auth::user()->getMaxNumVendors().' vendors']);
+            return View::make('error', ['hideHeader' => true, 'error' => "Sorry, you've exceeded the limit of " . Auth::user()->getMaxNumVendors() . ' vendors']);
         }
 
         $data = [
@@ -131,7 +131,7 @@ class VendorController extends BaseController
         $data = [
             'vendor' => $vendor,
             'method' => 'PUT',
-            'url' => 'vendors/'.$vendor->public_id,
+            'url' => 'vendors/' . $vendor->public_id,
             'title' => trans('texts.edit_vendor'),
         ];
 
@@ -178,7 +178,7 @@ class VendorController extends BaseController
         $ids = Input::get('public_id') ? Input::get('public_id') : Input::get('ids');
         $count = $this->vendorService->bulk($ids, $action);
 
-        $message = Utils::pluralize($action.'d_vendor', $count);
+        $message = Utils::pluralize($action . 'd_vendor', $count);
         Session::flash('message', $message);
 
         return $this->returnBulk($this->entityType, $action, $ids);

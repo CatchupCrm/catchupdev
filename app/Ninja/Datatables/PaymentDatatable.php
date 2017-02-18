@@ -25,7 +25,7 @@ class PaymentDatatable extends EntityDatatable
             [
                 'invoice_name',
                 function ($model) {
-                    if (! Auth::user()->can('viewByOwner', [ENTITY_INVOICE, $model->invoice_user_id])) {
+                    if (!Auth::user()->can('viewByOwner', [ENTITY_INVOICE, $model->invoice_user_id])) {
                         return $model->invoice_number;
                     }
 
@@ -35,24 +35,24 @@ class PaymentDatatable extends EntityDatatable
             [
                 'client_name',
                 function ($model) {
-                    if (! Auth::user()->can('viewByOwner', [ENTITY_CLIENT, $model->client_user_id])) {
+                    if (!Auth::user()->can('viewByOwner', [ENTITY_CLIENT, $model->client_user_id])) {
                         return Utils::getClientDisplayName($model);
                     }
 
                     return $model->client_public_id ? link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml() : '';
                 },
-                ! $this->hideClient,
+                !$this->hideClient,
             ],
             [
                 'transaction_reference',
                 function ($model) {
-                    return $model->transaction_reference ? $model->transaction_reference : '<i>'.trans('texts.manual_entry').'</i>';
+                    return $model->transaction_reference ? $model->transaction_reference : '<i>' . trans('texts.manual_entry') . '</i>';
                 },
             ],
             [
                 'method',
                 function ($model) {
-                    return ($model->payment_type && ! $model->last4) ? $model->payment_type : ($model->company_gateway_id ? $model->gateway_name : '');
+                    return ($model->payment_type && !$model->last4) ? $model->payment_type : ($model->company_gateway_id ? $model->gateway_name : '');
                 },
             ],
             [
@@ -77,8 +77,8 @@ class PaymentDatatable extends EntityDatatable
                                 $bankName = $bankData->name;
                             }
                         }
-                        if (! empty($bankName)) {
-                            return $bankName.'&nbsp; &bull;&bull;&bull;' . $model->last4;
+                        if (!empty($bankName)) {
+                            return $bankName . '&nbsp; &bull;&bull;&bull;' . $model->last4;
                         } elseif ($model->last4) {
                             return '<img height="22" src="' . URL::to('/images/credit_cards/ach.png') . '" alt="' . htmlentities($card_type) . '">&nbsp; &bull;&bull;&bull;' . $model->last4;
                         }
@@ -133,8 +133,8 @@ class PaymentDatatable extends EntityDatatable
                 },
                 function ($model) {
                     return Auth::user()->can('editByOwner', [ENTITY_PAYMENT, $model->user_id])
-                        && $model->payment_status_id >= PAYMENT_STATUS_COMPLETED
-                        && $model->refunded < $model->amount;
+                    && $model->payment_status_id >= PAYMENT_STATUS_COMPLETED
+                    && $model->refunded < $model->amount;
                 },
             ],
         ];

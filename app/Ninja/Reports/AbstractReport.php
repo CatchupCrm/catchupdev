@@ -40,11 +40,11 @@ class AbstractReport
     {
         $currencyId = $currencyId ?: Auth::user()->company->getCurrencyId();
 
-        if (! isset($this->totals[$currencyId][$dimension])) {
+        if (!isset($this->totals[$currencyId][$dimension])) {
             $this->totals[$currencyId][$dimension] = [];
         }
 
-        if (! isset($this->totals[$currencyId][$dimension][$field])) {
+        if (!isset($this->totals[$currencyId][$dimension][$field])) {
             $this->totals[$currencyId][$dimension][$field] = 0;
         }
 

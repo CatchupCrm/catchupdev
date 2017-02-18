@@ -251,26 +251,39 @@
             }
         }
 
-
         table.dataTable thead > tr > th, table.invoice-table thead > tr > th {
-            background-color: {{ $color }} !important;
+            background-color: {{ $color }}  !important;
         }
 
-        .pagination>.active>a,
-        .pagination>.active>span,
-        .pagination>.active>a:hover,
-        .pagination>.active>span:hover,
-        .pagination>.active>a:focus,
-        .pagination>.active>span:focus {
+        .pagination > .active > a,
+        .pagination > .active > span,
+        .pagination > .active > a:hover,
+        .pagination > .active > span:hover,
+        .pagination > .active > a:focus,
+        .pagination > .active > span:focus {
             background-color: {{ $color }};
             border-color: {{ $color }};
         }
 
-        table.table thead .sorting:after { content: '' !important }
-        table.table thead .sorting_asc:after { content: '' !important }
-        table.table thead .sorting_desc:after { content: '' !important }
-        table.table thead .sorting_asc_disabled:after { content: '' !important }
-        table.table thead .sorting_desc_disabled:after { content: '' !important }
+        table.table thead .sorting:after {
+            content: '' !important
+        }
+
+        table.table thead .sorting_asc:after {
+            content: '' !important
+        }
+
+        table.table thead .sorting_desc:after {
+            content: '' !important
+        }
+
+        table.table thead .sorting_asc_disabled:after {
+            content: '' !important
+        }
+
+        table.table thead .sorting_desc_disabled:after {
+            content: '' !important
+        }
 
     </style>
 
@@ -346,11 +359,11 @@
         </div>
 
         @if (!empty($company->getTokenGatewayId()))
-                <div class="row">
-                    <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12">
                     @include('payments.paymentmethods_list')
                 </div>
-        </div>
+            </div>
         @endif
 
         <div style="min-height: 550px" class="hide">

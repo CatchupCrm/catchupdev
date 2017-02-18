@@ -110,12 +110,12 @@ class ExpenseController extends BaseController
             $invoices = $expense->client_id ? $this->invoiceRepo->findOpenInvoices($expense->client_id, ENTITY_EXPENSE) : [];
 
             foreach ($invoices as $invoice) {
-                $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", '.$invoice->public_id.')', 'label' => trans('texts.add_to_invoice', ['invoice' => $invoice->invoice_number])];
+                $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", ' . $invoice->public_id . ')', 'label' => trans('texts.add_to_invoice', ['invoice' => $invoice->invoice_number])];
             }
         }
 
         $actions[] = \DropdownButton::DIVIDER;
-        if (! $expense->trashed()) {
+        if (!$expense->trashed()) {
             $actions[] = ['url' => 'javascript:submitAction("archive")', 'label' => trans('texts.archive_expense')];
             $actions[] = ['url' => 'javascript:onDeleteClick()', 'label' => trans('texts.delete_expense')];
         } else {
@@ -127,7 +127,7 @@ class ExpenseController extends BaseController
             'expense' => $expense,
             'entity' => $expense,
             'method' => 'PUT',
-            'url' => 'expenses/'.$expense->public_id,
+            'url' => 'expenses/' . $expense->public_id,
             'title' => 'Edit Expense',
             'actions' => $actions,
             'vendors' => Vendor::scope()->with('vendor_contacts')->orderBy('name')->get(),
@@ -193,7 +193,7 @@ class ExpenseController extends BaseController
                 // Validate that either all expenses do not have a client or if there is a client, it is the same client
                 foreach ($expenses as $expense) {
                     if ($expense->client) {
-                        if (! $clientPublicId) {
+                        if (!$clientPublicId) {
                             $clientPublicId = $expense->client->public_id;
                         } elseif ($clientPublicId != $expense->client->public_id) {
                             Session::flash('error', trans('texts.expense_error_multiple_clients'));
@@ -202,7 +202,7 @@ class ExpenseController extends BaseController
                         }
                     }
 
-                    if (! $currencyId) {
+                    if (!$currencyId) {
                         $currencyId = $expense->invoice_currency_id;
                     } elseif ($currencyId != $expense->invoice_currency_id && $expense->invoice_currency_id) {
                         Session::flash('error', trans('texts.expense_error_multiple_currencies'));
@@ -219,14 +219,14 @@ class ExpenseController extends BaseController
 
                 if ($action == 'invoice') {
                     return Redirect::to("invoices/create/{$clientPublicId}")
-                            ->with('expenseCurrencyId', $currencyId)
-                            ->with('expenses', $ids);
+                        ->with('expenseCurrencyId', $currencyId)
+                        ->with('expenses', $ids);
                 } else {
                     $invoiceId = Input::get('invoice_id');
 
                     return Redirect::to("invoices/{$invoiceId}/edit")
-                            ->with('expenseCurrencyId', $currencyId)
-                            ->with('expenses', $ids);
+                        ->with('expenseCurrencyId', $currencyId)
+                        ->with('expenses', $ids);
                 }
                 break;
 
@@ -235,7 +235,7 @@ class ExpenseController extends BaseController
         }
 
         if ($count > 0) {
-            $message = Utils::pluralize($action.'d_expense', $count);
+            $message = Utils::pluralize($action . 'd_expense', $count);
             Session::flash('message', $message);
         }
 

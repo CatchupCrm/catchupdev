@@ -31,7 +31,7 @@ class PushService
     public function sendNotification(Invoice $invoice, $type)
     {
         //check user has registered for push notifications
-        if (! $this->checkDeviceExists($invoice->company)) {
+        if (!$this->checkDeviceExists($invoice->company)) {
             return;
         }
 

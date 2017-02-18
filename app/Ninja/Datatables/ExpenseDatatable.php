@@ -19,7 +19,7 @@ class ExpenseDatatable extends EntityDatatable
                 'vendor_name',
                 function ($model) {
                     if ($model->vendor_public_id) {
-                        if (! Auth::user()->can('viewByOwner', [ENTITY_VENDOR, $model->vendor_user_id])) {
+                        if (!Auth::user()->can('viewByOwner', [ENTITY_VENDOR, $model->vendor_user_id])) {
                             return $model->vendor_name;
                         }
 
@@ -28,13 +28,13 @@ class ExpenseDatatable extends EntityDatatable
                         return '';
                     }
                 },
-                ! $this->hideClient,
+                !$this->hideClient,
             ],
             [
                 'client_name',
                 function ($model) {
                     if ($model->client_public_id) {
-                        if (! Auth::user()->can('viewByOwner', [ENTITY_CLIENT, $model->client_user_id])) {
+                        if (!Auth::user()->can('viewByOwner', [ENTITY_CLIENT, $model->client_user_id])) {
                             return Utils::getClientDisplayName($model);
                         }
 
@@ -43,12 +43,12 @@ class ExpenseDatatable extends EntityDatatable
                         return '';
                     }
                 },
-                ! $this->hideClient,
+                !$this->hideClient,
             ],
             [
                 'expense_date',
                 function ($model) {
-                    if (! Auth::user()->can('viewByOwner', [ENTITY_EXPENSE, $model->user_id])) {
+                    if (!Auth::user()->can('viewByOwner', [ENTITY_EXPENSE, $model->user_id])) {
                         return Utils::fromSqlDate($model->expense_date);
                     }
 
@@ -118,7 +118,7 @@ class ExpenseDatatable extends EntityDatatable
                     return "javascript:submitForm_expense('invoice', {$model->public_id})";
                 },
                 function ($model) {
-                    return ! $model->invoice_id && (! $model->deleted_at || $model->deleted_at == '0000-00-00') && Auth::user()->can('create', ENTITY_INVOICE);
+                    return !$model->invoice_id && (!$model->deleted_at || $model->deleted_at == '0000-00-00') && Auth::user()->can('create', ENTITY_INVOICE);
                 },
             ],
         ];

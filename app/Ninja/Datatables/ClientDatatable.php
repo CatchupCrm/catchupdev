@@ -67,8 +67,8 @@ class ClientDatatable extends EntityDatatable
             ],
             [
                 '--divider--', function () {
-                    return false;
-                },
+                return false;
+            },
                 function ($model) {
                     $user = Auth::user();
 
@@ -104,8 +104,8 @@ class ClientDatatable extends EntityDatatable
             ],
             [
                 '--divider--', function () {
-                    return false;
-                },
+                return false;
+            },
                 function ($model) {
                     $user = Auth::user();
 

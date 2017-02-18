@@ -1,9 +1,9 @@
 @if (!Utils::isPro() && isset($advanced) && $advanced)
-<div class="alert alert-warning" style="font-size:larger;">
-<center>
-    {!! trans('texts.pro_plan_advanced_settings', ['link'=>'<a href="javascript:showUpgradeModal()">' . trans('texts.pro_plan_remove_logo_link') . '</a>']) !!}
-</center>
-</div>
+    <div class="alert alert-warning" style="font-size:larger;">
+        <center>
+            {!! trans('texts.pro_plan_advanced_settings', ['link'=>'<a href="javascript:showUpgradeModal()">' . trans('texts.pro_plan_remove_logo_link') . '</a>']) !!}
+        </center>
+    </div>
 @endif
 
 <div class="row">
@@ -22,8 +22,9 @@
                 </div>
                 <div class="list-group">
                     @foreach ($settings as $section)
-                        <a href="{{ URL::to("settings/{$section}") }}" class="list-group-item {{ $selected === $section ? 'selected' : '' }}"
-                            style="width:100%;text-align:left">{{ trans("texts.{$section}") }}</a>
+                        <a href="{{ URL::to("settings/{$section}") }}"
+                           class="list-group-item {{ $selected === $section ? 'selected' : '' }}"
+                           style="width:100%;text-align:left">{{ trans("texts.{$section}") }}</a>
                     @endforeach
                 </div>
             </div>

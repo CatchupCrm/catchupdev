@@ -24,7 +24,7 @@ class CompanyGatewayService extends BaseService
      * CompanyGatewayService constructor.
      *
      * @param CompanyGatewayRepository $companyGatewayRepo
-     * @param DatatableService         $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(CompanyGatewayRepository $companyGatewayRepo, DatatableService $datatableService)
     {

@@ -41,7 +41,7 @@ class ExportController extends BaseController
         } else {
             $fields = $request->all();
             $fields = array_filter(array_map(function ($key) {
-                if (! in_array($key, ['format', 'include', '_token'])) {
+                if (!in_array($key, ['format', 'include', '_token'])) {
                     return $key;
                 } else {
                     return null;
@@ -78,18 +78,18 @@ class ExportController extends BaseController
         $company = Auth::user()->company;
         $company->load(['clients' => function ($query) {
             $query->withArchived()
-                  ->with(['contacts', 'invoices' => function ($query) {
-                      $query->withArchived()
-                            ->with(['invoice_items', 'payments' => function ($query) {
-                                $query->withArchived();
-                            }]);
-                  }]);
+                ->with(['contacts', 'invoices' => function ($query) {
+                    $query->withArchived()
+                        ->with(['invoice_items', 'payments' => function ($query) {
+                            $query->withArchived();
+                        }]);
+                }]);
         }]);
 
         $resource = new Item($company, new CompanyTransformer());
         $data = $manager->parseIncludes('clients.invoices.payments')
-                    ->createData($resource)
-                    ->toArray();
+            ->createData($resource)
+            ->toArray();
 
         return response()->json($data);
     }
@@ -124,14 +124,14 @@ class ExportController extends BaseController
 
         return Excel::create($fileName, function ($excel) use ($user, $data) {
             $excel->setTitle($data['title'])
-                  ->setCreator($user->getDisplayName())
-                  ->setLastModifiedBy($user->getDisplayName())
-                  ->setDescription('')
-                  ->setSubject('')
-                  ->setKeywords('')
-                  ->setCategory('')
-                  ->setManager('')
-                  ->setCompany($user->company->getDisplayName());
+                ->setCreator($user->getDisplayName())
+                ->setLastModifiedBy($user->getDisplayName())
+                ->setDescription('')
+                ->setSubject('')
+                ->setKeywords('')
+                ->setCategory('')
+                ->setManager('')
+                ->setCompany($user->company->getDisplayName());
 
             foreach ($data as $key => $val) {
                 if ($key === 'company' || $key === 'title' || $key === 'multiUser') {

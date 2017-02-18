@@ -211,7 +211,7 @@ class Payment extends EntityModel
             return false;
         }
 
-        if (! $amount) {
+        if (!$amount) {
             $amount = $this->amount;
         }
 
@@ -291,7 +291,7 @@ class Payment extends EntityModel
      */
     public function getBankDataAttribute()
     {
-        if (! $this->routing_number) {
+        if (!$this->routing_number) {
             return null;
         }
 
@@ -354,9 +354,9 @@ class Payment extends EntityModel
     public function invoiceJsonBackup()
     {
         $activity = Activity::wherePaymentId($this->id)
-                        ->whereActivityTypeId(ACTIVITY_TYPE_CREATE_PAYMENT)
-                        ->get(['json_backup'])
-                        ->first();
+            ->whereActivityTypeId(ACTIVITY_TYPE_CREATE_PAYMENT)
+            ->get(['json_backup'])
+            ->first();
 
         return $activity->json_backup;
     }

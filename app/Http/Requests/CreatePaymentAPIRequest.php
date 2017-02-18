@@ -23,7 +23,7 @@ class CreatePaymentAPIRequest extends PaymentRequest
      */
     public function rules()
     {
-        if (! $this->invoice_id || ! $this->amount) {
+        if (!$this->invoice_id || !$this->amount) {
             return [
                 'invoice_id' => 'required|numeric|min:1',
                 'amount' => 'required|numeric|min:0.01',

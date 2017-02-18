@@ -44,9 +44,9 @@ class PaymentApiController extends BaseAPIController
     public function index()
     {
         $payments = Payment::scope()
-                        ->withTrashed()
-                        ->with(['invoice'])
-                        ->orderBy('created_at', 'desc');
+            ->withTrashed()
+            ->with(['invoice'])
+            ->orderBy('created_at', 'desc');
 
         return $this->listResponse($payments);
     }

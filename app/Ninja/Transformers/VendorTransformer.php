@@ -36,12 +36,12 @@ class VendorTransformer extends EntityTransformer
     protected $defaultIncludes = [
         'vendor_contacts',
     ];
-    
+
     protected $availableIncludes = [
         'invoices',
         //'expenses',
     ];
-    
+
     public function includeVendorContacts(Vendor $vendor)
     {
         $transformer = new VendorContactTransformer($this->company, $this->serializer);
@@ -66,10 +66,10 @@ class VendorTransformer extends EntityTransformer
     public function transform(Vendor $vendor)
     {
         return array_merge($this->getDefaults($vendor), [
-            'id' => (int) $vendor->public_id,
+            'id' => (int)$vendor->public_id,
             'name' => $vendor->name,
-            'balance' => (float) $vendor->balance,
-            'paid_to_date' => (float) $vendor->paid_to_date,
+            'balance' => (float)$vendor->balance,
+            'paid_to_date' => (float)$vendor->paid_to_date,
             'updated_at' => $this->getTimestamp($vendor->updated_at),
             'archived_at' => $this->getTimestamp($vendor->deleted_at),
             'address1' => $vendor->address1,
@@ -77,15 +77,15 @@ class VendorTransformer extends EntityTransformer
             'city' => $vendor->city,
             'state' => $vendor->state,
             'postal_code' => $vendor->postal_code,
-            'country_id' => (int) $vendor->country_id,
+            'country_id' => (int)$vendor->country_id,
             'work_phone' => $vendor->work_phone,
             'private_notes' => $vendor->private_notes,
             'last_login' => $vendor->last_login,
             'website' => $vendor->website,
-            'is_deleted' => (bool) $vendor->is_deleted,
+            'is_deleted' => (bool)$vendor->is_deleted,
             'vat_number' => $vendor->vat_number,
             'id_number' => $vendor->id_number,
-            'currency_id' => (int) $vendor->currency_id,
+            'currency_id' => (int)$vendor->currency_id,
         ]);
     }
 }

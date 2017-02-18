@@ -10,7 +10,7 @@ class ContactRepository extends BaseRepository
     {
         $publicId = isset($data['public_id']) ? $data['public_id'] : false;
 
-        if (! $publicId || $publicId == '-1') {
+        if (!$publicId || $publicId == '-1') {
             $contact = Contact::createNew();
             $contact->send_invoice = true;
             $contact->client_id = $data['client_id'];

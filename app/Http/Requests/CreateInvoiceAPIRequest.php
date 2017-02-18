@@ -37,7 +37,7 @@ class CreateInvoiceAPIRequest extends InvoiceRequest
 
         if ($this->user()->company->client_number_counter) {
             $clientId = Client::getPrivateId(request()->input('client')['public_id']);
-            $rules['client.id_number'] = 'unique:clients,id_number,'.$clientId.',id,company_id,' . $this->user()->company_id;
+            $rules['client.id_number'] = 'unique:clients,id_number,' . $clientId . ',id,company_id,' . $this->user()->company_id;
         }
 
         return $rules;

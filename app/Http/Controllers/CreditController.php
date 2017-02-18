@@ -77,7 +77,7 @@ class CreditController extends BaseController
             'clientPublicId' => $credit->client->public_id,
             'credit' => $credit,
             'method' => 'PUT',
-            'url' => 'credits/'.$publicId,
+            'url' => 'credits/' . $publicId,
             'title' => 'Edit Credit',
             'clients' => null,
         ];
@@ -114,7 +114,7 @@ class CreditController extends BaseController
         $count = $this->creditService->bulk($ids, $action);
 
         if ($count > 0) {
-            $message = Utils::pluralize($action.'d_credit', $count);
+            $message = Utils::pluralize($action . 'd_credit', $count);
             Session::flash('message', $message);
         }
 

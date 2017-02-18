@@ -33,9 +33,9 @@ class NotificationListener
     /**
      * NotificationListener constructor.
      *
-     * @param UserMailer    $userMailer
+     * @param UserMailer $userMailer
      * @param ContactMailer $contactMailer
-     * @param PushService   $pushService
+     * @param PushService $pushService
      */
     public function __construct(UserMailer $userMailer, ContactMailer $contactMailer, PushService $pushService)
     {
@@ -81,7 +81,7 @@ class NotificationListener
      */
     public function viewedInvoice(InvoiceInvitationWasViewed $event)
     {
-        if (! floatval($event->invoice->balance)) {
+        if (!floatval($event->invoice->balance)) {
             return;
         }
 
@@ -117,7 +117,7 @@ class NotificationListener
     public function createdPayment(PaymentWasCreated $event)
     {
         // only send emails for online payments
-        if (! $event->payment->company_gateway_id) {
+        if (!$event->payment->company_gateway_id) {
             return;
         }
 

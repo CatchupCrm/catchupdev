@@ -68,14 +68,14 @@ class UserController extends BaseController
     public function edit($publicId)
     {
         $user = User::where('company_id', '=', Auth::user()->company_id)
-                        ->where('public_id', '=', $publicId)
-                        ->withTrashed()
-                        ->firstOrFail();
+            ->where('public_id', '=', $publicId)
+            ->withTrashed()
+            ->firstOrFail();
 
         $data = [
             'user' => $user,
             'method' => 'PUT',
-            'url' => 'users/'.$publicId,
+            'url' => 'users/' . $publicId,
         ];
 
         return View::make('users.edit', $data);
@@ -96,28 +96,28 @@ class UserController extends BaseController
      */
     public function create()
     {
-        if (! Auth::user()->registered) {
+        if (!Auth::user()->registered) {
             Session::flash('error', trans('texts.register_to_add_user'));
 
             return Redirect::to('settings/' . COMPANY_USER_MANAGEMENT);
         }
 
-        if (! Auth::user()->confirmed) {
+        if (!Auth::user()->confirmed) {
             Session::flash('error', trans('texts.confirmation_required'));
 
             return Redirect::to('settings/' . COMPANY_USER_MANAGEMENT);
         }
 
-        if (Utils::isNinja() && ! Auth::user()->caddAddUsers()) {
+        if (Utils::isNinja() && !Auth::user()->caddAddUsers()) {
             Session::flash('error', trans('texts.max_users_reached'));
 
             return Redirect::to('settings/' . COMPANY_USER_MANAGEMENT);
         }
 
         $data = [
-          'user' => null,
-          'method' => 'POST',
-          'url' => 'users',
+            'user' => null,
+            'method' => 'POST',
+            'url' => 'users',
         ];
 
         return View::make('users.edit', $data);
@@ -129,14 +129,14 @@ class UserController extends BaseController
         $id = Input::get('bulk_public_id');
 
         $user = User::where('company_id', '=', Auth::user()->company_id)
-                    ->where('public_id', '=', $id)
-                    ->withTrashed()
-                    ->firstOrFail();
+            ->where('public_id', '=', $id)
+            ->withTrashed()
+            ->firstOrFail();
 
         if ($action === 'archive') {
             $user->delete();
         } else {
-            if (! Auth::user()->caddAddUsers()) {
+            if (!Auth::user()->caddAddUsers()) {
                 return Redirect::to('settings/' . COMPANY_USER_MANAGEMENT)
                     ->with('error', trans('texts.max_users_reached'));
             }
@@ -164,11 +164,11 @@ class UserController extends BaseController
 
             if ($userPublicId) {
                 $user = User::where('company_id', '=', Auth::user()->company_id)
-                            ->where('public_id', '=', $userPublicId)
-                            ->withTrashed()
-                            ->firstOrFail();
+                    ->where('public_id', '=', $userPublicId)
+                    ->withTrashed()
+                    ->firstOrFail();
 
-                $rules['email'] = 'required|email|unique:users,email,'.$user->id.',id';
+                $rules['email'] = 'required|email|unique:users,email,' . $user->id . ',id';
             } else {
                 $rules['email'] = 'required|email|unique:users';
             }
@@ -190,7 +190,7 @@ class UserController extends BaseController
                 }
             } else {
                 $lastUser = User::withTrashed()->where('company_id', '=', Auth::user()->company_id)
-                            ->orderBy('public_id', 'DESC')->first();
+                    ->orderBy('public_id', 'DESC')->first();
 
                 $user = new User();
                 $user->company_id = Auth::user()->company_id;
@@ -210,7 +210,7 @@ class UserController extends BaseController
 
             $user->save();
 
-            if (! $user->confirmed) {
+            if (!$user->confirmed) {
                 $this->userMailer->sendConfirmation($user, Auth::user());
                 $message = trans('texts.sent_invite');
             } else {
@@ -226,7 +226,7 @@ class UserController extends BaseController
     public function sendConfirmation($userPublicId)
     {
         $user = User::where('company_id', '=', Auth::user()->company_id)
-                    ->where('public_id', '=', $userPublicId)->firstOrFail();
+            ->where('public_id', '=', $userPublicId)->firstOrFail();
 
         $this->userMailer->sendConfirmation($user, Auth::user());
         Session::flash('message', trans('texts.sent_invite'));
@@ -279,10 +279,11 @@ class UserController extends BaseController
     public function changePassword()
     {
         // check the current password is correct
-        if (! Auth::validate([
+        if (!Auth::validate([
             'email' => Auth::user()->email,
             'password' => Input::get('current_password'),
-        ])) {
+        ])
+        ) {
             return trans('texts.password_error_incorrect');
         }
 
@@ -306,7 +307,7 @@ class UserController extends BaseController
     {
         $oldUserId = Auth::user()->id;
         $referer = Request::header('referer');
-        $company = $this->companyRepo->findUserAccounts($newUserId, $oldUserId);
+        $company = $this->companyRepo->findUserCompanies($newUserId, $oldUserId);
 
         if ($company) {
             if ($company->hasUserId($newUserId) && $company->hasUserId($oldUserId)) {
@@ -332,7 +333,7 @@ class UserController extends BaseController
     {
         $user = $this->companyRepo->findUser(Auth::user(), $companyKey);
 
-        if (! $user) {
+        if (!$user) {
             return redirect()->to('/');
         }
 
@@ -344,9 +345,9 @@ class UserController extends BaseController
         return redirect()->to($redirectTo);
     }
 
-    public function unlinkCompany($userAccountId, $userId)
+    public function unlinkCompany($userCompanyId, $userId)
     {
-        $this->companyRepo->unlinkUser($userAccountId, $userId);
+        $this->companyRepo->unlinkUser($userCompanyId, $userId);
         $referer = Request::header('referer');
 
         $users = $this->companyRepo->loadCompanys(Auth::user()->id);

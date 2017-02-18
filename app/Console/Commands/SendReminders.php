@@ -41,7 +41,7 @@ class SendReminders extends Command
     /**
      * SendReminders constructor.
      *
-     * @param Mailer            $mailer
+     * @param Mailer $mailer
      * @param InvoiceRepository $invoiceRepo
      * @param companyRepository $companyRepo
      */
@@ -63,7 +63,7 @@ class SendReminders extends Command
 
         /** @var \App\Models\Company $company */
         foreach ($companies as $company) {
-            if (! $company->hasFeature(FEATURE_EMAIL_TEMPLATES_REMINDERS)) {
+            if (!$company->hasFeature(FEATURE_EMAIL_TEMPLATES_REMINDERS)) {
                 continue;
             }
 
@@ -84,8 +84,8 @@ class SendReminders extends Command
         if ($errorEmail = env('ERROR_EMAIL')) {
             \Mail::raw('EOM', function ($message) use ($errorEmail) {
                 $message->to($errorEmail)
-                        ->from(CONTACT_EMAIL)
-                        ->subject('SendReminders: Finished successfully');
+                    ->from(CONTACT_EMAIL)
+                    ->subject('SendReminders: Finished successfully');
             });
         }
     }

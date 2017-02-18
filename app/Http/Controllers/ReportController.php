@@ -20,12 +20,12 @@ class ReportController extends BaseController
     public function d3()
     {
         $message = '';
-        $fileName = storage_path().'/dataviz_sample.txt';
+        $fileName = storage_path() . '/dataviz_sample.txt';
 
         if (Auth::user()->company->hasFeature(FEATURE_REPORTS)) {
             $company = Company::where('id', '=', Auth::user()->company->id)
-                            ->with(['clients.invoices.invoice_items', 'clients.contacts'])
-                            ->first();
+                ->with(['clients.invoices.invoice_items', 'clients.contacts'])
+                ->first();
             $company = $company->hideFieldsForViz();
             $clients = $company->clients->toJson();
         } elseif (file_exists($fileName)) {
@@ -48,7 +48,7 @@ class ReportController extends BaseController
      */
     public function showReports()
     {
-        if (! Auth::user()->hasPermission('view_all')) {
+        if (!Auth::user()->hasPermission('view_all')) {
             return redirect('/');
         }
 
@@ -122,7 +122,7 @@ class ReportController extends BaseController
      */
     private function export($reportType, $data, $columns, $totals)
     {
-        if (! Auth::user()->hasPermission('view_all')) {
+        if (!Auth::user()->hasPermission('view_all')) {
             exit;
         }
 

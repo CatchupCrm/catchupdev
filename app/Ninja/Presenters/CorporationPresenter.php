@@ -12,19 +12,19 @@ class CompanyPresenter extends EntityPresenter
 
         return trans('texts.promo_message', [
             'expires' => $this->entity->promo_expires->format('M dS, Y'),
-            'amount' => (int) ($this->discount * 100) . '%',
+            'amount' => (int)($this->discount * 100) . '%',
         ]);
     }
 
     public function discountMessage()
     {
-        if (! $this->entity->hasActiveDiscount()) {
+        if (!$this->entity->hasActiveDiscount()) {
             return '';
         }
 
         return trans('texts.discount_message', [
             'expires' => $this->entity->discount_expires->format('M dS, Y'),
-            'amount' => (int) ($this->discount * 100) . '%',
+            'amount' => (int)($this->discount * 100) . '%',
         ]);
     }
 }

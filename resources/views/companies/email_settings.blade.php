@@ -84,7 +84,8 @@
         </center>
     @endif
 
-    <div class="modal fade" id="designHelpModal" tabindex="-1" role="dialog" aria-labelledby="designHelpModalLabel" aria-hidden="true">
+    <div class="modal fade" id="designHelpModal" tabindex="-1" role="dialog" aria-labelledby="designHelpModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" style="min-width:150px">
             <div class="modal-content">
                 <div class="modal-header">
@@ -110,7 +111,8 @@
                 </div>
 
                 <div class="modal-footer" style="margin-top: 0px">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">{{ trans('texts.close') }}</button>
+                    <button type="button" class="btn btn-primary"
+                            data-dismiss="modal">{{ trans('texts.close') }}</button>
                 </div>
 
             </div>
@@ -121,7 +123,7 @@
 
     <script type="text/javascript">
 
-        $('.email_design_id .input-group-addon').click(function() {
+        $('.email_design_id .input-group-addon').click(function () {
             $('#designHelpModal').modal('show');
         });
 

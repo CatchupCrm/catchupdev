@@ -69,7 +69,7 @@ class ResetInvoiceSchemaCounter extends Command
                 $a->update();
             });
 
-            $this->info('The counter has been resetted successfully for '.$companies->count().' company(s).');
+            $this->info('The counter has been resetted successfully for ' . $companies->count() . ' company(s).');
         }
     }
 }

@@ -15,7 +15,7 @@ class BaseIntent
     public function __construct($state, $data)
     {
         //if (true) {
-        if (! $state || is_string($state)) {
+        if (!$state || is_string($state)) {
             $state = new stdClass();
             foreach (['current', 'previous'] as $reference) {
                 $state->$reference = new stdClass();
@@ -34,7 +34,7 @@ class BaseIntent
 
     public static function createIntent($state, $data)
     {
-        if (! count($data->intents)) {
+        if (!count($data->intents)) {
             throw new Exception(trans('texts.intent_not_found'));
         }
 
@@ -48,7 +48,7 @@ class BaseIntent
             }
         }
 
-        if (! $entityType) {
+        if (!$entityType) {
             $entityType = $state->current->entityType;
         }
 
@@ -58,7 +58,7 @@ class BaseIntent
 
         //echo "Intent: $intent<p>";
 
-        if (! class_exists($className)) {
+        if (!class_exists($className)) {
             throw new Exception(trans('texts.intent_not_supported'));
         }
 
@@ -72,7 +72,7 @@ class BaseIntent
 
     public function setStateEntities($entityType, $entities)
     {
-        if (! is_array($entities)) {
+        if (!is_array($entities)) {
             $entities = [$entities];
         }
 
@@ -139,7 +139,7 @@ class BaseIntent
     {
         $data = [];
 
-        if (! isset($this->data->compositeEntities)) {
+        if (!isset($this->data->compositeEntities)) {
             return [];
         }
 
@@ -153,8 +153,7 @@ class BaseIntent
 
             foreach ($compositeEntity->children as $child) {
                 if ($child->type == 'Field') {
-                    $field = $child->value;
-                    ;
+                    $field = $child->value;;
                 } elseif ($child->type == 'Value') {
                     $value = $child->value;
                 }
@@ -213,7 +212,7 @@ class BaseIntent
         } else {
             if ($content instanceof \Illuminate\Database\Eloquent\Collection) {
                 // do nothing
-            } elseif (! is_array($content)) {
+            } elseif (!is_array($content)) {
                 $content = [$content];
             }
 

@@ -53,8 +53,8 @@ class ProductApiController extends BaseAPIController
     public function index()
     {
         $products = Product::scope()
-                        ->withTrashed()
-                        ->orderBy('created_at', 'desc');
+            ->withTrashed()
+            ->orderBy('created_at', 'desc');
 
         return $this->listResponse($products);
     }

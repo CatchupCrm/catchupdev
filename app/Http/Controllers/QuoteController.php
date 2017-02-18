@@ -48,9 +48,9 @@ class QuoteController extends BaseController
         $datatable->entityType = ENTITY_QUOTE;
 
         $data = [
-          'title' => trans('texts.quotes'),
-          'entityType' => ENTITY_QUOTE,
-          'datatable' => $datatable,
+            'title' => trans('texts.quotes'),
+            'entityType' => ENTITY_QUOTE,
+            'datatable' => $datatable,
         ];
 
         return response()->view('list_wrapper', $data);
@@ -66,7 +66,7 @@ class QuoteController extends BaseController
 
     public function create(InvoiceRequest $request, $clientPublicId = 0)
     {
-        if (! Utils::hasFeature(FEATURE_QUOTES)) {
+        if (!Utils::hasFeature(FEATURE_QUOTES)) {
             return Redirect::to('/invoices/create');
         }
 
@@ -96,30 +96,29 @@ class QuoteController extends BaseController
         $company = Auth::user()->company;
 
         return [
-          'entityType' => ENTITY_QUOTE,
-          'company' => $company,
-          'products' => Product::scope()->orderBy('id')->get(['product_key', 'notes', 'cost', 'qty']),
-          'taxRateOptions' => $company->present()->taxRateOptions,
-          'defaultTax' => $company->default_tax_rate,
-          'countries' => Cache::get('countries'),
-          'clients' => Client::scope()->with('contacts', 'country')->orderBy('name')->get(),
-          'taxRates' => TaxRate::scope()->orderBy('name')->get(),
-          'currencies' => Cache::get('currencies'),
-          'sizes' => Cache::get('sizes'),
-          'paymentTerms' => Cache::get('paymentTerms'),
-          'languages' => Cache::get('languages'),
-          'industries' => Cache::get('industries'),
-          'invoiceDesigns' => InvoiceDesign::getDesigns(),
-          'invoiceFonts' => Cache::get('fonts'),
-          'invoiceLabels' => Auth::user()->company->getInvoiceLabels(),
-          'isRecurring' => false,
+            'entityType' => ENTITY_QUOTE,
+            'company' => $company,
+            'products' => Product::scope()->orderBy('id')->get(['product_key', 'notes', 'cost', 'qty']),
+            'taxRateOptions' => $company->present()->taxRateOptions,
+            'defaultTax' => $company->default_tax_rate,
+            'countries' => Cache::get('countries'),
+            'clients' => Client::scope()->with('contacts', 'country')->orderBy('name')->get(),
+            'taxRates' => TaxRate::scope()->orderBy('name')->get(),
+            'currencies' => Cache::get('currencies'),
+            'sizes' => Cache::get('sizes'),
+            'paymentTerms' => Cache::get('paymentTerms'),
+            'languages' => Cache::get('languages'),
+            'industries' => Cache::get('industries'),
+            'invoiceDesigns' => InvoiceDesign::getDesigns(),
+            'invoiceFonts' => Cache::get('fonts'),
+            'invoiceLabels' => Auth::user()->company->getInvoiceLabels(),
+            'isRecurring' => false,
         ];
     }
 
     public function bulk()
     {
-        $action = Input::get('bulk_action') ?: Input::get('action');
-        ;
+        $action = Input::get('bulk_action') ?: Input::get('action');;
         $ids = Input::get('bulk_public_id') ?: (Input::get('public_id') ?: Input::get('ids'));
 
         if ($action == 'convert') {
@@ -128,7 +127,7 @@ class QuoteController extends BaseController
 
             Session::flash('message', trans('texts.converted_to_invoice'));
 
-            return Redirect::to('invoices/'.$clone->public_id);
+            return Redirect::to('invoices/' . $clone->public_id);
         }
 
         $count = $this->invoiceService->bulk($ids, $action);

@@ -17,15 +17,15 @@ class BankAccountRepository extends BaseRepository
     public function find($companyId)
     {
         return DB::table('bank_companies')
-                    ->join('banks', 'banks.id', '=', 'bank_companies.bank_id')
-                    ->where('bank_companies.deleted_at', '=', null)
-                    ->where('bank_companies.company_id', '=', $companyId)
-                    ->select(
-                        'bank_companies.public_id',
-                        'banks.name as bank_name',
-                        'bank_companies.deleted_at',
-                        'banks.bank_library_id'
-                    );
+            ->join('banks', 'banks.id', '=', 'bank_companies.bank_id')
+            ->where('bank_companies.deleted_at', '=', null)
+            ->where('bank_companies.company_id', '=', $companyId)
+            ->select(
+                'bank_companies.public_id',
+                'banks.name as bank_name',
+                'bank_companies.deleted_at',
+                'banks.bank_library_id'
+            );
     }
 
     public function save($input)
@@ -38,7 +38,7 @@ class BankAccountRepository extends BaseRepository
         $company->bank_companies()->save($bankAccount);
 
         foreach ($input['bank_companies'] as $data) {
-            if (! isset($data['include']) || ! filter_var($data['include'], FILTER_VALIDATE_BOOLEAN)) {
+            if (!isset($data['include']) || !filter_var($data['include'], FILTER_VALIDATE_BOOLEAN)) {
                 continue;
             }
 

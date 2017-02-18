@@ -18,9 +18,9 @@ class TaskReport extends AbstractReport
     public function run()
     {
         $tasks = Task::scope()
-                    ->with('client.contacts')
-                    ->withArchived()
-                    ->dateRange($this->startDate, $this->endDate);
+            ->with('client.contacts')
+            ->withArchived()
+            ->dateRange($this->startDate, $this->endDate);
 
         foreach ($tasks->get() as $task) {
             $this->data[] = [

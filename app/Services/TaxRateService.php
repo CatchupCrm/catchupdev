@@ -24,7 +24,7 @@ class TaxRateService extends BaseService
      * TaxRateService constructor.
      *
      * @param TaxRateRepository $taxRateRepo
-     * @param DatatableService  $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(TaxRateRepository $taxRateRepo, DatatableService $datatableService)
     {

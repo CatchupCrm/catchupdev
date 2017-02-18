@@ -61,7 +61,7 @@ class Corporation extends Eloquent
     // handle promos and discounts
     public function hasActiveDiscount(Carbon $date = null)
     {
-        if (! $this->discount || ! $this->discount_expires) {
+        if (!$this->discount || !$this->discount_expires) {
             return false;
         }
 
@@ -76,7 +76,7 @@ class Corporation extends Eloquent
 
     public function discountedPrice($price)
     {
-        if (! $this->hasActivePromo() && ! $this->hasActiveDiscount()) {
+        if (!$this->hasActivePromo() && !$this->hasActiveDiscount()) {
             return $price;
         }
 
@@ -85,7 +85,7 @@ class Corporation extends Eloquent
 
     public function daysUntilPlanExpires()
     {
-        if (! $this->hasActivePlan()) {
+        if (!$this->hasActivePlan()) {
             return 0;
         }
 
@@ -108,7 +108,7 @@ class Corporation extends Eloquent
 
     public function hasEarnedPromo()
     {
-        if (! Utils::isNinjaProd() || Utils::isPro()) {
+        if (!Utils::isNinjaProd() || Utils::isPro()) {
             return false;
         }
 

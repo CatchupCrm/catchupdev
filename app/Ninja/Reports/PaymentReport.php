@@ -22,17 +22,17 @@ class PaymentReport extends AbstractReport
         $company = Auth::user()->company;
 
         $payments = Payment::scope()
-                        ->withArchived()
-                        ->excludeFailed()
-                        ->whereHas('client', function ($query) {
-                            $query->where('is_deleted', '=', false);
-                        })
-                        ->whereHas('invoice', function ($query) {
-                            $query->where('is_deleted', '=', false);
-                        })
-                        ->with('client.contacts', 'invoice', 'payment_type', 'company_gateway.gateway')
-                        ->where('payment_date', '>=', $this->startDate)
-                        ->where('payment_date', '<=', $this->endDate);
+            ->withArchived()
+            ->excludeFailed()
+            ->whereHas('client', function ($query) {
+                $query->where('is_deleted', '=', false);
+            })
+            ->whereHas('invoice', function ($query) {
+                $query->where('is_deleted', '=', false);
+            })
+            ->with('client.contacts', 'invoice', 'payment_type', 'company_gateway.gateway')
+            ->where('payment_date', '>=', $this->startDate)
+            ->where('payment_date', '<=', $this->endDate);
 
         foreach ($payments->get() as $payment) {
             $invoice = $payment->invoice;

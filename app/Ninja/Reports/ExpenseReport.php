@@ -21,10 +21,10 @@ class ExpenseReport extends AbstractReport
         $company = Auth::user()->company;
 
         $expenses = Expense::scope()
-                        ->withArchived()
-                        ->with('client.contacts', 'vendor')
-                        ->where('expense_date', '>=', $this->startDate)
-                        ->where('expense_date', '<=', $this->endDate);
+            ->withArchived()
+            ->with('client.contacts', 'vendor')
+            ->where('expense_date', '>=', $this->startDate)
+            ->where('expense_date', '<=', $this->endDate);
 
         foreach ($expenses->get() as $expense) {
             $amount = $expense->amountWithTax();

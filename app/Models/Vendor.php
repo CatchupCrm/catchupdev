@@ -323,7 +323,7 @@ class Vendor extends EntityModel
             return $this->currency_id;
         }
 
-        if (! $this->company) {
+        if (!$this->company) {
             $this->load('company');
         }
 
@@ -336,11 +336,11 @@ class Vendor extends EntityModel
     public function getTotalExpenses()
     {
         return DB::table('expenses')
-                ->select('expense_currency_id', DB::raw('SUM(amount) as amount'))
-                ->whereVendorId($this->id)
-                ->whereIsDeleted(false)
-                ->groupBy('expense_currency_id')
-                ->get();
+            ->select('expense_currency_id', DB::raw('SUM(amount) as amount'))
+            ->whereVendorId($this->id)
+            ->whereIsDeleted(false)
+            ->groupBy('expense_currency_id')
+            ->get();
     }
 }
 

@@ -14,7 +14,7 @@ class ResetData extends Command
      * @var string
      */
     protected $name = 'ninja:reset-data';
-    
+
     /**
      * @var string
      */
@@ -24,7 +24,7 @@ class ResetData extends Command
     {
         $this->info(date('Y-m-d') . ' Running ResetData...');
 
-        if (! Utils::isNinjaDev()) {
+        if (!Utils::isNinjaDev()) {
             return;
         }
 

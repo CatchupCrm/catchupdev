@@ -52,7 +52,7 @@ class AuthService
      */
     public function execute($provider, $hasCode)
     {
-        if (! $hasCode) {
+        if (!$hasCode) {
             return $this->getAuthorization($provider);
         }
 
@@ -69,7 +69,7 @@ class AuthService
             $result = $this->companyRepo->updateUserFromOauth($user, $name[0], $name[1], $email, $providerId, $oauthUserId);
 
             if ($result === true) {
-                if (! $isRegistered) {
+                if (!$isRegistered) {
                     Session::flash('warning', trans('texts.success_message'));
                     Session::flash('onReady', 'handleSignedUp();');
                 } else {

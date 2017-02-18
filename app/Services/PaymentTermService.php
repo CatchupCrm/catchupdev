@@ -14,7 +14,7 @@ class PaymentTermService extends BaseService
      * PaymentTermService constructor.
      *
      * @param PaymentTermRepository $paymentTermRepo
-     * @param DatatableService      $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(PaymentTermRepository $paymentTermRepo, DatatableService $datatableService)
     {

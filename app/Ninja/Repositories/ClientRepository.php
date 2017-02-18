@@ -20,48 +20,48 @@ class ClientRepository extends BaseRepository
     public function all()
     {
         return Client::scope()
-                ->with('user', 'contacts', 'country')
-                ->withTrashed()
-                ->where('is_deleted', '=', false)
-                ->get();
+            ->with('user', 'contacts', 'country')
+            ->withTrashed()
+            ->where('is_deleted', '=', false)
+            ->get();
     }
 
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('clients')
-                    ->join('companies', 'companies.id', '=', 'clients.company_id')
-                    ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('clients.company_id', '=', \Auth::user()->company_id)
-                    ->where('contacts.is_primary', '=', true)
-                    ->where('contacts.deleted_at', '=', null)
-                    //->whereRaw('(clients.name != "" or contacts.first_name != "" or contacts.last_name != "" or contacts.email != "")') // filter out buy now invoices
-                    ->select(
-                        DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
-                        DB::raw("CONCAT(contacts.first_name, ' ', contacts.last_name) contact"),
-                        'clients.public_id',
-                        'clients.name',
-                        'contacts.first_name',
-                        'contacts.last_name',
-                        'clients.balance',
-                        'clients.last_login',
-                        'clients.created_at',
-                        'clients.created_at as client_created_at',
-                        'clients.work_phone',
-                        'contacts.email',
-                        'clients.deleted_at',
-                        'clients.is_deleted',
-                        'clients.user_id'
-                    );
+            ->join('companies', 'companies.id', '=', 'clients.company_id')
+            ->join('contacts', 'contacts.client_id', '=', 'clients.id')
+            ->where('clients.company_id', '=', \Auth::user()->company_id)
+            ->where('contacts.is_primary', '=', true)
+            ->where('contacts.deleted_at', '=', null)
+            //->whereRaw('(clients.name != "" or contacts.first_name != "" or contacts.last_name != "" or contacts.email != "")') // filter out buy now invoices
+            ->select(
+                DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
+                DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
+                DB::raw("CONCAT(contacts.first_name, ' ', contacts.last_name) contact"),
+                'clients.public_id',
+                'clients.name',
+                'contacts.first_name',
+                'contacts.last_name',
+                'clients.balance',
+                'clients.last_login',
+                'clients.created_at',
+                'clients.created_at as client_created_at',
+                'clients.work_phone',
+                'contacts.email',
+                'clients.deleted_at',
+                'clients.is_deleted',
+                'clients.user_id'
+            );
 
         $this->applyFilters($query, ENTITY_CLIENT);
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.first_name', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.last_name', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.email', 'like', '%'.$filter.'%');
+                $query->where('clients.name', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.first_name', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.last_name', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.email', 'like', '%' . $filter . '%');
             });
         }
 
@@ -78,7 +78,7 @@ class ClientRepository extends BaseRepository
 
         if ($client) {
             // do nothing
-        } elseif (! $publicId || $publicId == '-1') {
+        } elseif (!$publicId || $publicId == '-1') {
             $client = Client::createNew();
             if (Auth::check() && Auth::user()->company->client_number_counter && empty($data['id_number'])) {
                 $data['id_number'] = Auth::user()->company->getNextNumber();
@@ -130,15 +130,15 @@ class ClientRepository extends BaseRepository
             $first = false;
         }
 
-        if (! $client->wasRecentlyCreated) {
+        if (!$client->wasRecentlyCreated) {
             foreach ($client->contacts as $contact) {
-                if (! in_array($contact->public_id, $contactIds)) {
+                if (!in_array($contact->public_id, $contactIds)) {
                     $contact->delete();
                 }
             }
         }
 
-        if (! $publicId || $publicId == '-1') {
+        if (!$publicId || $publicId == '-1') {
             event(new ClientWasCreated($client));
         } else {
             event(new ClientWasUpdated($client));
@@ -160,7 +160,7 @@ class ClientRepository extends BaseRepository
         foreach ($clients as $client) {
             $map[$client->id] = $client;
 
-            if (! $client->name) {
+            if (!$client->name) {
                 continue;
             }
 
@@ -175,7 +175,7 @@ class ClientRepository extends BaseRepository
         $contacts = Contact::scope()->get(['client_id', 'first_name', 'last_name', 'public_id']);
 
         foreach ($contacts as $contact) {
-            if (! $contact->getFullName() || ! isset($map[$contact->client_id])) {
+            if (!$contact->getFullName() || !isset($map[$contact->client_id])) {
                 continue;
             }
 

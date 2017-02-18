@@ -13,7 +13,7 @@ class ExpenseRequest extends EntityRequest
         $expense = parent::entity();
 
         // eager load the documents
-        if ($expense && ! $expense->relationLoaded('documents')) {
+        if ($expense && !$expense->relationLoaded('documents')) {
             $expense->load('documents');
         }
 

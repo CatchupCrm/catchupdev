@@ -154,7 +154,7 @@ trait PresentsInvoice
     public function getInvoiceLabels()
     {
         $data = [];
-        $custom = (array) json_decode($this->invoice_labels);
+        $custom = (array)json_decode($this->invoice_labels);
 
         $fields = [
             'invoice',
@@ -228,13 +228,13 @@ trait PresentsInvoice
         }
 
         foreach ([
-            'invoice.custom_text_value1' => 'custom_invoice_text_label1',
-            'invoice.custom_text_value2' => 'custom_invoice_text_label2',
-            'client.custom_value1' => 'custom_client_label1',
-            'client.custom_value2' => 'custom_client_label2',
-            'company.custom_value1' => 'custom_label1',
-            'company.custom_value2' => 'custom_label2',
-        ] as $field => $property) {
+                     'invoice.custom_text_value1' => 'custom_invoice_text_label1',
+                     'invoice.custom_text_value2' => 'custom_invoice_text_label2',
+                     'client.custom_value1' => 'custom_client_label1',
+                     'client.custom_value2' => 'custom_client_label2',
+                     'company.custom_value1' => 'custom_label1',
+                     'company.custom_value2' => 'custom_label2',
+                 ] as $field => $property) {
             $data[$field] = $this->$property ?: trans('texts.custom_field');
         }
 

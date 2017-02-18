@@ -25,7 +25,7 @@ class ProjectService extends BaseService
      * CreditService constructor.
      *
      * @param ProjectRepository $creditRepo
-     * @param DatatableService  $datatableService
+     * @param DatatableService $datatableService
      */
     public function __construct(ProjectRepository $projectRepo, DatatableService $datatableService)
     {

@@ -48,7 +48,7 @@ class AuthController extends Controller
      * Create a new authentication controller instance.
      *
      * @param CompanyRepository $repo
-     * @param AuthService       $authService
+     * @param AuthService $authService
      *
      * @internal param \Illuminate\Contracts\Auth\Guard $auth
      * @internal param \Illuminate\Contracts\Auth\Registrar $registrar
@@ -117,7 +117,7 @@ class AuthController extends Controller
      */
     public function getLoginWrapper()
     {
-        if (! Utils::isNinja() && ! User::count()) {
+        if (!Utils::isNinja() && !User::count()) {
             return redirect()->to('invoice_now');
         }
 
@@ -172,11 +172,11 @@ class AuthController extends Controller
      */
     public function getLogoutWrapper()
     {
-        if (Auth::check() && ! Auth::user()->registered) {
+        if (Auth::check() && !Auth::user()->registered) {
             $company = Auth::user()->company;
             $this->companyRepo->unlinkCompany($company);
 
-            if (! $company->hasMultipleCompanys()) {
+            if (!$company->hasMultipleCompanys()) {
                 $company->corporation->forceDelete();
             }
             $company->forceDelete();

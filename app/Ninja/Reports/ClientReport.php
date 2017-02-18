@@ -8,10 +8,10 @@ use Auth;
 class ClientReport extends AbstractReport
 {
     public $columns = [
-            'client',
-            'amount',
-            'paid',
-            'balance',
+        'client',
+        'amount',
+        'paid',
+        'balance',
     ];
 
     public function run()
@@ -19,15 +19,15 @@ class ClientReport extends AbstractReport
         $company = Auth::user()->company;
 
         $clients = Client::scope()
-                        ->withArchived()
-                        ->with('contacts')
-                        ->with(['invoices' => function ($query) {
-                            $query->where('invoice_date', '>=', $this->startDate)
-                                  ->where('invoice_date', '<=', $this->endDate)
-                                  ->where('invoice_type_id', '=', INVOICE_TYPE_STANDARD)
-                                  ->where('is_recurring', '=', false)
-                                  ->withArchived();
-                        }]);
+            ->withArchived()
+            ->with('contacts')
+            ->with(['invoices' => function ($query) {
+                $query->where('invoice_date', '>=', $this->startDate)
+                    ->where('invoice_date', '<=', $this->endDate)
+                    ->where('invoice_type_id', '=', INVOICE_TYPE_STANDARD)
+                    ->where('is_recurring', '=', false)
+                    ->withArchived();
+            }]);
 
         foreach ($clients->get() as $client) {
             $amount = 0;

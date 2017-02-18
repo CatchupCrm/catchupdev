@@ -11,7 +11,7 @@ class InvitationTransformer extends EntityTransformer
         $invitation->setRelation('company', $this->company);
 
         return [
-            'id' => (int) $invitation->public_id,
+            'id' => (int)$invitation->public_id,
             'key' => $invitation->getName(),
             'status' => $invitation->getStatus(),
             'link' => $invitation->getLink(),

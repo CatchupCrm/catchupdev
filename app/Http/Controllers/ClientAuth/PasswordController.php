@@ -49,8 +49,8 @@ class PasswordController extends Controller
     public function showLinkRequestForm()
     {
         $data = [
-        	'clientauth' => true,
-		];
+            'clientauth' => true,
+        ];
         $contactKey = session('contact_key');
         if (!$contactKey) {
             return \Redirect::to('/client/sessionexpired');
@@ -74,7 +74,7 @@ class PasswordController extends Controller
         $contactKey = session('contact_key');
         if ($contactKey) {
             $contact = Contact::where('contact_key', '=', $contactKey)->first();
-            if ($contact && ! $contact->is_deleted) {
+            if ($contact && !$contact->is_deleted) {
                 $contactId = $contact->id;
             }
         }
@@ -99,8 +99,8 @@ class PasswordController extends Controller
      * If no token is present, display the link request form.
      *
      * @param \Illuminate\Http\Request $request
-     * @param string|null              $key
-     * @param string|null              $token
+     * @param string|null $key
+     * @param string|null $token
      *
      * @return \Illuminate\Http\Response
      */
@@ -111,25 +111,25 @@ class PasswordController extends Controller
         }
 
         $data = array(
-        	'token' => $token,
-			'clientauth' => true,
-		);
+            'token' => $token,
+            'clientauth' => true,
+        );
 
         if ($key) {
             $contact = Contact::where('contact_key', '=', $key)->first();
-            if ($contact && ! $contact->is_deleted) {
+            if ($contact && !$contact->is_deleted) {
                 $company = $contact->company;
                 $data['contact_key'] = $contact->contact_key;
             } else {
                 // Maybe it's an invitation key
                 $invitation = Invitation::where('invitation_key', '=', $key)->first();
-                if ($invitation && ! $invitation->is_deleted) {
+                if ($invitation && !$invitation->is_deleted) {
                     $company = $invitation->company;
                     $data['contact_key'] = $invitation->contact->contact_key;
                 }
             }
 
-            if ( empty($company)) {
+            if (empty($company)) {
                 return \Redirect::to('/client/sessionexpired');
             }
         }
@@ -143,8 +143,8 @@ class PasswordController extends Controller
      * If no token is present, display the link request form.
      *
      * @param \Illuminate\Http\Request $request
-     * @param string|null              $key
-     * @param string|null              $token
+     * @param string|null $key
+     * @param string|null $token
      *
      * @return \Illuminate\Http\Response
      */
@@ -173,7 +173,7 @@ class PasswordController extends Controller
         $contactKey = session('contact_key');
         if ($contactKey) {
             $contact = Contact::where('contact_key', '=', $contactKey)->first();
-            if ($contact && ! $contact->is_deleted) {
+            if ($contact && !$contact->is_deleted) {
                 $credentials['id'] = $contact->id;
             }
         }

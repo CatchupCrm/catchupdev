@@ -27,10 +27,10 @@ class ExpenseRepository extends BaseRepository
     public function all()
     {
         return Expense::scope()
-                ->with('user')
-                ->withTrashed()
-                ->where('is_deleted', '=', false)
-                ->get();
+            ->with('user')
+            ->withTrashed()
+            ->where('is_deleted', '=', false)
+            ->get();
     }
 
     public function findVendor($vendorPublicId)
@@ -46,55 +46,55 @@ class ExpenseRepository extends BaseRepository
     {
         $companyid = \Auth::user()->company_id;
         $query = DB::table('expenses')
-                    ->join('companies', 'companies.id', '=', 'expenses.company_id')
-                    ->leftjoin('clients', 'clients.id', '=', 'expenses.client_id')
-                    ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->leftjoin('vendors', 'vendors.id', '=', 'expenses.vendor_id')
-                    ->leftJoin('invoices', 'invoices.id', '=', 'expenses.invoice_id')
-                    ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
-                    ->where('expenses.company_id', '=', $companyid)
-                    ->where('contacts.deleted_at', '=', null)
-                    ->where('vendors.deleted_at', '=', null)
-                    ->where('clients.deleted_at', '=', null)
-                    ->where(function ($query) { // handle when client isn't set
-                        $query->where('contacts.is_primary', '=', true)
-                              ->orWhere('contacts.is_primary', '=', null);
-                    })
-                    ->select(
-                        DB::raw('COALESCE(expenses.invoice_id, expenses.should_be_invoiced) status'),
-                        'expenses.company_id',
-                        'expenses.amount',
-                        'expenses.deleted_at',
-                        'expenses.exchange_rate',
-                        'expenses.expense_date',
-                        'expenses.id',
-                        'expenses.is_deleted',
-                        'expenses.private_notes',
-                        'expenses.public_id',
-                        'expenses.invoice_id',
-                        'expenses.public_notes',
-                        'expenses.should_be_invoiced',
-                        'expenses.vendor_id',
-                        'expenses.expense_currency_id',
-                        'expenses.invoice_currency_id',
-                        'expenses.user_id',
-                        'expenses.tax_rate1',
-                        'expenses.tax_rate2',
-                        'expense_categories.name as category',
-                        'invoices.public_id as invoice_public_id',
-                        'invoices.user_id as invoice_user_id',
-                        'invoices.balance',
-                        'vendors.name as vendor_name',
-                        'vendors.public_id as vendor_public_id',
-                        'vendors.user_id as vendor_user_id',
-                        DB::raw("COALESCE(NULLIF(clients.name,''), NULLIF(CONCAT(contacts.first_name, ' ', contacts.last_name),''), NULLIF(contacts.email,'')) client_name"),
-                        'clients.public_id as client_public_id',
-                        'clients.user_id as client_user_id',
-                        'contacts.first_name',
-                        'contacts.email',
-                        'contacts.last_name',
-                        'clients.country_id as client_country_id'
-                    );
+            ->join('companies', 'companies.id', '=', 'expenses.company_id')
+            ->leftjoin('clients', 'clients.id', '=', 'expenses.client_id')
+            ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
+            ->leftjoin('vendors', 'vendors.id', '=', 'expenses.vendor_id')
+            ->leftJoin('invoices', 'invoices.id', '=', 'expenses.invoice_id')
+            ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+            ->where('expenses.company_id', '=', $companyid)
+            ->where('contacts.deleted_at', '=', null)
+            ->where('vendors.deleted_at', '=', null)
+            ->where('clients.deleted_at', '=', null)
+            ->where(function ($query) { // handle when client isn't set
+                $query->where('contacts.is_primary', '=', true)
+                    ->orWhere('contacts.is_primary', '=', null);
+            })
+            ->select(
+                DB::raw('COALESCE(expenses.invoice_id, expenses.should_be_invoiced) status'),
+                'expenses.company_id',
+                'expenses.amount',
+                'expenses.deleted_at',
+                'expenses.exchange_rate',
+                'expenses.expense_date',
+                'expenses.id',
+                'expenses.is_deleted',
+                'expenses.private_notes',
+                'expenses.public_id',
+                'expenses.invoice_id',
+                'expenses.public_notes',
+                'expenses.should_be_invoiced',
+                'expenses.vendor_id',
+                'expenses.expense_currency_id',
+                'expenses.invoice_currency_id',
+                'expenses.user_id',
+                'expenses.tax_rate1',
+                'expenses.tax_rate2',
+                'expense_categories.name as category',
+                'invoices.public_id as invoice_public_id',
+                'invoices.user_id as invoice_user_id',
+                'invoices.balance',
+                'vendors.name as vendor_name',
+                'vendors.public_id as vendor_public_id',
+                'vendors.user_id as vendor_user_id',
+                DB::raw("COALESCE(NULLIF(clients.name,''), NULLIF(CONCAT(contacts.first_name, ' ', contacts.last_name),''), NULLIF(contacts.email,'')) client_name"),
+                'clients.public_id as client_public_id',
+                'clients.user_id as client_user_id',
+                'contacts.first_name',
+                'contacts.email',
+                'contacts.last_name',
+                'clients.country_id as client_country_id'
+            );
 
         $this->applyFilters($query, ENTITY_EXPENSE);
 
@@ -105,28 +105,27 @@ class ExpenseRepository extends BaseRepository
 
                 if (in_array(EXPENSE_STATUS_LOGGED, $statuses)) {
                     $query->orWhere('expenses.invoice_id', '=', 0)
-                          ->orWhereNull('expenses.invoice_id');
+                        ->orWhereNull('expenses.invoice_id');
                 }
                 if (in_array(EXPENSE_STATUS_INVOICED, $statuses)) {
                     $query->orWhere('expenses.invoice_id', '>', 0);
-                    if (! in_array(EXPENSE_STATUS_PAID, $statuses)) {
+                    if (!in_array(EXPENSE_STATUS_PAID, $statuses)) {
                         $query->where('invoices.balance', '>', 0);
                     }
                 }
                 if (in_array(EXPENSE_STATUS_PAID, $statuses)) {
                     $query->orWhere('invoices.balance', '=', 0)
-                          ->where('expenses.invoice_id', '>', 0);
+                        ->where('expenses.invoice_id', '>', 0);
                 }
             });
         }
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('expenses.public_notes', 'like', '%'.$filter.'%')
-                      ->orWhere('clients.name', 'like', '%'.$filter.'%')
-                      ->orWhere('vendors.name', 'like', '%'.$filter.'%')
-                      ->orWhere('expense_categories.name', 'like', '%'.$filter.'%');
-                ;
+                $query->where('expenses.public_notes', 'like', '%' . $filter . '%')
+                    ->orWhere('clients.name', 'like', '%' . $filter . '%')
+                    ->orWhere('vendors.name', 'like', '%' . $filter . '%')
+                    ->orWhere('expense_categories.name', 'like', '%' . $filter . '%');;
             });
         }
 
@@ -161,10 +160,10 @@ class ExpenseRepository extends BaseRepository
 
         $expense->should_be_invoiced = isset($input['should_be_invoiced']) && floatval($input['should_be_invoiced']) || $expense->client_id ? true : false;
 
-        if (! $expense->expense_currency_id) {
+        if (!$expense->expense_currency_id) {
             $expense->expense_currency_id = \Auth::user()->company->getCurrencyId();
         }
-        if (! $expense->invoice_currency_id) {
+        if (!$expense->invoice_currency_id) {
             $expense->invoice_currency_id = \Auth::user()->company->getCurrencyId();
         }
 
@@ -177,8 +176,7 @@ class ExpenseRepository extends BaseRepository
         $expense->save();
 
         // Documents
-        $document_ids = ! empty($input['document_ids']) ? array_map('intval', $input['document_ids']) : [];
-        ;
+        $document_ids = !empty($input['document_ids']) ? array_map('intval', $input['document_ids']) : [];;
         foreach ($document_ids as $document_id) {
             // check document completed upload before user submitted form
             if ($document_id) {
@@ -192,9 +190,9 @@ class ExpenseRepository extends BaseRepository
         }
 
         // prevent loading all of the documents if we don't have to
-        if (! $expense->wasRecentlyCreated) {
+        if (!$expense->wasRecentlyCreated) {
             foreach ($expense->documents as $document) {
-                if (! in_array($document->public_id, $document_ids)) {
+                if (!in_array($document->public_id, $document_ids)) {
                     // Not checking permissions; deleting a document is just editing the invoice
                     $document->delete();
                 }

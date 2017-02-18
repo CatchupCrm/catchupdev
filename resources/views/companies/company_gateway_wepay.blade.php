@@ -42,16 +42,16 @@
 
             @if (WEPAY_ENABLE_CANADA)
                 <div id="wepay-country">
-                {!! Former::radios('country')
-                        ->radios([
-                            trans('texts.united_states') => ['value' => 'US'],
-                            trans('texts.canada') => ['value' => 'CA'],
-                        ]) !!}
+                    {!! Former::radios('country')
+                            ->radios([
+                                trans('texts.united_states') => ['value' => 'US'],
+                                trans('texts.canada') => ['value' => 'CA'],
+                            ]) !!}
                 </div>
                 <div id="wepay-accept-debit">
-                {!! Former::checkbox('debit_cards')
-                        ->text(trans('texts.accept_debit_cards'))
-                        ->value(1) !!}
+                    {!! Former::checkbox('debit_cards')
+                            ->text(trans('texts.accept_debit_cards'))
+                            ->value(1) !!}
                 </div>
             @endif
 
@@ -78,31 +78,41 @@
                 ))->value('true')
                   ->inlineHelp('standard_fees_apply') !!}
         </div>
-        </div>
+    </div>
 
-        <br/>
-        <center>
-            {!! Button::normal(trans('texts.use_another_provider'))->large()->asLinkTo(URL::to('/gateways/create?other_providers=true')) !!}
-            {!! Button::success(trans('texts.sign_up_with_wepay'))->submit()->large() !!}
-        </center>
+    <br/>
+    <center>
+        {!! Button::normal(trans('texts.use_another_provider'))->large()->asLinkTo(URL::to('/gateways/create?other_providers=true')) !!}
+        {!! Button::success(trans('texts.sign_up_with_wepay'))->submit()->large() !!}
+    </center>
 
 
     <style>
-        #other-providers{display:none}
-        #wepay-country .radio{display:inline-block;padding-right:15px}
-        #wepay-country .radio label{padding-left:0}
+        #other-providers {
+            display: none
+        }
+
+        #wepay-country .radio {
+            display: inline-block;
+            padding-right: 15px
+        }
+
+        #wepay-country .radio label {
+            padding-left: 0
+        }
     </style>
 
     <script type="text/javascript">
-        $(function(){
+        $(function () {
             $('#wepay-country input').change(handleCountryChange)
-            function handleCountryChange(){
+            function handleCountryChange() {
                 var country = $('#wepay-country input:checked').val();
-                if(country) {
+                if (country) {
                     $('#wepay-accept-debit').toggle(country == 'CA');
                     $('#wepay-tos-link').attr('href', 'https://go.wepay.com/terms-of-service-' + country.toLowerCase());
                 }
             }
+
             handleCountryChange();
         })
     </script>

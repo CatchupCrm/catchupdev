@@ -13,14 +13,14 @@ class EntityPolicy
     use HandlesAuthorization;
 
     /**
-     * @param User  $user
+     * @param User $user
      * @param mixed $item
      *
      * @return bool
      */
     public static function create(User $user, $item)
     {
-        if (! static::checkModuleEnabled($user, $item)) {
+        if (!static::checkModuleEnabled($user, $item)) {
             return false;
         }
 
@@ -35,7 +35,7 @@ class EntityPolicy
      */
     public static function edit(User $user, $item)
     {
-        if (! static::checkModuleEnabled($user, $item)) {
+        if (!static::checkModuleEnabled($user, $item)) {
             return false;
         }
 
@@ -50,7 +50,7 @@ class EntityPolicy
      */
     public static function view(User $user, $item)
     {
-        if (! static::checkModuleEnabled($user, $item)) {
+        if (!static::checkModuleEnabled($user, $item)) {
             return false;
         }
 
@@ -82,7 +82,7 @@ class EntityPolicy
     private static function checkModuleEnabled(User $user, $item)
     {
         $entityType = is_string($item) ? $item : $item->getEntityType();
-        
+
         return $user->company->isModuleEnabled($entityType);
     }
 }

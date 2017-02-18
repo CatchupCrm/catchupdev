@@ -31,8 +31,8 @@ class ContactMailer extends Mailer
 
     /**
      * @param Invoice $invoice
-     * @param bool    $reminder
-     * @param bool    $pdfString
+     * @param bool $reminder
+     * @param bool $pdfString
      *
      * @return bool|null|string
      */
@@ -62,7 +62,7 @@ class ContactMailer extends Mailer
 
         $sent = false;
 
-        if ($company->attachPDF() && ! $pdfString) {
+        if ($company->attachPDF() && !$pdfString) {
             $pdfString = $invoice->getPDFString();
         }
 
@@ -115,7 +115,7 @@ class ContactMailer extends Mailer
 
     /**
      * @param Invitation $invitation
-     * @param Invoice    $invoice
+     * @param Invoice $invoice
      * @param $body
      * @param $subject
      * @param $pdfString
@@ -135,7 +135,8 @@ class ContactMailer extends Mailer
         $documentStrings,
         $reminder,
         $isFirst
-    ) {
+    )
+    {
         $client = $invoice->client;
         $company = $invoice->company;
 
@@ -148,11 +149,11 @@ class ContactMailer extends Mailer
             }
         }
 
-        if (! $user->email || ! $user->registered) {
+        if (!$user->email || !$user->registered) {
             return trans('texts.email_error_user_unregistered');
-        } elseif (! $user->confirmed) {
+        } elseif (!$user->confirmed) {
             return trans('texts.email_error_user_unconfirmed');
-        } elseif (! $invitation->contact->email) {
+        } elseif (!$invitation->contact->email) {
             return trans('texts.email_error_invalid_contact_email');
         } elseif ($invitation->contact->trashed()) {
             return trans('texts.email_error_inactive_contact');

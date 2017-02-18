@@ -22,7 +22,7 @@ class ProductTransformer extends EntityTransformer
     public function transform(Product $product)
     {
         return array_merge($this->getDefaults($product), [
-            'id' => (int) $product->public_id,
+            'id' => (int)$product->public_id,
             'product_key' => $product->product_key,
             'notes' => $product->notes,
             'cost' => $product->cost,

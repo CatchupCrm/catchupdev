@@ -44,7 +44,7 @@ class DashboardController extends BaseController
 
         $showBlueVinePromo = $user->is_admin
             && env('BLUEVINE_PARTNER_UNIQUE_ID')
-            && ! $company->corporation->bluevine_status
+            && !$company->corporation->bluevine_status
             && $company->created_at <= date('Y-m-d', strtotime('-1 month'));
 
         $showWhiteLabelExpired = false;
@@ -118,7 +118,7 @@ class DashboardController extends BaseController
 
         array_map(function ($item) use (&$currencyIds) {
             $currencyId = intval($item['currency_id']);
-            if ($currencyId && ! in_array($currencyId, $currencyIds)) {
+            if ($currencyId && !in_array($currencyId, $currencyIds)) {
                 $currencyIds[] = $currencyId;
             }
         }, $data);
@@ -132,7 +132,7 @@ class DashboardController extends BaseController
 
         array_map(function ($item) use (&$currencyIds) {
             $currencyId = intval($item['expense_currency_id']);
-            if ($currencyId && ! in_array($currencyId, $currencyIds)) {
+            if ($currencyId && !in_array($currencyId, $currencyIds)) {
                 $currencyIds[] = $currencyId;
             }
         }, $data);

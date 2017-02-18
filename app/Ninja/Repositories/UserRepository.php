@@ -14,7 +14,7 @@ class UserRepository extends BaseRepository
     public function find($companyId)
     {
         $query = DB::table('users')
-                  ->where('users.company_id', '=', $companyId);
+            ->where('users.company_id', '=', $companyId);
 
         $this->applyFilters($query, ENTITY_USER);
 

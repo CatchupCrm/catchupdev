@@ -169,7 +169,7 @@ class User extends Authenticatable
     public function getFullName()
     {
         if ($this->first_name || $this->last_name) {
-            return $this->first_name.' '.$this->last_name;
+            return $this->first_name . ' ' . $this->last_name;
         } else {
             return '';
         }
@@ -180,7 +180,7 @@ class User extends Authenticatable
      */
     public function showGreyBackground()
     {
-        return ! $this->theme_id || in_array($this->theme_id, [2, 3, 5, 6, 7, 8, 10, 11, 12]);
+        return !$this->theme_id || in_array($this->theme_id, [2, 3, 5, 6, 7, 8, 10, 11, 12]);
     }
 
     /**
@@ -272,10 +272,11 @@ class User extends Authenticatable
      */
     public static function onUpdatedUser($user)
     {
-        if (! $user->getOriginal('email')
+        if (!$user->getOriginal('email')
             || $user->getOriginal('email') == TEST_USERNAME
             || $user->getOriginal('username') == TEST_USERNAME
-            || $user->getOriginal('email') == 'tests@bitrock.com') {
+            || $user->getOriginal('email') == 'tests@bitrock.com'
+        ) {
             event(new UserSignedUp());
         }
 
@@ -288,35 +289,35 @@ class User extends Authenticatable
     public function isEmailBeingChanged()
     {
         return Utils::isNinjaProd()
-                && $this->email != $this->getOriginal('email')
-                && $this->getOriginal('confirmed');
+        && $this->email != $this->getOriginal('email')
+        && $this->getOriginal('confirmed');
     }
 
-     /**
-      * Set the permissions attribute on the model.
-      *
-      * @param  mixed  $value
-      *
-      * @return $this
-      */
-     protected function setPermissionsAttribute($value)
-     {
-         if (empty($value)) {
-             $this->attributes['permissions'] = 0;
-         } else {
-             $bitmask = 0;
-             foreach ($value as $permission) {
-                 if (! $permission) {
-                     continue;
-                 }
-                 $bitmask = $bitmask | static::$all_permissions[$permission];
-             }
+    /**
+     * Set the permissions attribute on the model.
+     *
+     * @param  mixed $value
+     *
+     * @return $this
+     */
+    protected function setPermissionsAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['permissions'] = 0;
+        } else {
+            $bitmask = 0;
+            foreach ($value as $permission) {
+                if (!$permission) {
+                    continue;
+                }
+                $bitmask = $bitmask | static::$all_permissions[$permission];
+            }
 
-             $this->attributes['permissions'] = $bitmask;
-         }
+            $this->attributes['permissions'] = $bitmask;
+        }
 
-         return $this;
-     }
+        return $this;
+    }
 
     /**
      * Expands the value of the permissions attribute.
@@ -351,7 +352,7 @@ class User extends Authenticatable
         if ($this->is_admin) {
             return true;
         } elseif (is_string($permission)) {
-            return ! empty($this->permissions[$permission]);
+            return !empty($this->permissions[$permission]);
         } elseif (is_array($permission)) {
             if ($requireAll) {
                 return count(array_diff($permission, $this->permissions)) == 0;
@@ -370,7 +371,7 @@ class User extends Authenticatable
      */
     public function owns($entity)
     {
-        return ! empty($entity->user_id) && $entity->user_id == $this->id;
+        return !empty($entity->user_id) && $entity->user_id == $this->id;
     }
 
     /**
@@ -383,9 +384,9 @@ class User extends Authenticatable
 
     public function caddAddUsers()
     {
-        if (! Utils::isNinjaProd()) {
+        if (!Utils::isNinjaProd()) {
             return true;
-        } elseif (! $this->hasFeature(FEATURE_USERS)) {
+        } elseif (!$this->hasFeature(FEATURE_USERS)) {
             return false;
         }
 
@@ -403,7 +404,7 @@ class User extends Authenticatable
     public function canCreateOrEdit($entityType, $entity = false)
     {
         return ($entity && $this->can('edit', $entity))
-            || (! $entity && $this->can('create', $entityType));
+        || (!$entity && $this->can('create', $entityType));
     }
 
     public function primaryCompany()

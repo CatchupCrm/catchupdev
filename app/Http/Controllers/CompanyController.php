@@ -77,11 +77,11 @@ class CompanyController extends BaseController
     /**
      * CompanyController constructor.
      *
-     * @param CompanyRepository  $companyRepo
-     * @param UserMailer         $userMailer
-     * @param ContactMailer      $contactMailer
+     * @param CompanyRepository $companyRepo
+     * @param UserMailer $userMailer
+     * @param ContactMailer $contactMailer
      * @param ReferralRepository $referralRepository
-     * @param PaymentService     $paymentService
+     * @param PaymentService $paymentService
      */
     public function __construct(
         CompanyRepository $companyRepo,
@@ -89,7 +89,8 @@ class CompanyController extends BaseController
         ContactMailer $contactMailer,
         ReferralRepository $referralRepository,
         PaymentService $paymentService
-    ) {
+    )
+    {
         $this->companyRepo = $companyRepo;
         $this->userMailer = $userMailer;
         $this->contactMailer = $contactMailer;
@@ -104,7 +105,7 @@ class CompanyController extends BaseController
     {
         $demoCompanyId = Utils::getDemoCompanyId();
 
-        if (! $demoCompanyId) {
+        if (!$demoCompanyId) {
             return Redirect::to('/');
         }
 
@@ -129,11 +130,11 @@ class CompanyController extends BaseController
             return Redirect::to('invoices/create');
         }
 
-        if (! Utils::isNinja() && (Company::count() > 0 && ! $prevUserId)) {
+        if (!Utils::isNinja() && (Company::count() > 0 && !$prevUserId)) {
             return Redirect::to('/login');
         }
 
-        if ($guestKey && ! $prevUserId) {
+        if ($guestKey && !$prevUserId) {
             $user = User::where('password', '=', $guestKey)->first();
 
             if ($user && $user->registered) {
@@ -141,7 +142,7 @@ class CompanyController extends BaseController
             }
         }
 
-        if (! $user) {
+        if (!$user) {
             $company = $this->companyRepo->create();
             $user = $company->users()->first();
 
@@ -186,7 +187,7 @@ class CompanyController extends BaseController
         $newPlan['price'] = Utils::getPlanPrice($newPlan);
         $credit = 0;
 
-        if (! empty($planDetails['started']) && $plan == PLAN_FREE) {
+        if (!empty($planDetails['started']) && $plan == PLAN_FREE) {
             // Downgrade
             $refund_deadline = clone $planDetails['started'];
             $refund_deadline->modify('+30 days');
@@ -205,7 +206,7 @@ class CompanyController extends BaseController
         }
 
         $hasPaid = false;
-        if (! empty($planDetails['paid']) && $plan != PLAN_FREE) {
+        if (!empty($planDetails['paid']) && $plan != PLAN_FREE) {
             $hasPaid = true;
             $time_used = $planDetails['paid']->diff(date_create());
             $days_used = $time_used->days;
@@ -293,12 +294,12 @@ class CompanyController extends BaseController
      */
     public function showSection($section = false)
     {
-        if (! Auth::user()->is_admin) {
+        if (!Auth::user()->is_admin) {
             return Redirect::to('/settings/user_details');
         }
 
-        if (! $section) {
-            return Redirect::to('/settings/'.COMPANY_COMPANY_DETAILS, 301);
+        if (!$section) {
+            return Redirect::to('/settings/' . COMPANY_COMPANY_DETAILS, 301);
         }
 
         if ($section == COMPANY_COMPANY_DETAILS) {
@@ -393,7 +394,7 @@ class CompanyController extends BaseController
         // check that logo is less than the max file size
         $company = Auth::user()->company;
         if ($company->isLogoTooLarge()) {
-            Session::flash('warning', trans('texts.logo_too_large', ['size' => $company->getLogoSize().'KB']));
+            Session::flash('warning', trans('texts.logo_too_large', ['size' => $company->getLogoSize() . 'KB']));
         }
 
         $data = [
@@ -427,7 +428,7 @@ class CompanyController extends BaseController
     {
         $oauthLoginUrls = [];
         foreach (AuthService::$providers as $provider) {
-            $oauthLoginUrls[] = ['label' => $provider, 'url' => URL::to('/auth/'.strtolower($provider))];
+            $oauthLoginUrls[] = ['label' => $provider, 'url' => URL::to('/auth/' . strtolower($provider))];
         }
 
         $data = [
@@ -468,7 +469,7 @@ class CompanyController extends BaseController
     {
         return View::make('companies.banks', [
             'title' => trans('texts.bank_companies'),
-            'advanced' => ! Auth::user()->hasFeature(FEATURE_EXPENSES),
+            'advanced' => !Auth::user()->hasFeature(FEATURE_EXPENSES),
         ]);
     }
 
@@ -483,7 +484,7 @@ class CompanyController extends BaseController
         $trashedCount = CompanyGateway::scope()->withTrashed()->count();
 
         if ($companyGateway = $company->getGatewayConfig(GATEWAY_STRIPE)) {
-            if (! $companyGateway->getPublishableStripeKey()) {
+            if (!$companyGateway->getPublishableStripeKey()) {
                 Session::flash('warning', trans('texts.missing_publishable_key'));
             }
         }
@@ -613,14 +614,14 @@ class CompanyController extends BaseController
         }
 
         if ($section == COMPANY_CUSTOMIZE_DESIGN) {
-            $data['customDesign'] = ($company->custom_design && ! $design) ? $company->custom_design : $design;
+            $data['customDesign'] = ($company->custom_design && !$design) ? $company->custom_design : $design;
 
             // sample invoice to help determine variables
             $invoice = Invoice::scope()
-                            ->invoiceType(INVOICE_TYPE_STANDARD)
-                            ->with('client', 'company')
-                            ->where('is_recurring', '=', false)
-                            ->first();
+                ->invoiceType(INVOICE_TYPE_STANDARD)
+                ->with('client', 'company')
+                ->where('is_recurring', '=', false)
+                ->first();
 
             if ($invoice) {
                 $invoice->hidePrivateFields();
@@ -770,7 +771,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_MANAGEMENT);
+        return Redirect::to('settings/' . COMPANY_MANAGEMENT);
     }
 
     /**
@@ -787,7 +788,7 @@ class CompanyController extends BaseController
             Session::flash('message', trans('texts.updated_settings'));
         }
 
-        return Redirect::to('settings/'.COMPANY_CUSTOMIZE_DESIGN);
+        return Redirect::to('settings/' . COMPANY_CUSTOMIZE_DESIGN);
     }
 
     /**
@@ -798,12 +799,12 @@ class CompanyController extends BaseController
         $company = $request->user()->company;
         $company->fill($request->all());
         $company->client_view_css = $request->client_view_css;
-		$company->subdomain = $request->subdomain;
+        $company->subdomain = $request->subdomain;
         $company->iframe_url = $request->iframe_url;
         $company->save();
 
         return redirect('settings/' . COMPANY_CLIENT_PORTAL)
-                ->with('message', trans('texts.updated_settings'));
+            ->with('message', trans('texts.updated_settings'));
     }
 
     /**
@@ -817,7 +818,7 @@ class CompanyController extends BaseController
         $company->save();
 
         return redirect('settings/' . COMPANY_EMAIL_SETTINGS)
-                ->with('message', trans('texts.updated_settings'));
+            ->with('message', trans('texts.updated_settings'));
     }
 
     /**
@@ -851,7 +852,7 @@ class CompanyController extends BaseController
             Session::flash('message', trans('texts.updated_settings'));
         }
 
-        return Redirect::to('settings/'.COMPANY_TEMPLATES_AND_REMINDERS);
+        return Redirect::to('settings/' . COMPANY_TEMPLATES_AND_REMINDERS);
     }
 
     /**
@@ -865,7 +866,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_TAX_RATES);
+        return Redirect::to('settings/' . COMPANY_TAX_RATES);
     }
 
     /**
@@ -881,7 +882,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_PRODUCTS);
+        return Redirect::to('settings/' . COMPANY_PRODUCTS);
     }
 
     /**
@@ -900,7 +901,7 @@ class CompanyController extends BaseController
             $validator = Validator::make(Input::all(), $rules);
 
             if ($validator->fails()) {
-                return Redirect::to('settings/'.COMPANY_INVOICE_SETTINGS)
+                return Redirect::to('settings/' . COMPANY_INVOICE_SETTINGS)
                     ->withErrors($validator)
                     ->withInput();
             } else {
@@ -938,7 +939,7 @@ class CompanyController extends BaseController
                     $company->recurring_hour = Input::get('recurring_hour');
                 }
 
-                if (! $company->share_counter) {
+                if (!$company->share_counter) {
                     $company->quote_number_counter = Input::get('quote_number_counter');
                 }
 
@@ -952,12 +953,13 @@ class CompanyController extends BaseController
                     }
                 }
 
-                if (! $company->share_counter
-                        && $company->invoice_number_prefix == $company->quote_number_prefix
-                        && $company->invoice_number_pattern == $company->quote_number_pattern) {
+                if (!$company->share_counter
+                    && $company->invoice_number_prefix == $company->quote_number_prefix
+                    && $company->invoice_number_pattern == $company->quote_number_pattern
+                ) {
                     Session::flash('error', trans('texts.invalid_counter'));
 
-                    return Redirect::to('settings/'.COMPANY_INVOICE_SETTINGS)->withInput();
+                    return Redirect::to('settings/' . COMPANY_INVOICE_SETTINGS)->withInput();
                 } else {
                     $company->save();
                     Session::flash('message', trans('texts.updated_settings'));
@@ -965,7 +967,7 @@ class CompanyController extends BaseController
             }
         }
 
-        return Redirect::to('settings/'.COMPANY_INVOICE_SETTINGS);
+        return Redirect::to('settings/' . COMPANY_INVOICE_SETTINGS);
     }
 
     /**
@@ -1000,7 +1002,7 @@ class CompanyController extends BaseController
             Session::flash('message', trans('texts.updated_settings'));
         }
 
-        return Redirect::to('settings/'.COMPANY_INVOICE_DESIGN);
+        return Redirect::to('settings/' . COMPANY_INVOICE_DESIGN);
     }
 
     /**
@@ -1017,7 +1019,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_NOTIFICATIONS);
+        return Redirect::to('settings/' . COMPANY_NOTIFICATIONS);
     }
 
     /**
@@ -1035,18 +1037,18 @@ class CompanyController extends BaseController
             $path = Input::file('logo')->getRealPath();
 
             $disk = $company->getLogoDisk();
-            if ($company->hasLogo() && ! Utils::isNinjaProd()) {
+            if ($company->hasLogo() && !Utils::isNinjaProd()) {
                 $disk->delete($company->logo);
             }
 
             $extension = strtolower($uploaded->getClientOriginalExtension());
-            if (empty(Document::$types[$extension]) && ! empty(Document::$extraExtensions[$extension])) {
+            if (empty(Document::$types[$extension]) && !empty(Document::$extraExtensions[$extension])) {
                 $documentType = Document::$extraExtensions[$extension];
             } else {
                 $documentType = $extension;
             }
 
-            if (! in_array($documentType, ['jpeg', 'png', 'gif'])) {
+            if (!in_array($documentType, ['jpeg', 'png', 'gif'])) {
                 Session::flash('warning', 'Unsupported file type');
             } else {
                 $documentTypeData = Document::$types[$documentType];
@@ -1058,7 +1060,7 @@ class CompanyController extends BaseController
                     Session::flash('warning', 'File too large');
                 } else {
                     if ($documentType != 'gif') {
-                        $company->logo = $company->company_key.'.'.$documentType;
+                        $company->logo = $company->company_key . '.' . $documentType;
 
                         $imageSize = getimagesize($filePath);
                         $company->logo_width = $imageSize[0];
@@ -1069,7 +1071,7 @@ class CompanyController extends BaseController
                         if (extension_loaded('fileinfo')) {
                             $image = Image::make($path);
                             $image->interlace(false);
-                            $imageStr = (string) $image->encode($documentType);
+                            $imageStr = (string)$image->encode($documentType);
                             $disk->put($company->logo, $imageStr);
 
                             $company->logo_size = strlen($imageStr);
@@ -1085,9 +1087,9 @@ class CompanyController extends BaseController
                                 $constraint->aspectRatio();
                             });
 
-                            $company->logo = $company->company_key.'.png';
+                            $company->logo = $company->company_key . '.png';
                             $image = Image::canvas($image->width(), $image->height(), '#FFFFFF')->insert($image);
-                            $imageStr = (string) $image->encode('png');
+                            $imageStr = (string)$image->encode('png');
                             $disk->put($company->logo, $imageStr);
 
                             $company->logo_size = strlen($imageStr);
@@ -1107,7 +1109,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_COMPANY_DETAILS);
+        return Redirect::to('settings/' . COMPANY_COMPANY_DETAILS);
     }
 
     /**
@@ -1117,11 +1119,11 @@ class CompanyController extends BaseController
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $rules = ['email' => 'email|required|unique:users,email,'.$user->id.',id'];
+        $rules = ['email' => 'email|required|unique:users,email,' . $user->id . ',id'];
         $validator = Validator::make(Input::all(), $rules);
 
         if ($validator->fails()) {
-            return Redirect::to('settings/'.COMPANY_USER_DETAILS)
+            return Redirect::to('settings/' . COMPANY_USER_DETAILS)
                 ->withErrors($validator)
                 ->withInput();
         } else {
@@ -1131,7 +1133,7 @@ class CompanyController extends BaseController
             $user->email = trim(strtolower(Input::get('email')));
             $user->phone = trim(Input::get('phone'));
 
-            if (! Auth::user()->is_admin) {
+            if (!Auth::user()->is_admin) {
                 $user->notify_sent = Input::get('notify_sent');
                 $user->notify_viewed = Input::get('notify_viewed');
                 $user->notify_paid = Input::get('notify_paid');
@@ -1139,7 +1141,7 @@ class CompanyController extends BaseController
             }
 
             if (Utils::isNinja()) {
-                if (Input::get('referral_code') && ! $user->referral_code) {
+                if (Input::get('referral_code') && !$user->referral_code) {
                     $user->referral_code = $this->companyRepo->getReferralCode();
                 }
             }
@@ -1152,7 +1154,7 @@ class CompanyController extends BaseController
             event(new UserSettingsChanged());
             Session::flash('message', trans('texts.updated_settings'));
 
-            return Redirect::to('settings/'.COMPANY_USER_DETAILS);
+            return Redirect::to('settings/' . COMPANY_USER_DETAILS);
         }
     }
 
@@ -1179,7 +1181,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_LOCALIZATION);
+        return Redirect::to('settings/' . COMPANY_LOCALIZATION);
     }
 
     /**
@@ -1196,7 +1198,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return Redirect::to('settings/'.COMPANY_PAYMENTS);
+        return Redirect::to('settings/' . COMPANY_PAYMENTS);
     }
 
     /**
@@ -1207,7 +1209,7 @@ class CompanyController extends BaseController
         $gateway_type_id = intval(Input::get('gateway_type_id'));
         $gateway_settings = CompanyGatewaySettings::scope()->where('gateway_type_id', '=', $gateway_type_id)->first();
 
-        if (! $gateway_settings) {
+        if (!$gateway_settings) {
             $gateway_settings = CompanyGatewaySettings::createNew();
             $gateway_settings->gateway_type_id = $gateway_type_id;
         }
@@ -1235,7 +1237,7 @@ class CompanyController extends BaseController
     {
         $company = Auth::user()->company;
 
-        if (! Utils::isNinjaProd() && $company->hasLogo()) {
+        if (!Utils::isNinjaProd() && $company->hasLogo()) {
             $company->getLogoDisk()->delete($company->logo);
         }
 
@@ -1247,7 +1249,7 @@ class CompanyController extends BaseController
 
         Session::flash('message', trans('texts.removed_logo'));
 
-        return Redirect::to('settings/'.COMPANY_COMPANY_DETAILS);
+        return Redirect::to('settings/' . COMPANY_COMPANY_DETAILS);
     }
 
     /**
@@ -1256,8 +1258,8 @@ class CompanyController extends BaseController
     public function checkEmail()
     {
         $email = User::withTrashed()->where('email', '=', Input::get('email'))
-                                    ->where('id', '<>', Auth::user()->id)
-                                    ->first();
+            ->where('id', '<>', Auth::user()->id)
+            ->first();
 
         if ($email) {
             return 'taken';
@@ -1275,7 +1277,7 @@ class CompanyController extends BaseController
             'new_first_name' => 'required',
             'new_last_name' => 'required',
             'new_password' => 'required|min:6',
-            'new_email' => 'email|required|unique:users,email,'.Auth::user()->id.',id',
+            'new_email' => 'email|required|unique:users,email,' . Auth::user()->id . ',id',
         ];
 
         $validator = Validator::make(Input::all(), $rules);
@@ -1311,7 +1313,7 @@ class CompanyController extends BaseController
         $affiliate = Affiliate::where('affiliate_key', '=', SELF_HOST_AFFILIATE_KEY)->first();
         $email = trim(Input::get('email'));
 
-        if (! $email || $email == TEST_USERNAME) {
+        if (!$email || $email == TEST_USERNAME) {
             return RESULT_FAILURE;
         }
 
@@ -1378,7 +1380,7 @@ class CompanyController extends BaseController
         $user = Auth::user();
         $this->userMailer->sendConfirmation($user);
 
-        return Redirect::to('/settings/'.COMPANY_USER_DETAILS)->with('message', trans('texts.confirmation_resent'));
+        return Redirect::to('/settings/' . COMPANY_USER_DETAILS)->with('message', trans('texts.confirmation_resent'));
     }
 
     /**
@@ -1400,7 +1402,7 @@ class CompanyController extends BaseController
             }
         }
 
-        if (! in_array($section, array_merge(Company::$basicSettings, Company::$advancedSettings))) {
+        if (!in_array($section, array_merge(Company::$basicSettings, Company::$advancedSettings))) {
             $section = COMPANY_COMPANY_DETAILS;
         }
 
@@ -1416,11 +1418,11 @@ class CompanyController extends BaseController
     {
         $template = Input::get('template');
         $invoice = Invoice::scope()
-                    ->invoices()
-                    ->withTrashed()
-                    ->first();
+            ->invoices()
+            ->withTrashed()
+            ->first();
 
-        if (! $invoice) {
+        if (!$invoice) {
             return trans('texts.create_invoice_for_sample');
         }
 

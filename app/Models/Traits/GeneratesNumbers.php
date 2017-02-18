@@ -27,7 +27,7 @@ trait GeneratesNumbers
         $counterOffset = 0;
         $check = false;
 
-        if ($entityType == ENTITY_CLIENT && ! $this->clientNumbersEnabled()) {
+        if ($entityType == ENTITY_CLIENT && !$this->clientNumbersEnabled()) {
             return '';
         }
 
@@ -56,7 +56,7 @@ trait GeneratesNumbers
                     $this->save();
                 }
             } elseif ($entity->isType(INVOICE_TYPE_QUOTE)) {
-                if (! $this->share_counter) {
+                if (!$this->share_counter) {
                     $this->quote_number_counter += $counterOffset - 1;
                     $this->save();
                 }
@@ -80,7 +80,7 @@ trait GeneratesNumbers
      */
     public function getNumberPrefix($entityType)
     {
-        if (! $this->hasFeature(FEATURE_INVOICE_SETTINGS)) {
+        if (!$this->hasFeature(FEATURE_INVOICE_SETTINGS)) {
             return '';
         }
 
@@ -96,7 +96,7 @@ trait GeneratesNumbers
      */
     public function getNumberPattern($entityType)
     {
-        if (! $this->hasFeature(FEATURE_INVOICE_SETTINGS)) {
+        if (!$this->hasFeature(FEATURE_INVOICE_SETTINGS)) {
             return false;
         }
 
@@ -140,7 +140,7 @@ trait GeneratesNumbers
         $counter = $counter ?: $this->getCounter($entityType);
         $pattern = $this->getNumberPattern($entityType);
 
-        if (! $pattern) {
+        if (!$pattern) {
             return false;
         }
 
@@ -182,7 +182,7 @@ trait GeneratesNumbers
      */
     private function getClientInvoiceNumber($pattern, $invoice)
     {
-        if (! $invoice->client) {
+        if (!$invoice->client) {
             return $pattern;
         }
 
@@ -210,7 +210,7 @@ trait GeneratesNumbers
     {
         if ($entityType == ENTITY_CLIENT) {
             return $this->client_number_counter;
-        } elseif ($entityType == ENTITY_QUOTE && ! $this->share_counter) {
+        } elseif ($entityType == ENTITY_QUOTE && !$this->share_counter) {
             return $this->quote_number_counter;
         } else {
             return $this->invoice_number_counter;
@@ -238,7 +238,7 @@ trait GeneratesNumbers
             if ($this->client_number_counter) {
                 $this->client_number_counter += 1;
             }
-        } elseif ($entity->isType(INVOICE_TYPE_QUOTE) && ! $this->share_counter) {
+        } elseif ($entity->isType(INVOICE_TYPE_QUOTE) && !$this->share_counter) {
             $this->quote_number_counter += 1;
         } else {
             $this->invoice_number_counter += 1;

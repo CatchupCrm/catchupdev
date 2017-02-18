@@ -18,43 +18,43 @@ class TaskRepository extends BaseRepository
     public function find($clientPublicId = null, $filter = null)
     {
         $query = \DB::table('tasks')
-                    ->leftJoin('clients', 'tasks.client_id', '=', 'clients.id')
-                    ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->leftJoin('invoices', 'invoices.id', '=', 'tasks.invoice_id')
-                    ->leftJoin('projects', 'projects.id', '=', 'tasks.project_id')
-                    ->where('tasks.company_id', '=', Auth::user()->company_id)
-                    ->where(function ($query) { // handle when client isn't set
-                        $query->where('contacts.is_primary', '=', true)
-                                ->orWhere('contacts.is_primary', '=', null);
-                    })
-                    ->where('contacts.deleted_at', '=', null)
-                    ->select(
-                        'tasks.public_id',
-                        \DB::raw("COALESCE(NULLIF(clients.name,''), NULLIF(CONCAT(contacts.first_name, ' ', contacts.last_name),''), NULLIF(contacts.email,'')) client_name"),
-                        'clients.public_id as client_public_id',
-                        'clients.user_id as client_user_id',
-                        'contacts.first_name',
-                        'contacts.email',
-                        'contacts.last_name',
-                        'invoices.invoice_status_id',
-                        'tasks.description',
-                        'tasks.is_deleted',
-                        'tasks.deleted_at',
-                        'invoices.invoice_number',
-                        'invoices.invoice_number as status',
-                        'invoices.public_id as invoice_public_id',
-                        'invoices.user_id as invoice_user_id',
-                        'invoices.balance',
-                        'tasks.is_running',
-                        'tasks.time_log',
-                        'tasks.time_log as duration',
-                        'tasks.created_at',
-                        'tasks.created_at as date',
-                        'tasks.user_id',
-                        'projects.name as project',
-                        'projects.public_id as project_public_id',
-                        'projects.user_id as project_user_id'
-                    );
+            ->leftJoin('clients', 'tasks.client_id', '=', 'clients.id')
+            ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
+            ->leftJoin('invoices', 'invoices.id', '=', 'tasks.invoice_id')
+            ->leftJoin('projects', 'projects.id', '=', 'tasks.project_id')
+            ->where('tasks.company_id', '=', Auth::user()->company_id)
+            ->where(function ($query) { // handle when client isn't set
+                $query->where('contacts.is_primary', '=', true)
+                    ->orWhere('contacts.is_primary', '=', null);
+            })
+            ->where('contacts.deleted_at', '=', null)
+            ->select(
+                'tasks.public_id',
+                \DB::raw("COALESCE(NULLIF(clients.name,''), NULLIF(CONCAT(contacts.first_name, ' ', contacts.last_name),''), NULLIF(contacts.email,'')) client_name"),
+                'clients.public_id as client_public_id',
+                'clients.user_id as client_user_id',
+                'contacts.first_name',
+                'contacts.email',
+                'contacts.last_name',
+                'invoices.invoice_status_id',
+                'tasks.description',
+                'tasks.is_deleted',
+                'tasks.deleted_at',
+                'invoices.invoice_number',
+                'invoices.invoice_number as status',
+                'invoices.public_id as invoice_public_id',
+                'invoices.user_id as invoice_user_id',
+                'invoices.balance',
+                'tasks.is_running',
+                'tasks.time_log',
+                'tasks.time_log as duration',
+                'tasks.created_at',
+                'tasks.created_at as date',
+                'tasks.user_id',
+                'projects.name as project',
+                'projects.public_id as project_public_id',
+                'projects.user_id as project_user_id'
+            );
 
         if ($clientPublicId) {
             $query->where('clients.public_id', '=', $clientPublicId);
@@ -69,14 +69,14 @@ class TaskRepository extends BaseRepository
             $query->where(function ($query) use ($statuses) {
                 if (in_array(TASK_STATUS_LOGGED, $statuses)) {
                     $query->orWhere('tasks.invoice_id', '=', 0)
-                          ->orWhereNull('tasks.invoice_id');
+                        ->orWhereNull('tasks.invoice_id');
                 }
                 if (in_array(TASK_STATUS_RUNNING, $statuses)) {
                     $query->orWhere('tasks.is_running', '=', 1);
                 }
                 if (in_array(TASK_STATUS_INVOICED, $statuses)) {
                     $query->orWhere('tasks.invoice_id', '>', 0);
-                    if (! in_array(TASK_STATUS_PAID, $statuses)) {
+                    if (!in_array(TASK_STATUS_PAID, $statuses)) {
                         $query->where('invoices.balance', '>', 0);
                     }
                 }
@@ -88,12 +88,12 @@ class TaskRepository extends BaseRepository
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.first_name', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.last_name', 'like', '%'.$filter.'%')
-                      ->orWhere('tasks.description', 'like', '%'.$filter.'%')
-                      ->orWhere('contacts.email', 'like', '%'.$filter.'%')
-                      ->orWhere('projects.name', 'like', '%'.$filter.'%');
+                $query->where('clients.name', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.first_name', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.last_name', 'like', '%' . $filter . '%')
+                    ->orWhere('tasks.description', 'like', '%' . $filter . '%')
+                    ->orWhere('contacts.email', 'like', '%' . $filter . '%')
+                    ->orWhere('projects.name', 'like', '%' . $filter . '%');
             });
         }
 

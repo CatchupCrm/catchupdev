@@ -24,20 +24,20 @@ class ProductReport extends AbstractReport
         $status = $this->options['invoice_status'];
 
         $clients = Client::scope()
-                        ->withArchived()
-                        ->with('contacts')
-                        ->with(['invoices' => function ($query) use ($status) {
-                            if ($status == 'draft') {
-                                $query->whereIsPublic(false);
-                            } elseif ($status == 'unpaid' || $status == 'paid') {
-                                $query->whereIsPublic(true);
-                            }
-                            $query->invoices()
-                                  ->withArchived()
-                                  ->where('invoice_date', '>=', $this->startDate)
-                                  ->where('invoice_date', '<=', $this->endDate)
-                                  ->with(['invoice_items']);
-                        }]);
+            ->withArchived()
+            ->with('contacts')
+            ->with(['invoices' => function ($query) use ($status) {
+                if ($status == 'draft') {
+                    $query->whereIsPublic(false);
+                } elseif ($status == 'unpaid' || $status == 'paid') {
+                    $query->whereIsPublic(true);
+                }
+                $query->invoices()
+                    ->withArchived()
+                    ->where('invoice_date', '>=', $this->startDate)
+                    ->where('invoice_date', '<=', $this->endDate)
+                    ->with(['invoice_items']);
+            }]);
 
         foreach ($clients->get() as $client) {
             foreach ($client->invoices as $invoice) {

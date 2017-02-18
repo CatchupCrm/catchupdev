@@ -37,18 +37,18 @@ class CompanyGatewayDatatable extends EntityDatatable
                         $wepayCompanyId = $config->companyId;
                         $wepayState = isset($config->state) ? $config->state : null;
                         $linkText = $model->name;
-                        $url = $endpoint.'company/'.$wepayCompanyId;
+                        $url = $endpoint . 'company/' . $wepayCompanyId;
                         $html = link_to($url, $linkText, ['target' => '_blank'])->toHtml();
 
                         try {
                             if ($wepayState == 'action_required') {
-                                $updateUri = $endpoint.'api/company_update/'.$wepayCompanyId.'?redirect_uri='.urlencode(URL::to('gateways'));
-                                $linkText .= ' <span style="color:#d9534f">('.trans('texts.action_required').')</span>';
+                                $updateUri = $endpoint . 'api/company_update/' . $wepayCompanyId . '?redirect_uri=' . urlencode(URL::to('gateways'));
+                                $linkText .= ' <span style="color:#d9534f">(' . trans('texts.action_required') . ')</span>';
                                 $url = $updateUri;
                                 $html = "<a href=\"{$url}\">{$linkText}</a>";
                                 $model->setupUrl = $url;
                             } elseif ($wepayState == 'pending') {
-                                $linkText .= ' ('.trans('texts.resend_confirmation_email').')';
+                                $linkText .= ' (' . trans('texts.resend_confirmation_email') . ')';
                                 $model->resendConfirmationUrl = $url = URL::to("gateways/{$companyGateway->public_id}/resend_confirmation");
                                 $html = link_to($url, $linkText)->toHtml();
                             }
@@ -115,7 +115,7 @@ class CompanyGatewayDatatable extends EntityDatatable
                     return $model->resendConfirmationUrl;
                 },
                 function ($model) {
-                    return ! $model->deleted_at && $model->gateway_id == GATEWAY_WEPAY && ! empty($model->resendConfirmationUrl);
+                    return !$model->deleted_at && $model->gateway_id == GATEWAY_WEPAY && !empty($model->resendConfirmationUrl);
                 },
             ], [
                 uctrans('texts.edit_gateway'),
@@ -123,7 +123,7 @@ class CompanyGatewayDatatable extends EntityDatatable
                     return URL::to("gateways/{$model->public_id}/edit");
                 },
                 function ($model) {
-                    return ! $model->deleted_at;
+                    return !$model->deleted_at;
                 },
             ], [
                 uctrans('texts.finish_setup'),
@@ -131,7 +131,7 @@ class CompanyGatewayDatatable extends EntityDatatable
                     return $model->setupUrl;
                 },
                 function ($model) {
-                    return ! $model->deleted_at && $model->gateway_id == GATEWAY_WEPAY && ! empty($model->setupUrl);
+                    return !$model->deleted_at && $model->gateway_id == GATEWAY_WEPAY && !empty($model->setupUrl);
                 },
             ], [
                 uctrans('texts.manage_company'),
@@ -140,12 +140,12 @@ class CompanyGatewayDatatable extends EntityDatatable
                     $endpoint = WEPAY_ENVIRONMENT == WEPAY_STAGE ? 'https://stage.wepay.com/' : 'https://www.wepay.com/';
 
                     return [
-                        'url' => $endpoint.'company/'.$companyGateway->getConfig()->companyId,
+                        'url' => $endpoint . 'company/' . $companyGateway->getConfig()->companyId,
                         'attributes' => 'target="_blank"',
                     ];
                 },
                 function ($model) {
-                    return ! $model->deleted_at && $model->gateway_id == GATEWAY_WEPAY;
+                    return !$model->deleted_at && $model->gateway_id == GATEWAY_WEPAY;
                 },
             ], [
                 uctrans('texts.terms_of_service'),

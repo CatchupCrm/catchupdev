@@ -49,15 +49,16 @@ class TaskController extends BaseController
     /**
      * TaskController constructor.
      *
-     * @param TaskRepository    $taskRepo
+     * @param TaskRepository $taskRepo
      * @param InvoiceRepository $invoiceRepo
-     * @param TaskService       $taskService
+     * @param TaskService $taskService
      */
     public function __construct(
         TaskRepository $taskRepo,
         InvoiceRepository $invoiceRepo,
         TaskService $taskService
-    ) {
+    )
+    {
         // parent::__construct();
 
         $this->taskRepo = $taskRepo;
@@ -161,12 +162,12 @@ class TaskController extends BaseController
             $invoices = $task->client_id ? $this->invoiceRepo->findOpenInvoices($task->client_id, ENTITY_TASK) : [];
 
             foreach ($invoices as $invoice) {
-                $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", '.$invoice->public_id.')', 'label' => trans('texts.add_to_invoice', ['invoice' => $invoice->invoice_number])];
+                $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", ' . $invoice->public_id . ')', 'label' => trans('texts.add_to_invoice', ['invoice' => $invoice->invoice_number])];
             }
         }
 
         $actions[] = DropdownButton::DIVIDER;
-        if (! $task->trashed()) {
+        if (!$task->trashed()) {
             $actions[] = ['url' => 'javascript:submitAction("archive")', 'label' => trans('texts.archive_task')];
             $actions[] = ['url' => 'javascript:onDeleteClick()', 'label' => trans('texts.delete_task')];
         } else {
@@ -179,7 +180,7 @@ class TaskController extends BaseController
             'clientPublicId' => $task->client ? $task->client->public_id : 0,
             'projectPublicId' => $task->project ? $task->project->public_id : 0,
             'method' => 'PUT',
-            'url' => 'tasks/'.$task->public_id,
+            'url' => 'tasks/' . $task->public_id,
             'title' => trans('texts.edit_task'),
             'actions' => $actions,
             'timezone' => Auth::user()->company->timezone ? Auth::user()->company->timezone->name : DEFAULT_TIMEZONE,
@@ -266,7 +267,7 @@ class TaskController extends BaseController
             $lastProjectId = false;
             foreach ($tasks as $task) {
                 if ($task->client) {
-                    if (! $clientPublicId) {
+                    if (!$clientPublicId) {
                         $clientPublicId = $task->client->public_id;
                     } elseif ($clientPublicId != $task->client->public_id) {
                         Session::flash('error', trans('texts.task_error_multiple_clients'));
@@ -305,7 +306,7 @@ class TaskController extends BaseController
         } else {
             $count = $this->taskService->bulk($ids, $action);
 
-            $message = Utils::pluralize($action.'d_task', $count);
+            $message = Utils::pluralize($action . 'd_task', $count);
             Session::flash('message', $message);
 
             return $this->returnBulk($this->entityType, $action, $ids);
@@ -314,7 +315,7 @@ class TaskController extends BaseController
 
     private function checkTimezone()
     {
-        if (! Auth::user()->company->timezone) {
+        if (!Auth::user()->company->timezone) {
             $link = link_to('/settings/localization?focus=timezone_id', trans('texts.click_here'), ['target' => '_blank']);
             Session::flash('warning', trans('texts.timezone_unset', ['link' => $link]));
         }

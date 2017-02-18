@@ -22,17 +22,17 @@ class AgingReport extends AbstractReport
         $company = Auth::user()->company;
 
         $clients = Client::scope()
-                        ->withArchived()
-                        ->with('contacts')
-                        ->with(['invoices' => function ($query) {
-                            $query->invoices()
-                                  ->whereIsPublic(true)
-                                  ->withArchived()
-                                  ->where('balance', '>', 0)
-                                  ->where('invoice_date', '>=', $this->startDate)
-                                  ->where('invoice_date', '<=', $this->endDate)
-                                  ->with(['invoice_items']);
-                        }]);
+            ->withArchived()
+            ->with('contacts')
+            ->with(['invoices' => function ($query) {
+                $query->invoices()
+                    ->whereIsPublic(true)
+                    ->withArchived()
+                    ->where('balance', '>', 0)
+                    ->where('invoice_date', '>=', $this->startDate)
+                    ->where('invoice_date', '<=', $this->endDate)
+                    ->with(['invoice_items']);
+            }]);
 
         foreach ($clients->get() as $client) {
             foreach ($client->invoices as $invoice) {

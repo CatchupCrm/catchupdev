@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use App\Ninja\Repositories\CompanyRepository;
 use App\Ninja\Transformers\CompanyTransformer;
-use App\Ninja\Transformers\UserAccountTransformer;
+use App\Ninja\Transformers\UserCompanyTransformer;
 use App\Services\AuthService;
 use Auth;
 use Cache;
@@ -65,7 +65,7 @@ class CompanyApiController extends BaseAPIController
         $this->companyRepo->createTokens($user, $request->token_name);
 
         $users = $this->companyRepo->findUsers($user, 'company.company_tokens');
-        $transformer = new UserAccountTransformer($user->company, $request->serializer, $request->token_name);
+        $transformer = new UserCompanyTransformer($user->company, $request->serializer, $request->token_name);
         $data = $this->createCollection($users, $transformer, 'user_company');
 
         return $this->response($data);
@@ -95,7 +95,7 @@ class CompanyApiController extends BaseAPIController
         return $this->response($data);
     }
 
-    public function getUserAccounts(Request $request)
+    public function getUserCompanies(Request $request)
     {
         return $this->processLogin($request);
     }
@@ -121,7 +121,7 @@ class CompanyApiController extends BaseAPIController
         for ($x = 0; $x < count($devices); $x++) {
             if ($devices[$x]['email'] == Auth::user()->username) {
                 $devices[$x]['token'] = $request->token; //update
-                    $company->devices = json_encode($devices);
+                $company->devices = json_encode($devices);
                 $company->save();
                 $devices[$x]['company_key'] = $company->company_key;
 
