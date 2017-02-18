@@ -5,42 +5,42 @@
 
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
     <script type="text/javascript">
-        Stripe.setPublishableKey('{{ $accountGateway->getPublishableStripeKey() }}');
+        Stripe.setPublishableKey('{{ $companyGateway->getPublishableStripeKey() }}');
         $(function() {
             var countries = {!! Cache::get('countries')->pluck('iso_3166_2','id') !!};
             $('.payment-form').submit(function(event) {
-                if($('[name=plaidAccountId]').length)return;
+                if($('[name=plaidCompanyId]').length)return;
 
                 var $form = $(this);
 
                 var data = {
-                    account_holder_name: $('#account_holder_name').val(),
-                    account_holder_type: $('[name=account_holder_type]:checked').val(),
+                    company_holder_name: $('#company_holder_name').val(),
+                    company_holder_type: $('[name=company_holder_type]:checked').val(),
                     currency: $("#currency_id").val(),
                     country: countries[$("#country_id").val()],
                     routing_number: $('#routing_number').val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''),
-                    account_number: $('#account_number').val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
+                    company_number: $('#company_number').val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
                 };
 
-                // Validate the account details
-                if (!data.account_holder_type) {
-                    $('#js-error-message').html('{{ trans('texts.missing_account_holder_type') }}').fadeIn();
+                // Validate the company details
+                if (!data.company_holder_type) {
+                    $('#js-error-message').html('{{ trans('texts.missing_company_holder_type') }}').fadeIn();
                     return false;
                 }
-                if (!data.account_holder_name) {
-                    $('#js-error-message').html('{{ trans('texts.missing_account_holder_name') }}').fadeIn();
+                if (!data.company_holder_name) {
+                    $('#js-error-message').html('{{ trans('texts.missing_company_holder_name') }}').fadeIn();
                     return false;
                 }
                 if (!data.routing_number || !Stripe.bankAccount.validateRoutingNumber(data.routing_number, data.country)) {
                     $('#js-error-message').html('{{ trans('texts.invalid_routing_number') }}').fadeIn();
                     return false;
                 }
-                if (data.account_number != $('#confirm_account_number').val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')) {
-                    $('#js-error-message').html('{{ trans('texts.account_number_mismatch') }}').fadeIn();
+                if (data.company_number != $('#confirm_company_number').val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')) {
+                    $('#js-error-message').html('{{ trans('texts.company_number_mismatch') }}').fadeIn();
                     return false;
                 }
-                if (!data.account_number || !Stripe.bankAccount.validateAccountNumber(data.account_number, data.country)) {
-                    $('#js-error-message').html('{{ trans('texts.invalid_account_number') }}').fadeIn();
+                if (!data.company_number || !Stripe.bankAccount.validateCompanyNumber(data.company_number, data.country)) {
+                    $('#js-error-message').html('{{ trans('texts.invalid_company_number') }}').fadeIn();
                     return false;
                 }
 
@@ -54,12 +54,12 @@
                 return false;
             });
 
-            @if ($accountGateway->getPlaidEnabled())
+            @if ($companyGateway->getPlaidEnabled())
                 var plaidHandler = Plaid.create({
-                    selectAccount: true,
-                    env: '{{ $accountGateway->getPlaidEnvironment() }}',
-                    clientName: {!! json_encode($account->getDisplayName()) !!},
-                    key: '{{ $accountGateway->getPlaidPublicKey() }}',
+                    selectCompany: true,
+                    env: '{{ $companyGateway->getPlaidEnvironment() }}',
+                    clientName: {!! json_encode($company->getDisplayName()) !!},
+                    key: '{{ $companyGateway->getPlaidPublicKey() }}',
                     product: 'auth',
                     onSuccess: plaidSuccessHandler,
                     onExit : function(){$('#secured_by_plaid').hide()}
@@ -72,10 +72,10 @@
                     $('#plaid_linked').hide();
                     $('#plaid_link_button').show();
                     $('#pay_now_button').hide();
-                    $('#add_account_button').show();
+                    $('#add_company_button').show();
                     $('[name=plaidPublicToken]').remove();
-                    $('[name=plaidAccountId]').remove();
-                    $('[name=account_holder_type],#account_holder_name').attr('required','required');
+                    $('[name=plaidCompanyId]').remove();
+                    $('[name=company_holder_type],#company_holder_name').attr('required','required');
                 })
             @endif
         });
@@ -86,7 +86,7 @@
             if (response.error) {
                 // Show the errors on the form
                 var error = response.error.message;
-                if(response.error.param == 'bank_account[country]') {
+                if(response.error.param == 'bank_company[country]') {
                     error = "{{trans('texts.country_not_supported')}}";
                 }
                 $form.find('button').prop('disabled', false);
@@ -106,18 +106,18 @@
             var $form = $('.payment-form');
 
             $form.append($('<input type="hidden" name="plaidPublicToken"/>').val(public_token));
-            $form.append($('<input type="hidden" name="plaidAccountId"/>').val(metadata.account_id));
+            $form.append($('<input type="hidden" name="plaidCompanyId"/>').val(metadata.company_id));
             $('#plaid_linked_status').text('{{ trans('texts.plaid_linked_status') }}'.replace(':bank', metadata.institution.name));
             $('#manual_container').fadeOut();
             $('#plaid_linked').show();
             $('#plaid_link_button').hide();
-            $('[name=account_holder_type],#account_holder_name').removeAttr('required');
+            $('[name=company_holder_type],#company_holder_name').removeAttr('required');
 
 
             var payNowBtn = $('#pay_now_button');
             if(payNowBtn.length) {
                 payNowBtn.show();
-                $('#add_account_button').hide();
+                $('#add_company_button').hide();
             }
         };
     </script>
@@ -134,30 +134,30 @@
             ->rules(array(
                 'country_id' => 'required',
                 'currency_id' => 'required',
-                'account_number' => 'required',
+                'company_number' => 'required',
                 'routing_number' => 'required',
-                'account_holder_name' => 'required',
-                'account_holder_type' => 'required',
+                'company_holder_name' => 'required',
+                'company_holder_type' => 'required',
                 'authorize_ach' => 'required',
             )) !!}
 
-    {!! Former::populateField('account_holder_type', 'individual') !!}
+    {!! Former::populateField('company_holder_type', 'individual') !!}
     {!! Former::populateField('country_id', $client->country_id) !!}
     {!! Former::populateField('currency_id', $client->getCurrencyCode()) !!}
 
     @if (Utils::isNinjaDev())
-        {!! Former::populateField('account_holder_name', 'Test Client') !!}
+        {!! Former::populateField('company_holder_name', 'Test Client') !!}
         <script>
             $(function() {
                 $('#routing_number').val('110000000');
-                $('#account_number').val('000123456789');
-                $('#confirm_account_number').val('000123456789');
+                $('#company_number').val('000123456789');
+                $('#confirm_company_number').val('000123456789');
                 $('#authorize_ach').prop('checked', true);
             })
         </script>
     @endif
 
-    @if ($accountGateway->getPlaidEnabled())
+    @if ($companyGateway->getPlaidEnabled())
         <div id="plaid_container">
             <a class="btn btn-default btn-lg" id="plaid_link_button">
                 <img src="{{ URL::to('images/plaid-logo.svg') }}">
@@ -172,7 +172,7 @@
     @endif
 
     <div id="manual_container">
-        @if($accountGateway->getPlaidEnabled())
+        @if($companyGateway->getPlaidEnabled())
             <div id="plaid_or"><span>{{ trans('texts.or') }}</span></div>
             <h4>{{ trans('texts.link_manually') }}</h4>
         @endif
@@ -180,13 +180,13 @@
         <p>{{ trans('texts.ach_verification_delay_help') }}</p><br/>
 
 
-        {!! Former::radios('account_holder_type')->radios(array(
-                trans('texts.individual_account') => array('value' => 'individual'),
-                trans('texts.company_account') => array('value' => 'company'),
-            ))->inline()->label(trans('texts.account_holder_type'));  !!}
+        {!! Former::radios('company_holder_type')->radios(array(
+                trans('texts.individual_company') => array('value' => 'individual'),
+                trans('texts.company_company') => array('value' => 'corporation'),
+            ))->inline()->label(trans('texts.company_holder_type'));  !!}
 
-        {!! Former::text('account_holder_name')
-               ->label(trans('texts.account_holder_name')) !!}
+        {!! Former::text('company_holder_name')
+               ->label(trans('texts.company_holder_name')) !!}
 
         {!! Former::select('country_id')
                 ->label(trans('texts.country_id'))
@@ -211,15 +211,15 @@
         </div>
 
         {!! Former::text('')
-                ->id('account_number')
-                ->label(trans('texts.account_number')) !!}
+                ->id('company_number')
+                ->label(trans('texts.company_number')) !!}
         {!! Former::text('')
-                ->id('confirm_account_number')
-                ->label(trans('texts.confirm_account_number')) !!}
+                ->id('confirm_company_number')
+                ->label(trans('texts.confirm_company_number')) !!}
     </div>
 
     {!! Former::checkbox('authorize_ach')
-            ->text(trans('texts.ach_authorization', ['company'=>$account->getDisplayName(), 'email' => $account->work_email]))
+            ->text(trans('texts.ach_authorization', ['corporation'=>$company->getDisplayName(), 'email' => $company->work_email]))
             ->label(' ')
             ->value(1) !!}
 
@@ -232,13 +232,13 @@
 
     <div class="col-md-8 col-md-offset-4">
 
-        {!! Button::success(strtoupper(trans('texts.add_account')))
+        {!! Button::success(strtoupper(trans('texts.add_company')))
                         ->submit()
-                        ->withAttributes(['id'=>'add_account_button'])
+                        ->withAttributes(['id'=>'add_company_button'])
                         ->large() !!}
 
-        @if ($accountGateway->getPlaidEnabled() && !empty($amount))
-            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $account->formatMoney($amount, $client, CURRENCY_DECORATOR_CODE)  ))
+        @if ($companyGateway->getPlaidEnabled() && !empty($amount))
+            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $company->formatMoney($amount, $client, CURRENCY_DECORATOR_CODE)  ))
                         ->submit()
                         ->withAttributes(['style'=>'display:none', 'id'=>'pay_now_button'])
                         ->large() !!}

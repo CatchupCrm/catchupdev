@@ -37,7 +37,7 @@ class InvoiceCard
         }
 
         foreach ($invoice->invoice_items as $item) {
-            $this->addItem($item, $invoice->account);
+            $this->addItem($item, $invoice->company);
         }
 
         $this->setTotal($invoice->present()->requestedAmount);
@@ -69,9 +69,9 @@ class InvoiceCard
         $this->content->facts[] = $fact;
     }
 
-    public function addItem($item, $account)
+    public function addItem($item, $company)
     {
-        $this->content->items[] = new InvoiceItemCard($item, $account);
+        $this->content->items[] = new InvoiceItemCard($item, $company);
     }
 
     public function addButton($type, $title, $value, $url = false)

@@ -25,7 +25,7 @@ class TicketsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('tickets')
-                    ->where('tickets.account_id', '=', \Auth::user()->account_id)
+                    ->where('tickets.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'tickets.public_id',

@@ -14,7 +14,7 @@ class CoreTransformer extends EntityTransformer
     /**
     * @SWG\Property(property="id", type="integer", example=1, readOnly=true)
     * @SWG\Property(property="user_id", type="integer", example=1)
-    * @SWG\Property(property="account_key", type="string", example="123456")
+    * @SWG\Property(property="company_key", type="string", example="123456")
     * @SWG\Property(property="updated_at", type="timestamp", example="")
     * @SWG\Property(property="archived_at", type="timestamp", example="1451160233")
     */

@@ -61,7 +61,7 @@ class CreateTicketsTable extends Migration
             $table->timestamps();
 
 
-            $table->foreign('company_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 

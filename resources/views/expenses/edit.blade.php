@@ -58,7 +58,7 @@
                     {!! Former::select('expense_currency_id')->addOption('','')
                             ->data_bind('combobox: expense_currency_id')
                             ->label(trans('texts.currency_id'))
-                            ->data_placeholder(Utils::getFromCache($account->getCurrencyId(), 'currencies')->name)
+                            ->data_placeholder(Utils::getFromCache($company->getCurrencyId(), 'currencies')->name)
                             ->fromQuery($currencies, 'name', 'id') !!}
 
                     {!! Former::text('amount')
@@ -101,7 +101,7 @@
                         <span style="display:none" data-bind="visible: !client_id()">
                             {!! Former::select('invoice_currency_id')->addOption('','')
                                     ->label(trans('texts.invoice_currency'))
-                                    ->data_placeholder(Utils::getFromCache($account->getCurrencyId(), 'currencies')->name)
+                                    ->data_placeholder(Utils::getFromCache($company->getCurrencyId(), 'currencies')->name)
                                     ->data_bind('combobox: invoice_currency_id, disable: true')
                                     ->fromQuery($currencies, 'name', 'id') !!}
                         </span>
@@ -143,7 +143,7 @@
                             {!! Former::input('tax_name1') !!}
                         </div>
 
-                        <div style="display:{{ $account->enable_second_tax_rate ? 'block' : 'none' }}">
+                        <div style="display:{{ $company->enable_second_tax_rate ? 'block' : 'none' }}">
                             {!! Former::select('tax_select2')
                                 ->addOption('','')
                                 ->label(trans('texts.tax_rate'))
@@ -164,7 +164,7 @@
 
                 </div>
             </div>
-            @if ($account->hasFeature(FEATURE_DOCUMENTS))
+            @if ($company->hasFeature(FEATURE_DOCUMENTS))
             <div clas="row">
                 <div class="col-md-2 col-sm-4"><div class="control-label" style="margin-bottom:10px;">{{trans('texts.expense_documents')}}</div></div>
                 <div class="col-md-12 col-sm-8">
@@ -320,7 +320,7 @@
                 $('#amount').focus();
             @endif
 
-            @if (Auth::user()->account->hasFeature(FEATURE_DOCUMENTS))
+            @if (Auth::user()->company->hasFeature(FEATURE_DOCUMENTS))
             $('.main-form').submit(function(){
                 if($('#document-upload .fallback input').val())$(this).attr('enctype', 'multipart/form-data')
                 else $(this).removeAttr('enctype')
@@ -386,7 +386,7 @@
             self.convert_currency = ko.observable({{ ($expense && $expense->isExchanged()) ? 'true' : 'false' }});
             self.apply_taxes = ko.observable({{ ($expense && ($expense->tax_name1 || $expense->tax_name2)) ? 'true' : 'false' }});
 
-            self.account_currency_id = ko.observable({{ $account->getCurrencyId() }});
+            self.company_currency_id = ko.observable({{ $company->getCurrencyId() }});
             self.client_id = ko.observable({{ $clientPublicId }});
             self.vendor_id = ko.observable({{ $vendorPublicId }});
             self.expense_category_id = ko.observable({{ $categoryPublicId }});
@@ -414,7 +414,7 @@
 
 
             self.getCurrency = function(currencyId) {
-                return currencyMap[currencyId || self.account_currency_id()];
+                return currencyMap[currencyId || self.company_currency_id()];
             };
 
             self.expenseCurrencyCode = ko.computed(function() {
@@ -433,11 +433,11 @@
                 if (self.convert_currency()) {
                     return true;
                 }
-                var expenseCurrencyId = self.expense_currency_id() || self.account_currency_id();
-                var invoiceCurrencyId = self.invoice_currency_id() || self.account_currency_id();
+                var expenseCurrencyId = self.expense_currency_id() || self.company_currency_id();
+                var invoiceCurrencyId = self.invoice_currency_id() || self.company_currency_id();
                 return expenseCurrencyId != invoiceCurrencyId
-                    || invoiceCurrencyId != self.account_currency_id()
-                    || expenseCurrencyId != self.account_currency_id();
+                    || invoiceCurrencyId != self.company_currency_id()
+                    || expenseCurrencyId != self.company_currency_id();
             })
 
             self.addDocument = function() {

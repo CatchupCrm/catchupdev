@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class AddBankSubaccounts extends Migration
+class AddBankSubcompanies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,22 +13,22 @@ class AddBankSubaccounts extends Migration
     {
         Schema::create('bank_subaccounts', function ($table) {
             $table->increments('id');
-            $table->unsignedInteger('account_id');
+            $table->unsignedInteger('company_id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('bank_account_id');
+            $table->unsignedInteger('bank_company_id');
 
-            $table->string('account_name');
-            $table->string('account_number');
+            $table->string('company_name');
+            $table->string('company_number');
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('bank_account_id')->references('id')->on('bank_accounts')->onDelete('cascade');
+            $table->foreign('bank_company_id')->references('id')->on('bank_companies')->onDelete('cascade');
 
             $table->unsignedInteger('public_id')->index();
-            $table->unique(['account_id', 'public_id']);
+            $table->unique(['company_id', 'public_id']);
         });
 
         Schema::table('expenses', function ($table) {

@@ -5,9 +5,9 @@ namespace App\Models;
 use Eloquent;
 
 /**
- * Class UserAccount.
+ * Class UserCompany.
  */
-class UserAccount extends Eloquent
+class UserCompany extends Eloquent
 {
     /**
      * @var bool

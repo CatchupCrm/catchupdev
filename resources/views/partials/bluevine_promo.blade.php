@@ -18,7 +18,7 @@
             <div class="panel-body">
                 {!! Former::open('/bluevine/signup')->id('bluevineSignup') !!}
                 {!! trans('texts.bluevine_modal_text') !!}<br/>
-                <h3>{!! trans('texts.bluevine_create_account') !!}</h3>
+                <h3>{!! trans('texts.bluevine_create_company') !!}</h3>
                 {!! Former::text('name')->id('bluevine_name')->placeholder(trans('texts.name'))->value($user->first_name . ' ' . $user->last_name)->required() !!}
                 {!! Former::text('email')->id('bluevine_email')->placeholder(trans('texts.email'))->value($user->email)->required() !!}
                 {!! Former::text('phone')->id('bluevine_phone')->placeholder(trans('texts.phone'))->value(!empty($user->phone) ? $user->phone : '')->required() !!}
@@ -57,7 +57,7 @@
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">{{ trans('texts.cancel') }}</button>
                 <button type="button" class="btn btn-primary"
-                        onclick="bluevineCreateAccount()">{{ trans('texts.sign_up') }}</button>
+                        onclick="bluevineCreateCompany()">{{ trans('texts.sign_up') }}</button>
             </div>
         </div>
     </div>
@@ -93,14 +93,14 @@
 
     jQuery('#bluevineSignup').on('submit', function (e) {
         e.preventDefault();
-        bluevineCreateAccount();
+        bluevineCreateCompany();
     });
 
     jQuery('#business_inception').datepicker().siblings('.input-group-addon').click(function () {
         jQuery('#business_inception').focus();
     });
 
-    function bluevineCreateAccount() {
+    function bluevineCreateCompany() {
         var form = $('#bluevineSignup');
         $('#bluevineModal').find('.alert').remove();
 

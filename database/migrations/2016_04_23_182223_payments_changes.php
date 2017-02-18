@@ -44,10 +44,10 @@ class PaymentsChanges extends Migration
 
         Schema::create('payment_methods', function ($table) {
             $table->increments('id');
-            $table->unsignedInteger('account_id');
+            $table->unsignedInteger('company_id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('contact_id')->nullable();
-            $table->unsignedInteger('account_gateway_token_id');
+            $table->unsignedInteger('company_gateway_token_id');
             $table->unsignedInteger('payment_type_id');
             $table->string('source_reference');
 
@@ -65,14 +65,14 @@ class PaymentsChanges extends Migration
         });
 
         Schema::table('payment_methods', function ($table) {
-            $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
-            $table->foreign('account_gateway_token_id')->references('id')->on('account_gateway_tokens');
+            $table->foreign('company_gateway_token_id')->references('id')->on('company_gateway_tokens');
             $table->foreign('payment_type_id')->references('id')->on('payment_types');
             $table->foreign('currency_id')->references('id')->on('currencies');
 
-            $table->unique(['account_id', 'public_id']);
+            $table->unique(['company_id', 'public_id']);
         });
 
         Schema::table('payments', function ($table) {
@@ -105,11 +105,11 @@ class PaymentsChanges extends Migration
             ->where('is_recurring', '=', 1)
             ->update(['auto_bill' => AUTO_BILL_OFF]);
 
-        Schema::table('account_gateway_tokens', function ($table) {
+        Schema::table('company_gateway_tokens', function ($table) {
             $table->unsignedInteger('default_payment_method_id')->nullable();
         });
 
-        Schema::table('account_gateway_tokens', function ($table) {
+        Schema::table('company_gateway_tokens', function ($table) {
             $table->foreign('default_payment_method_id')->references('id')->on('payment_methods');
         });
     }
@@ -160,8 +160,8 @@ class PaymentsChanges extends Migration
 
         Schema::dropIfExists('payment_statuses');
 
-        Schema::table('account_gateway_tokens', function ($table) {
-            $table->dropForeign('account_gateway_tokens_default_payment_method_id_foreign');
+        Schema::table('company_gateway_tokens', function ($table) {
+            $table->dropForeign('company_gateway_tokens_default_payment_method_id_foreign');
             $table->dropColumn('default_payment_method_id');
         });
 

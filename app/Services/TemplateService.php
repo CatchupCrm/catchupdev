@@ -18,8 +18,8 @@ class TemplateService
      */
     public function processVariables($template, array $data)
     {
-        /** @var \App\Models\Account $account */
-        $account = $data['account'];
+        /** @var \App\Models\Company $company */
+        $company = $data['company'];
 
         /** @var \App\Models\Client $client */
         $client = $data['client'];
@@ -31,7 +31,7 @@ class TemplateService
         $passwordHTML = isset($data['password']) ? '<p>'.trans('texts.password').': '.$data['password'].'<p>' : false;
         $documentsHTML = '';
 
-        if ($account->hasFeature(FEATURE_DOCUMENTS) && $invoice->hasDocuments()) {
+        if ($company->hasFeature(FEATURE_DOCUMENTS) && $invoice->hasDocuments()) {
             $documentsHTML .= trans('texts.email_documents_header').'<ul>';
             foreach ($invoice->documents as $document) {
                 $documentsHTML .= '<li><a href="'.HTML::entities($document->getClientUrl($invitation)).'">'.HTML::entities($document->name).'</a></li>';
@@ -45,14 +45,14 @@ class TemplateService
         }
 
         $variables = [
-            '$footer' => $account->getEmailFooter(),
+            '$footer' => $company->getEmailFooter(),
             '$client' => $client->getDisplayName(),
-            '$account' => $account->getDisplayName(),
-            '$dueDate' => $account->formatDate($invoice->due_date),
-            '$invoiceDate' => $account->formatDate($invoice->invoice_date),
+            '$company' => $company->getDisplayName(),
+            '$dueDate' => $company->formatDate($invoice->due_date),
+            '$invoiceDate' => $company->formatDate($invoice->invoice_date),
             '$contact' => $invitation->contact->getDisplayName(),
             '$firstName' => $invitation->contact->first_name,
-            '$amount' => $account->formatMoney($data['amount'], $client),
+            '$amount' => $company->formatMoney($data['amount'], $client),
             '$invoice' => $invoice->invoice_number,
             '$quote' => $invoice->invoice_number,
             '$link' => $invitation->getLink(),

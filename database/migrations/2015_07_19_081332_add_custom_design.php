@@ -11,7 +11,7 @@ class AddCustomDesign extends Migration
      */
     public function up()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->mediumText('custom_design')->nullable();
         });
 
@@ -25,7 +25,7 @@ class AddCustomDesign extends Migration
      */
     public function down()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->dropColumn('custom_design');
         });
     }

@@ -17,7 +17,7 @@ class WePayPaymentDriver extends BasePaymentDriver
             GATEWAY_TYPE_TOKEN,
         ];
 
-        if ($this->accountGateway && $this->accountGateway->getAchEnabled()) {
+        if ($this->companyGateway && $this->companyGateway->getAchEnabled()) {
             $types[] = GATEWAY_TYPE_BANK_TRANSFER;
         }
 
@@ -58,7 +58,7 @@ class WePayPaymentDriver extends BasePaymentDriver
 
         $data['applicationFee'] = (env('WEPAY_APP_FEE_MULTIPLIER') * $data['amount']) + env('WEPAY_APP_FEE_FIXED');
         $data['feePayer'] = env('WEPAY_FEE_PAYER');
-        $data['callbackUri'] = $this->accountGateway->getWebhookUrl();
+        $data['callbackUri'] = $this->companyGateway->getWebhookUrl();
 
         if ($this->isGatewayType(GATEWAY_TYPE_BANK_TRANSFER, $paymentMethod)) {
             $data['paymentMethodType'] = 'payment_bank';
@@ -71,7 +71,7 @@ class WePayPaymentDriver extends BasePaymentDriver
 
     public function createToken()
     {
-        $wepay = Utils::setupWePay($this->accountGateway);
+        $wepay = Utils::setupWePay($this->companyGateway);
         $token = intval($this->input['sourceToken']);
 
         if ($this->isGatewayType(GATEWAY_TYPE_BANK_TRANSFER)) {
@@ -95,7 +95,7 @@ class WePayPaymentDriver extends BasePaymentDriver
                 'client_secret' => WEPAY_CLIENT_SECRET,
                 'credit_card_id' => $token,
                 'auto_update' => WEPAY_AUTO_UPDATE,
-                'callback_uri' => $this->accountGateway->getWebhookUrl(),
+                'callback_uri' => $this->companyGateway->getWebhookUrl(),
             ]);
 
             $this->tokenResponse = $wepay->request('credit_card', [
@@ -112,7 +112,7 @@ class WePayPaymentDriver extends BasePaymentDriver
     public function creatingCustomer($customer)
     {
         if ($gatewayResponse instanceof \Omnipay\WePay\Message\CustomCheckoutResponse) {
-            $wepay = \Utils::setupWePay($accountGateway);
+            $wepay = \Utils::setupWePay($companyGateway);
             $paymentMethodType = $gatewayResponse->getData()['payment_method']['type'];
 
             $gatewayResponse = $wepay->request($paymentMethodType, array(
@@ -130,7 +130,7 @@ class WePayPaymentDriver extends BasePaymentDriver
 
         if ($this->isGatewayType(GATEWAY_TYPE_BANK_TRANSFER)) {
             $paymentMethod->payment_type_id = PAYMENT_TYPE_ACH;
-            $paymentMethod->last4 = $source->account_last_four;
+            $paymentMethod->last4 = $source->company_last_four;
             $paymentMethod->bank_name = $source->bank_name;
             $paymentMethod->source_reference = $source->payment_bank_id;
 
@@ -157,7 +157,7 @@ class WePayPaymentDriver extends BasePaymentDriver
     {
         parent::removePaymentMethod($paymentMethod);
 
-        $wepay = Utils::setupWePay($this->accountGateway);
+        $wepay = Utils::setupWePay($this->companyGateway);
         $response = $wepay->request('/credit_card/delete', [
             'client_id' => WEPAY_CLIENT_ID,
             'client_secret' => WEPAY_CLIENT_SECRET,
@@ -198,8 +198,8 @@ class WePayPaymentDriver extends BasePaymentDriver
 
     public function handleWebHook($input)
     {
-        $accountGateway = $this->accountGateway;
-        $accountId = $accountGateway->account_id;
+        $companyGateway = $this->companyGateway;
+        $companyId = $companyGateway->company_id;
 
         foreach (array_keys($input) as $key) {
             if ('_id' == substr($key, -3)) {
@@ -214,13 +214,13 @@ class WePayPaymentDriver extends BasePaymentDriver
         }
 
         if ($objectType == 'credit_card') {
-            $paymentMethod = PaymentMethod::scope(false, $accountId)->where('source_reference', '=', $objectId)->first();
+            $paymentMethod = PaymentMethod::scope(false, $companyId)->where('source_reference', '=', $objectId)->first();
 
             if (! $paymentMethod) {
                 throw new Exception('Unknown payment method');
             }
 
-            $wepay = Utils::setupWePay($accountGateway);
+            $wepay = Utils::setupWePay($companyGateway);
             $source = $wepay->request('credit_card', [
                 'client_id' => WEPAY_CLIENT_ID,
                 'client_secret' => WEPAY_CLIENT_SECRET,
@@ -234,34 +234,34 @@ class WePayPaymentDriver extends BasePaymentDriver
             }
 
             return 'Processed successfully';
-        } elseif ($objectType == 'account') {
-            $config = $accountGateway->getConfig();
-            if ($config->accountId != $objectId) {
-                throw new Exception('Unknown account');
+        } elseif ($objectType == 'company') {
+            $config = $companyGateway->getConfig();
+            if ($config->companyId != $objectId) {
+                throw new Exception('Unknown company');
             }
 
-            $wepay = Utils::setupWePay($accountGateway);
-            $wepayAccount = $wepay->request('account', [
-                'account_id' => intval($objectId),
+            $wepay = Utils::setupWePay($companyGateway);
+            $wepayCompany = $wepay->request('company', [
+                'company_id' => intval($objectId),
             ]);
 
-            if ($wepayAccount->state == 'deleted') {
-                $accountGateway->delete();
+            if ($wepayCompany->state == 'deleted') {
+                $companyGateway->delete();
             } else {
-                $config->state = $wepayAccount->state;
-                $accountGateway->setConfig($config);
-                $accountGateway->save();
+                $config->state = $wepayCompany->state;
+                $companyGateway->setConfig($config);
+                $companyGateway->save();
             }
 
             return ['message' => 'Processed successfully'];
         } elseif ($objectType == 'checkout') {
-            $payment = Payment::scope(false, $accountId)->where('transaction_reference', '=', $objectId)->first();
+            $payment = Payment::scope(false, $companyId)->where('transaction_reference', '=', $objectId)->first();
 
             if (! $payment) {
                 throw new Exception('Unknown payment');
             }
 
-            $wepay = Utils::setupWePay($accountGateway);
+            $wepay = Utils::setupWePay($companyGateway);
             $checkout = $wepay->request('checkout', [
                 'checkout_id' => intval($objectId),
             ]);

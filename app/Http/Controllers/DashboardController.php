@@ -27,29 +27,29 @@ class DashboardController extends BaseController
         $user = Auth::user();
         $viewAll = $user->hasPermission('view_all');
         $userId = $user->id;
-        $account = $user->account;
-        $accountId = $account->id;
+        $company = $user->company;
+        $companyId = $company->id;
 
         $dashboardRepo = $this->dashboardRepo;
-        $metrics = $dashboardRepo->totals($accountId, $userId, $viewAll);
-        $paidToDate = $dashboardRepo->paidToDate($account, $userId, $viewAll);
-        $averageInvoice = $dashboardRepo->averages($account, $userId, $viewAll);
-        $balances = $dashboardRepo->balances($accountId, $userId, $viewAll);
-        $activities = $dashboardRepo->activities($accountId, $userId, $viewAll);
-        $pastDue = $dashboardRepo->pastDue($accountId, $userId, $viewAll);
-        $upcoming = $dashboardRepo->upcoming($accountId, $userId, $viewAll);
-        $payments = $dashboardRepo->payments($accountId, $userId, $viewAll);
-        $expenses = $dashboardRepo->expenses($account, $userId, $viewAll);
-        $tasks = $dashboardRepo->tasks($accountId, $userId, $viewAll);
+        $metrics = $dashboardRepo->totals($companyId, $userId, $viewAll);
+        $paidToDate = $dashboardRepo->paidToDate($company, $userId, $viewAll);
+        $averageInvoice = $dashboardRepo->averages($company, $userId, $viewAll);
+        $balances = $dashboardRepo->balances($companyId, $userId, $viewAll);
+        $activities = $dashboardRepo->activities($companyId, $userId, $viewAll);
+        $pastDue = $dashboardRepo->pastDue($companyId, $userId, $viewAll);
+        $upcoming = $dashboardRepo->upcoming($companyId, $userId, $viewAll);
+        $payments = $dashboardRepo->payments($companyId, $userId, $viewAll);
+        $expenses = $dashboardRepo->expenses($company, $userId, $viewAll);
+        $tasks = $dashboardRepo->tasks($companyId, $userId, $viewAll);
 
         $showBlueVinePromo = $user->is_admin
             && env('BLUEVINE_PARTNER_UNIQUE_ID')
-            && ! $account->company->bluevine_status
-            && $account->created_at <= date('Y-m-d', strtotime('-1 month'));
+            && ! $company->corporation->bluevine_status
+            && $company->created_at <= date('Y-m-d', strtotime('-1 month'));
 
-        $showWhiteLabelExpired = Utils::isSelfHost() && $account->company->hasExpiredPlan(PLAN_WHITE_LABEL);
+        $showWhiteLabelExpired = false;
 
-        // check if the account has quotes
+        // check if the company has quotes
         $hasQuotes = false;
         foreach ([$upcoming, $pastDue] as $data) {
             foreach ($data as $invoice) {
@@ -60,7 +60,7 @@ class DashboardController extends BaseController
         }
 
         $data = [
-            'account' => $user->account,
+            'company' => $user->company,
             'user' => $user,
             'paidToDate' => $paidToDate,
             'balances' => $balances,
@@ -84,11 +84,11 @@ class DashboardController extends BaseController
         if ($showBlueVinePromo) {
             $usdLast12Months = 0;
             $pastYear = date('Y-m-d', strtotime('-1 year'));
-            $paidLast12Months = $dashboardRepo->paidToDate($account, $userId, $viewAll, $pastYear);
+            $paidLast12Months = $dashboardRepo->paidToDate($company, $userId, $viewAll, $pastYear);
 
             foreach ($paidLast12Months as $item) {
                 if ($item->currency_id == null) {
-                    $currency = $user->account->currency_id ?: DEFAULT_CURRENCY;
+                    $currency = $user->company->currency_id ?: DEFAULT_CURRENCY;
                 } else {
                     $currency = $item->currency_id;
                 }
@@ -106,8 +106,8 @@ class DashboardController extends BaseController
 
     private function getCurrencyCodes()
     {
-        $account = Auth::user()->account;
-        $currencyIds = $account->currency_id ? [$account->currency_id] : [DEFAULT_CURRENCY];
+        $company = Auth::user()->company;
+        $currencyIds = $company->currency_id ? [$company->currency_id] : [DEFAULT_CURRENCY];
 
         // get client/invoice currencies
         $data = Client::scope()
@@ -148,7 +148,7 @@ class DashboardController extends BaseController
     public function chartData($groupBy, $startDate, $endDate, $currencyCode, $includeExpenses)
     {
         $includeExpenses = filter_var($includeExpenses, FILTER_VALIDATE_BOOLEAN);
-        $data = $this->dashboardRepo->chartData(Auth::user()->account, $groupBy, $startDate, $endDate, $currencyCode, $includeExpenses);
+        $data = $this->dashboardRepo->chartData(Auth::user()->company, $groupBy, $startDate, $endDate, $currencyCode, $includeExpenses);
 
         return json_encode($data);
     }

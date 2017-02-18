@@ -82,7 +82,7 @@ class BaseAPIController extends Controller
     protected function listResponse($query)
     {
         $transformerClass = EntityModel::getTransformerName($this->entityType);
-        $transformer = new $transformerClass(Auth::user()->account, Input::get('serializer'));
+        $transformer = new $transformerClass(Auth::user()->company, Input::get('serializer'));
 
         $includes = $transformer->getDefaultIncludes();
         $includes = $this->getRequestIncludes($includes);
@@ -116,7 +116,7 @@ class BaseAPIController extends Controller
     protected function itemResponse($item)
     {
         $transformerClass = EntityModel::getTransformerName($this->entityType);
-        $transformer = new $transformerClass(Auth::user()->account, Input::get('serializer'));
+        $transformer = new $transformerClass(Auth::user()->company, Input::get('serializer'));
 
         $data = $this->createItem($item, $transformer, $this->entityType);
 

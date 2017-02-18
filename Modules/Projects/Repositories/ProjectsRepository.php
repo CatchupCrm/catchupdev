@@ -25,7 +25,7 @@ class ProjectsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('projects')
-                    ->where('projects.account_id', '=', \Auth::user()->account_id)
+                    ->where('projects.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'projects.public_id',

@@ -2,7 +2,7 @@
 
 namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Client;
 use App\Models\Task;
 
@@ -20,15 +20,15 @@ class TaskTransformer extends EntityTransformer
         'client',
     ];
 
-    public function __construct(Account $account)
+    public function __construct(Company $company)
     {
-        parent::__construct($account);
+        parent::__construct($company);
     }
 
     public function includeClient(Task $task)
     {
         if ($task->client) {
-            $transformer = new ClientTransformer($this->account, $this->serializer);
+            $transformer = new ClientTransformer($this->company, $this->serializer);
 
             return $this->includeItem($task->client, $transformer, 'client');
         } else {

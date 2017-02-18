@@ -22,7 +22,7 @@ Route::get('/', 'HomeController@showIndex');
 Route::get('/log_error', 'HomeController@logError');
 Route::get('/invoice_now', 'HomeController@invoiceNow');
 Route::get('/keep_alive', 'HomeController@keepAlive');
-Route::post('/get_started', 'AccountController@getStarted');
+Route::post('/get_started', 'CompanyController@getStarted');
 
 // Client visible pages
 Route::group(['middleware' => 'auth:client'], function () {
@@ -66,8 +66,8 @@ Route::get('license', 'NinjaController@show_license_payment');
 Route::post('license', 'NinjaController@do_license_payment');
 Route::get('claim_license', 'NinjaController@claim_license');
 
-Route::post('signup/validate', 'AccountController@checkEmail');
-Route::post('signup/submit', 'AccountController@submitSignup');
+Route::post('signup/validate', 'CompanyController@checkEmail');
+Route::post('signup/submit', 'CompanyController@submitSignup');
 
 Route::get('/auth/{provider}', 'Auth\AuthController@authLogin');
 Route::get('/auth_unlink', 'Auth\AuthController@authUnlink');
@@ -76,7 +76,7 @@ Route::match(['GET', 'POST'], '/buy_now/{gateway_type?}', 'OnlinePaymentControll
 Route::post('/hook/email_bounced', 'AppController@emailBounced');
 Route::post('/hook/email_opened', 'AppController@emailOpened');
 Route::post('/hook/bot/{platform?}', 'BotController@handleMessage');
-Route::post('/payment_hook/{accountKey}/{gatewayId}', 'OnlinePaymentController@handlePaymentWebhook');
+Route::post('/payment_hook/{companyKey}/{gatewayId}', 'OnlinePaymentController@handlePaymentWebhook');
 
 // Laravel auth routes
 Route::get('/signup', ['as' => 'signup', 'uses' => 'Auth\AuthController@getRegister']);
@@ -101,9 +101,9 @@ Route::get('/client/password/reset/{invitation_key}/{token}', ['as' => 'forgot',
 Route::post('/client/password/reset', ['as' => 'forgot', 'uses' => 'ClientAuth\PasswordController@postReset']);
 
 if (Utils::isNinja()) {
-    Route::post('/signup/register', 'AccountController@doRegister');
+    Route::post('/signup/register', 'CompanyController@doRegister');
     Route::get('/news_feed/{user_type}/{version}/', 'HomeController@newsFeed');
-    Route::get('/demo', 'AccountController@demo');
+    Route::get('/demo', 'CompanyController@demo');
 }
 
 if (Utils::isReseller()) {
@@ -113,17 +113,17 @@ if (Utils::isReseller()) {
 Route::group(['middleware' => 'auth:user'], function () {
     Route::get('dashboard', 'DashboardController@index');
     Route::get('dashboard_chart_data/{group_by}/{start_date}/{end_date}/{currency_id}/{include_expenses}', 'DashboardController@chartData');
-    Route::get('set_entity_filter/{entity_type}/{filter?}', 'AccountController@setEntityFilter');
+    Route::get('set_entity_filter/{entity_type}/{filter?}', 'CompanyController@setEntityFilter');
     Route::get('hide_message', 'HomeController@hideMessage');
     Route::get('force_inline_pdf', 'UserController@forcePDFJS');
-    Route::get('account/get_search_data', ['as' => 'get_search_data', 'uses' => 'AccountController@getSearchData']);
+    Route::get('company/get_search_data', ['as' => 'get_search_data', 'uses' => 'CompanyController@getSearchData']);
     Route::get('check_invoice_number/{invoice_id?}', 'InvoiceController@checkInvoiceNumber');
     Route::post('save_sidebar_state', 'UserController@saveSidebarState');
     Route::post('contact_us', 'HomeController@contactUs');
 
-    Route::get('settings/user_details', 'AccountController@showUserDetails');
-    Route::post('settings/user_details', 'AccountController@saveUserDetails');
-    Route::post('settings/payment_gateway_limits', 'AccountController@savePaymentGatewayLimits');
+    Route::get('settings/user_details', 'CompanyController@showUserDetails');
+    Route::post('settings/user_details', 'CompanyController@saveUserDetails');
+    Route::post('settings/payment_gateway_limits', 'CompanyController@savePaymentGatewayLimits');
     Route::post('users/change_password', 'UserController@changePassword');
 
     Route::resource('clients', 'ClientController');
@@ -189,7 +189,7 @@ Route::group(['middleware' => 'auth:user'], function () {
     Route::resource('products', 'ProductController');
     Route::post('products/bulk', 'ProductController@bulk');
 
-    Route::get('/resend_confirmation', 'AccountController@resendConfirmation');
+    Route::get('/resend_confirmation', 'CompanyController@resendConfirmation');
     Route::post('/update_setup', 'AppController@updateSetup');
 
     // vendor
@@ -229,10 +229,10 @@ Route::group([
     Route::resource('users', 'UserController');
     Route::post('users/bulk', 'UserController@bulk');
     Route::get('send_confirmation/{user_id}', 'UserController@sendConfirmation');
-    Route::get('/switch_account/{user_id}', 'UserController@switchAccount');
-    Route::get('/account/{account_key}', 'UserController@viewAccountByKey');
-    Route::get('/unlink_account/{user_account_id}/{user_id}', 'UserController@unlinkAccount');
-    Route::get('/manage_companies', 'UserController@manageCompanies');
+    Route::get('/switch_company/{user_id}', 'UserController@switchCompany');
+    Route::get('/company/{company_key}', 'UserController@viewCompanyByKey');
+    Route::get('/unlink_company/{user_company_id}/{user_id}', 'UserController@unlinkCompany');
+    Route::get('/manage_corporations', 'UserController@manageCompanies');
 
     Route::get('api/tokens', 'TokenController@getDatatable');
     Route::resource('tokens', 'TokenController');
@@ -242,55 +242,55 @@ Route::group([
     Route::resource('tax_rates', 'TaxRateController');
     Route::post('tax_rates/bulk', 'TaxRateController@bulk');
 
-    Route::get('settings/email_preview', 'AccountController@previewEmail');
-    Route::post('settings/client_portal', 'AccountController@saveClientPortalSettings');
-    Route::post('settings/email_settings', 'AccountController@saveEmailSettings');
-    Route::get('company/{section}/{subSection?}', 'AccountController@redirectLegacy');
+    Route::get('settings/email_preview', 'CompanyController@previewEmail');
+    Route::post('settings/client_portal', 'CompanyController@saveClientPortalSettings');
+    Route::post('settings/email_settings', 'CompanyController@saveEmailSettings');
+    Route::get('corporation/{section}/{subSection?}', 'CompanyController@redirectLegacy');
     Route::get('settings/data_visualizations', 'ReportController@d3');
 
-    Route::post('settings/change_plan', 'AccountController@changePlan');
-    Route::post('settings/cancel_account', 'AccountController@cancelAccount');
-    Route::post('settings/company_details', 'AccountController@updateDetails');
-    Route::post('settings/{section?}', 'AccountController@doSection');
+    Route::post('settings/change_plan', 'CompanyController@changePlan');
+    Route::post('settings/cancel_company', 'CompanyController@cancelCompany');
+    Route::post('settings/company_details', 'CompanyController@updateDetails');
+    Route::post('settings/{section?}', 'CompanyController@doSection');
 
     Route::post('user/setTheme', 'UserController@setTheme');
-    Route::post('remove_logo', 'AccountController@removeLogo');
+    Route::post('remove_logo', 'CompanyController@removeLogo');
 
     Route::post('/export', 'ExportController@doExport');
     Route::post('/import', 'ImportController@doImport');
     Route::post('/import_csv', 'ImportController@doImportCSV');
 
-    Route::get('gateways/create/{show_wepay?}', 'AccountGatewayController@create');
-    Route::resource('gateways', 'AccountGatewayController');
-    Route::get('gateways/{public_id}/resend_confirmation', 'AccountGatewayController@resendConfirmation');
-    Route::get('api/gateways', 'AccountGatewayController@getDatatable');
-    Route::post('account_gateways/bulk', 'AccountGatewayController@bulk');
+    Route::get('gateways/create/{show_wepay?}', 'CompanyGatewayController@create');
+    Route::resource('gateways', 'CompanyGatewayController');
+    Route::get('gateways/{public_id}/resend_confirmation', 'CompanyGatewayController@resendConfirmation');
+    Route::get('api/gateways', 'CompanyGatewayController@getDatatable');
+    Route::post('company_gateways/bulk', 'CompanyGatewayController@bulk');
 
-    Route::get('bank_accounts/import_ofx', 'BankAccountController@showImportOFX');
-    Route::post('bank_accounts/import_ofx', 'BankAccountController@doImportOFX');
-    Route::resource('bank_accounts', 'BankAccountController');
-    Route::get('api/bank_accounts', 'BankAccountController@getDatatable');
-    Route::post('bank_accounts/bulk', 'BankAccountController@bulk');
-    Route::post('bank_accounts/validate', 'BankAccountController@validateAccount');
-    Route::post('bank_accounts/import_expenses/{bank_id}', 'BankAccountController@importExpenses');
+    Route::get('bank_companies/import_ofx', 'BankAccountController@showImportOFX');
+    Route::post('bank_companies/import_ofx', 'BankAccountController@doImportOFX');
+    Route::resource('bank_companies', 'BankAccountController');
+    Route::get('api/bank_companies', 'BankAccountController@getDatatable');
+    Route::post('bank_companies/bulk', 'BankAccountController@bulk');
+    Route::post('bank_companies/validate', 'BankAccountController@validateCompany');
+    Route::post('bank_companies/import_expenses/{bank_id}', 'BankAccountController@importExpenses');
     Route::get('self-update', 'SelfUpdateController@index');
     Route::post('self-update', 'SelfUpdateController@update');
     Route::get('self-update/download', 'SelfUpdateController@download');
 });
 
 Route::group(['middleware' => 'auth:user'], function () {
-    Route::get('settings/{section?}', 'AccountController@showSection');
+    Route::get('settings/{section?}', 'CompanyController@showSection');
 });
 
 // Route groups for API
 Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function () {
-    Route::get('ping', 'AccountApiController@ping');
-    Route::post('login', 'AccountApiController@login');
-    Route::post('oauth_login', 'AccountApiController@oauthLogin');
-    Route::post('register', 'AccountApiController@register');
-    Route::get('static', 'AccountApiController@getStaticData');
-    Route::get('accounts', 'AccountApiController@show');
-    Route::put('accounts', 'AccountApiController@update');
+    Route::get('ping', 'CompanyApiController@ping');
+    Route::post('login', 'CompanyApiController@login');
+    Route::post('oauth_login', 'CompanyApiController@oauthLogin');
+    Route::post('register', 'CompanyApiController@register');
+    Route::get('static', 'CompanyApiController@getStaticData');
+    Route::get('companies', 'CompanyApiController@show');
+    Route::put('companies', 'CompanyApiController@update');
     Route::resource('clients', 'ClientApiController');
     Route::get('quotes', 'QuoteApiController@index');
     Route::get('invoices', 'InvoiceApiController@index');
@@ -301,13 +301,13 @@ Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function () {
     Route::resource('tasks', 'TaskApiController');
     Route::post('hooks', 'IntegrationController@subscribe');
     Route::post('email_invoice', 'InvoiceApiController@emailInvoice');
-    Route::get('user_accounts', 'AccountApiController@getUserAccounts');
+    Route::get('user_companies', 'CompanyApiController@getUserCompanys');
     Route::resource('products', 'ProductApiController');
     Route::resource('tax_rates', 'TaxRateApiController');
     Route::resource('users', 'UserApiController');
     Route::resource('expenses', 'ExpenseApiController');
-    Route::post('add_token', 'AccountApiController@addDeviceToken');
-    Route::post('update_notifications', 'AccountApiController@updatePushNotifications');
+    Route::post('add_token', 'CompanyApiController@addDeviceToken');
+    Route::post('update_notifications', 'CompanyApiController@updatePushNotifications');
     Route::get('dashboard', 'DashboardApiController@index');
     Route::resource('documents', 'DocumentAPIController');
     Route::resource('vendors', 'VendorApiController');

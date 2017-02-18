@@ -25,7 +25,7 @@ class ExpensesRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('expenses')
-                    ->where('expenses.account_id', '=', \Auth::user()->account_id)
+                    ->where('expenses.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'expenses.public_id',

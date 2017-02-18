@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class AddPhoneToAccount extends Migration
+class AddPhoneToCompany extends Migration
 {
     /**
      * Run the migrations.
@@ -11,7 +11,7 @@ class AddPhoneToAccount extends Migration
      */
     public function up()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->string('work_phone')->nullable();
             $table->string('work_email')->nullable();
         });
@@ -24,7 +24,7 @@ class AddPhoneToAccount extends Migration
      */
     public function down()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->dropColumn('work_phone');
             $table->dropColumn('work_email');
         });

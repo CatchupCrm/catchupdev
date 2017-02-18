@@ -132,16 +132,16 @@
 <script type="text/javascript">
 
     var emailSubjects = [];
-    emailSubjects['{{ $invoice->getEntityType() }}'] = "{{ $account->getEmailSubject($invoice->getEntityType()) }}";
-    emailSubjects['reminder1'] = "{{ $account->getEmailSubject('reminder1') }}";
-    emailSubjects['reminder2'] = "{{ $account->getEmailSubject('reminder2') }}";
-    emailSubjects['reminder3'] = "{{ $account->getEmailSubject('reminder3') }}";
+    emailSubjects['{{ $invoice->getEntityType() }}'] = "{{ $company->getEmailSubject($invoice->getEntityType()) }}";
+    emailSubjects['reminder1'] = "{{ $company->getEmailSubject('reminder1') }}";
+    emailSubjects['reminder2'] = "{{ $company->getEmailSubject('reminder2') }}";
+    emailSubjects['reminder3'] = "{{ $company->getEmailSubject('reminder3') }}";
 
     var emailTemplates = [];
-    emailTemplates['{{ $invoice->getEntityType() }}'] = "{{ $account->getEmailTemplate($invoice->getEntityType()) }}";
-    emailTemplates['reminder1'] = "{{ $account->getEmailTemplate('reminder1') }}";
-    emailTemplates['reminder2'] = "{{ $account->getEmailTemplate('reminder2') }}";
-    emailTemplates['reminder3'] = "{{ $account->getEmailTemplate('reminder3') }}";
+    emailTemplates['{{ $invoice->getEntityType() }}'] = "{{ $company->getEmailTemplate($invoice->getEntityType()) }}";
+    emailTemplates['reminder1'] = "{{ $company->getEmailTemplate('reminder1') }}";
+    emailTemplates['reminder2'] = "{{ $company->getEmailTemplate('reminder2') }}";
+    emailTemplates['reminder3'] = "{{ $company->getEmailTemplate('reminder3') }}";
 
     function showEmailModal() {
         loadTemplate();

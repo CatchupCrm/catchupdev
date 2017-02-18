@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Libraries\Utils;
-use App\Models\Account;
+use App\Models\Company;
 use App\Ninja\Mailers\Mailer;
 use Auth;
 use Input;
@@ -43,7 +43,7 @@ class HomeController extends BaseController
     {
         Session::reflash();
 
-        if (! Utils::isNinja() && (! Utils::isDatabaseSetup() || Account::count() == 0)) {
+        if (! Utils::isNinja() && (! Utils::isDatabaseSetup() || Company::count() == 0)) {
             return Redirect::to('/setup');
         } elseif (Auth::check()) {
             return Redirect::to('/dashboard');

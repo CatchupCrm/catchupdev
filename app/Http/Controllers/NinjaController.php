@@ -6,7 +6,7 @@ use App\Models\Affiliate;
 use App\Models\Country;
 use App\Models\License;
 use App\Ninja\Mailers\ContactMailer;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\CompanyRepository;
 use Auth;
 use Cache;
 use CreditCard;
@@ -21,9 +21,9 @@ use View;
 class NinjaController extends BaseController
 {
     /**
-     * @var AccountRepository
+     * @var CompanyRepository
      */
-    protected $accountRepo;
+    protected $companyRepo;
 
     /**
      * @var ContactMailer
@@ -33,12 +33,12 @@ class NinjaController extends BaseController
     /**
      * NinjaController constructor.
      *
-     * @param AccountRepository $accountRepo
+     * @param CompanyRepository $companyRepo
      * @param ContactMailer     $contactMailer
      */
-    public function __construct(AccountRepository $accountRepo, ContactMailer $contactMailer)
+    public function __construct(CompanyRepository $companyRepo, ContactMailer $contactMailer)
     {
-        $this->accountRepo = $accountRepo;
+        $this->companyRepo = $companyRepo;
         $this->contactMailer = $contactMailer;
     }
 
@@ -114,11 +114,11 @@ class NinjaController extends BaseController
             Session::set('test_mode', Input::get('test_mode'));
         }
 
-        $account = $this->accountRepo->getNinjaAccount();
-        $account->load('account_gateways.gateway');
-        $accountGateway = $account->getGatewayByType(GATEWAY_TYPE_CREDIT_CARD);
-        $gateway = $accountGateway->gateway;
-        $acceptedCreditCardTypes = $accountGateway->getCreditcardTypes();
+        $company = $this->companyRepo->getNinjaCompany();
+        $company->load('company_gateways.gateway');
+        $companyGateway = $company->getGatewayByType(GATEWAY_TYPE_CREDIT_CARD);
+        $gateway = $companyGateway->gateway;
+        $acceptedCreditCardTypes = $companyGateway->getCreditcardTypes();
 
         $affiliate = Affiliate::find(Session::get('affiliate_id'));
 
@@ -130,8 +130,8 @@ class NinjaController extends BaseController
             'client' => false,
             'contact' => false,
             'gateway' => $gateway,
-            'account' => $account,
-            'accountGateway' => $accountGateway,
+            'company' => $company,
+            'companyGateway' => $companyGateway,
             'acceptedCreditCardTypes' => $acceptedCreditCardTypes,
             'countries' => Cache::get('countries'),
             'currencyId' => 1,
@@ -174,9 +174,9 @@ class NinjaController extends BaseController
                 ->withInput();
         }
 
-        $account = $this->accountRepo->getNinjaAccount();
-        $account->load('account_gateways.gateway');
-        $accountGateway = $account->getGatewayByType(GATEWAY_TYPE_CREDIT_CARD);
+        $company = $this->companyRepo->getNinjaCompany();
+        $company->load('company_gateways.gateway');
+        $companyGateway = $company->getGatewayByType(GATEWAY_TYPE_CREDIT_CARD);
 
         try {
             $affiliate = Affiliate::find(Session::get('affiliate_id'));
@@ -186,14 +186,14 @@ class NinjaController extends BaseController
             } else {
                 $details = self::getLicensePaymentDetails(Input::all(), $affiliate);
 
-                $gateway = Omnipay::create($accountGateway->gateway->provider);
-                $gateway->initialize((array) $accountGateway->getConfig());
+                $gateway = Omnipay::create($companyGateway->gateway->provider);
+                $gateway->initialize((array) $companyGateway->getConfig());
                 $response = $gateway->purchase($details)->send();
 
                 $ref = $response->getTransactionReference();
 
                 if (! $response->isSuccessful() || ! $ref) {
-                    $this->error('License', $response->getMessage(), $accountGateway);
+                    $this->error('License', $response->getMessage(), $companyGateway);
 
                     return redirect()->to('license')->withInput();
                 }
@@ -229,7 +229,7 @@ class NinjaController extends BaseController
 
             return View::make('public.license', $data);
         } catch (\Exception $e) {
-            $this->error('License-Uncaught', false, $accountGateway, $e);
+            $this->error('License-Uncaught', false, $companyGateway, $e);
 
             return redirect()->to('license')->withInput();
         }
@@ -269,11 +269,11 @@ class NinjaController extends BaseController
         }
     }
 
-    private function error($type, $error, $accountGateway = false, $exception = false)
+    private function error($type, $error, $companyGateway = false, $exception = false)
     {
         $message = '';
-        if ($accountGateway && $accountGateway->gateway) {
-            $message = $accountGateway->gateway->name . ': ';
+        if ($companyGateway && $companyGateway->gateway) {
+            $message = $companyGateway->gateway->name . ': ';
         }
         $message .= $error ?: trans('texts.payment_error');
         Session::flash('error', $message);
@@ -283,10 +283,10 @@ class NinjaController extends BaseController
     public function hideWhiteLabelMessage()
     {
         $user = Auth::user();
-        $company = $user->account->company;
+        $corporation = $user->company->corporation;
 
-        $company->plan = null;
-        $company->save();
+        $corporation->plan = null;
+        $corporation->save();
 
         return RESULT_SUCCESS;
     }

@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Affiliate;
 use App\Models\Client;
-use App\Models\Company;
+use App\Models\Corporation;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\DateFormat;
@@ -21,9 +21,9 @@ class UserTableSeeder extends Seeder
         Eloquent::unguard();
 
         $faker = Faker\Factory::create();
-        $company = Company::create();
+        $corporation = Corporation::create();
 
-        $account = Account::create([
+        $company = Company::create([
             'name' => $faker->name,
             'address1' => $faker->streetAddress,
             'address2' => $faker->secondaryAddress,
@@ -31,7 +31,7 @@ class UserTableSeeder extends Seeder
             'state' => $faker->state,
             'postal_code' => $faker->postcode,
             'country_id' => Country::all()->random()->id,
-            'account_key' => str_random(RANDOM_KEY_LENGTH),
+            'company_key' => str_random(RANDOM_KEY_LENGTH),
             'invoice_terms' => $faker->text($faker->numberBetween(50, 300)),
             'work_phone' => $faker->phoneNumber,
             'work_email' => $faker->safeEmail,
@@ -40,7 +40,7 @@ class UserTableSeeder extends Seeder
             'body_font_id' => min(Font::all()->random()->id, 17),
             'primary_color' => $faker->hexcolor,
             'timezone_id' => 58,
-            'company_id' => $company->id,
+            'company_id' => $corporation->id,
             'pdf_email_attachment' => true,
         ]);
 
@@ -49,7 +49,7 @@ class UserTableSeeder extends Seeder
             'last_name' => $faker->lastName,
             'email' => TEST_USERNAME,
             'username' => TEST_USERNAME,
-            'account_id' => $account->id,
+            'company_id' => $company->id,
             'password' => Hash::make(TEST_PASSWORD),
             'registered' => true,
             'confirmed' => true,
@@ -60,7 +60,7 @@ class UserTableSeeder extends Seeder
 
         $client = Client::create([
             'user_id' => $user->id,
-            'account_id' => $account->id,
+            'company_id' => $company->id,
             'public_id' => 1,
             'name' => $faker->name,
             'address1' => $faker->streetAddress,
@@ -74,7 +74,7 @@ class UserTableSeeder extends Seeder
 
         Contact::create([
             'user_id' => $user->id,
-            'account_id' => $account->id,
+            'company_id' => $company->id,
             'client_id' => $client->id,
             'public_id' => 1,
             'email' => env('TEST_EMAIL', TEST_USERNAME),
@@ -84,7 +84,7 @@ class UserTableSeeder extends Seeder
 
         Product::create([
             'user_id' => $user->id,
-            'account_id' => $account->id,
+            'company_id' => $company->id,
             'public_id' => 1,
             'product_key' => 'ITEM',
             'notes' => 'Something nice...',

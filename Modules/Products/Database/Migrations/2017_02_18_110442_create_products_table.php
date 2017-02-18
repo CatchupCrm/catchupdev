@@ -15,7 +15,7 @@ class CreateProductsTable extends Migration
         Schema::create(strtolower('products'), function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('company_id')->index('products_account_id_index');
+            $table->unsignedInteger('company_id')->index('products_company_id_index');
 
             $table->unsignedInteger('productid')->unsigned()->index();
       			$table->string('product_key');
@@ -40,12 +40,12 @@ class CreateProductsTable extends Migration
             $table->timestamps();
 
 
-            $table->foreign('company_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
 
 
-            $table->unique( ['company_id', 'public_id'], 'products_account_id_public_id_unique' );
+            $table->unique( ['company_id', 'public_id'], 'products_company_id_public_id_unique' );
         });
     }
 

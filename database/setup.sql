@@ -168,7 +168,7 @@ LOCK TABLES `account_tokens` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `accounts`
+-- Table structure for table `companies`
 --
 
 DROP TABLE IF EXISTS `accounts`;
@@ -343,12 +343,12 @@ CREATE TABLE `accounts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `accounts`
+-- Dumping data for table `companies`
 --
 
 LOCK TABLES `accounts` WRITE;
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+/*!40000 ALTER TABLE `companies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `companies` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

@@ -25,7 +25,7 @@ class RelationsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('relations')
-                    ->where('relations.account_id', '=', \Auth::user()->account_id)
+                    ->where('relations.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'relations.public_id',

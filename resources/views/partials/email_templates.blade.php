@@ -5,21 +5,21 @@
             return '';
         }
 
-        var passwordHtml = "{!! $account->isPro() && $account->enable_portal_password && $account->send_portal_password?'<br/>'.trans('texts.password').': XXXXXXXXX<br/>':'' !!}";
+        var passwordHtml = "{!! $company->isPro() && $company->enable_portal_password && $company->send_portal_password?'<br/>'.trans('texts.password').': XXXXXXXXX<br/>':'' !!}";
 
-        @if ($account->isPro())
+        @if ($company->isPro())
             var documentsHtml = "{!! trans('texts.email_documents_header').'<ul><li><a>'.trans('texts.email_documents_example_1').'</a></li><li><a>'.trans('texts.email_documents_example_2').'</a></li></ul>' !!}";
         @else
             var documentsHtml = "";
         @endif
 
         var keys = {
-            'footer': {!! json_encode($account->getEmailFooter()) !!},
-            'account': "{{ $account->getDisplayName() }}",
-            'dueDate': "{{ $account->formatDate($account->getDateTime()) }}",
-            'invoiceDate': "{{ $account->formatDate($account->getDateTime()) }}",
+            'footer': {!! json_encode($company->getEmailFooter()) !!},
+            'company': "{{ $company->getDisplayName() }}",
+            'dueDate': "{{ $company->formatDate($company->getDateTime()) }}",
+            'invoiceDate': "{{ $company->formatDate($company->getDateTime()) }}",
             'client': invoice ? getClientDisplayName(invoice.client) : 'Client Name',
-            'amount': invoice ? formatMoneyInvoice(parseFloat(invoice.partial) || parseFloat(invoice.balance_amount), invoice) : formatMoneyAccount(100, account),
+            'amount': invoice ? formatMoneyInvoice(parseFloat(invoice.partial) || parseFloat(invoice.balance_amount), invoice) : formatMoneyCompany(100, company),
             'contact': invoice ? getContactDisplayName(invoice.client.contacts[0]) : 'Contact Name',
             'firstName': invoice ? invoice.client.contacts[0].first_name : 'First Name',
             'invoice': invoice ? invoice.invoice_number : '0001',

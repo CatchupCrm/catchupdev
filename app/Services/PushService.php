@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Ninja\Notifications\PushFactory;
 
@@ -31,12 +31,12 @@ class PushService
     public function sendNotification(Invoice $invoice, $type)
     {
         //check user has registered for push notifications
-        if (! $this->checkDeviceExists($invoice->account)) {
+        if (! $this->checkDeviceExists($invoice->company)) {
             return;
         }
 
         //Harvest an array of devices that are registered for this notification type
-        $devices = json_decode($invoice->account->devices, true);
+        $devices = json_decode($invoice->company->devices, true);
 
         foreach ($devices as $device) {
             if (($device["notify_{$type}"] == true) && ($device['device'] == 'ios') && IOS_DEVICE) {
@@ -65,15 +65,15 @@ class PushService
     /**
      * checkDeviceExists function.
      *
-     * Returns a boolean if this account has devices registered for PUSH notifications
+     * Returns a boolean if this company has devices registered for PUSH notifications
      *
-     * @param Account $account
+     * @param Company $company
      *
      * @return bool
      */
-    private function checkDeviceExists(Account $account)
+    private function checkDeviceExists(Company $company)
     {
-        $devices = json_decode($account->devices, true);
+        $devices = json_decode($company->devices, true);
 
         if (count($devices) >= 1) {
             return true;

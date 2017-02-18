@@ -25,7 +25,7 @@ class CoreRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('core')
-                    ->where('core.account_id', '=', \Auth::user()->account_id)
+                    ->where('core.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'core.public_id',

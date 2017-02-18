@@ -3,7 +3,7 @@
 namespace App\Ninja\Repositories;
 
 use App\Jobs\SendInvoiceEmail;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Client;
 use App\Models\Document;
 use App\Models\Expense;
@@ -43,21 +43,21 @@ class InvoiceRepository extends BaseRepository
                 ->get();
     }
 
-    public function getInvoices($accountId, $clientPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
+    public function getInvoices($companyId, $clientPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
     {
         $query = DB::table('invoices')
-            ->join('accounts', 'accounts.id', '=', 'invoices.account_id')
+            ->join('companies', 'companies.id', '=', 'invoices.company_id')
             ->join('clients', 'clients.id', '=', 'invoices.client_id')
             ->join('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.invoice_status_id')
             ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-            ->where('invoices.account_id', '=', $accountId)
+            ->where('invoices.company_id', '=', $companyId)
             ->where('contacts.deleted_at', '=', null)
             ->where('invoices.is_recurring', '=', false)
             ->where('contacts.is_primary', '=', true)
             //->whereRaw('(clients.name != "" or contacts.first_name != "" or contacts.last_name != "" or contacts.email != "")') // filter out buy now invoices
             ->select(
-                DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
+                DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
                 'clients.public_id as client_public_id',
                 'clients.user_id as client_user_id',
                 'invoice_number',
@@ -131,21 +131,21 @@ class InvoiceRepository extends BaseRepository
         return $query;
     }
 
-    public function getRecurringInvoices($accountId, $clientPublicId = false, $filter = false)
+    public function getRecurringInvoices($companyId, $clientPublicId = false, $filter = false)
     {
         $query = DB::table('invoices')
-                    ->join('accounts', 'accounts.id', '=', 'invoices.account_id')
+                    ->join('companies', 'companies.id', '=', 'invoices.company_id')
                     ->join('clients', 'clients.id', '=', 'invoices.client_id')
                     ->join('frequencies', 'frequencies.id', '=', 'invoices.frequency_id')
                     ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('invoices.account_id', '=', $accountId)
+                    ->where('invoices.company_id', '=', $companyId)
                     ->where('invoices.invoice_type_id', '=', INVOICE_TYPE_STANDARD)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.is_recurring', '=', true)
                     ->where('contacts.is_primary', '=', true)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                        DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
+                        DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
                         'clients.public_id as client_public_id',
                         DB::raw("COALESCE(NULLIF(clients.name,''), NULLIF(CONCAT(contacts.first_name, ' ', contacts.last_name),''), NULLIF(contacts.email,'')) client_name"),
                         'invoices.public_id',
@@ -187,7 +187,7 @@ class InvoiceRepository extends BaseRepository
     public function getClientRecurringDatatable($contactId)
     {
         $query = DB::table('invitations')
-          ->join('accounts', 'accounts.id', '=', 'invitations.account_id')
+          ->join('companies', 'companies.id', '=', 'invitations.company_id')
           ->join('invoices', 'invoices.id', '=', 'invitations.invoice_id')
           ->join('clients', 'clients.id', '=', 'invoices.client_id')
           ->join('frequencies', 'frequencies.id', '=', 'invoices.frequency_id')
@@ -201,8 +201,8 @@ class InvoiceRepository extends BaseRepository
           ->whereIn('invoices.auto_bill', [AUTO_BILL_OPT_IN, AUTO_BILL_OPT_OUT])
           //->where('invoices.start_date', '>=', date('Y-m-d H:i:s'))
           ->select(
-                DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
+                DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
                 'invitations.invitation_key',
                 'invoices.invoice_number',
                 'invoices.due_date',
@@ -243,7 +243,7 @@ class InvoiceRepository extends BaseRepository
     public function getClientDatatable($contactId, $entityType, $search)
     {
         $query = DB::table('invitations')
-          ->join('accounts', 'accounts.id', '=', 'invitations.account_id')
+          ->join('companies', 'companies.id', '=', 'invitations.company_id')
           ->join('invoices', 'invoices.id', '=', 'invitations.invoice_id')
           ->join('clients', 'clients.id', '=', 'invoices.client_id')
           ->join('contacts', 'contacts.client_id', '=', 'clients.id')
@@ -256,11 +256,11 @@ class InvoiceRepository extends BaseRepository
           ->where('contacts.is_primary', '=', true)
           ->where('invoices.is_recurring', '=', false)
           ->where('invoices.is_public', '=', true)
-          // Only show paid invoices for ninja accounts
-          ->whereRaw(sprintf("((accounts.account_key != '%s' and accounts.account_key != '%s') or invoices.invoice_status_id = %d)", env('NINJA_LICENSE_ACCOUNT_KEY'), NINJA_ACCOUNT_KEY, INVOICE_STATUS_PAID))
+          // Only show paid invoices for ninja companies
+          ->whereRaw(sprintf("((companies.company_key != '%s' and companies.company_key != '%s') or invoices.invoice_status_id = %d)", env('NINJA_LICENSE_COMPANY_KEY'), NINJA_COMPANY_KEY, INVOICE_STATUS_PAID))
           ->select(
-                DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                DB::raw('COALESCE(clients.currency_id, companies.currency_id) currency_id'),
+                DB::raw('COALESCE(clients.country_id, companies.country_id) country_id'),
                 'invitations.invitation_key',
                 'invoices.invoice_number',
                 'invoices.invoice_date',
@@ -311,8 +311,8 @@ class InvoiceRepository extends BaseRepository
      */
     public function save(array $data, Invoice $invoice = null)
     {
-        /** @var Account $account */
-        $account = \Auth::user()->account;
+        /** @var Company $company */
+        $company = \Auth::user()->company;
         $publicId = isset($data['public_id']) ? $data['public_id'] : false;
 
         $isNew = ! $publicId || $publicId == '-1';
@@ -327,7 +327,7 @@ class InvoiceRepository extends BaseRepository
             } elseif (isset($data['is_quote']) && filter_var($data['is_quote'], FILTER_VALIDATE_BOOLEAN)) {
                 $entityType = ENTITY_QUOTE;
             }
-            $invoice = $account->createInvoice($entityType, $data['client_id']);
+            $invoice = $company->createInvoice($entityType, $data['client_id']);
             $invoice->invoice_date = date_create()->format('Y-m-d');
             if (isset($data['has_tasks']) && filter_var($data['has_tasks'], FILTER_VALIDATE_BOOLEAN)) {
                 $invoice->has_tasks = true;
@@ -339,7 +339,7 @@ class InvoiceRepository extends BaseRepository
             // set the default due date
             if ($entityType == ENTITY_INVOICE) {
                 $client = Client::scope()->whereId($data['client_id'])->first();
-                $invoice->due_date = $account->defaultDueDate($client);
+                $invoice->due_date = $company->defaultDueDate($client);
             }
         } else {
             $invoice = Invoice::scope($publicId)->firstOrFail();
@@ -364,12 +364,12 @@ class InvoiceRepository extends BaseRepository
         if ((isset($data['set_default_terms']) && $data['set_default_terms'])
             || (isset($data['set_default_footer']) && $data['set_default_footer'])) {
             if (isset($data['set_default_terms']) && $data['set_default_terms']) {
-                $account->{"{$invoice->getEntityType()}_terms"} = trim($data['terms']);
+                $company->{"{$invoice->getEntityType()}_terms"} = trim($data['terms']);
             }
             if (isset($data['set_default_footer']) && $data['set_default_footer']) {
-                $account->invoice_footer = trim($data['invoice_footer']);
+                $company->invoice_footer = trim($data['invoice_footer']);
             }
-            $account->save();
+            $company->save();
         }
 
         if (! empty($data['invoice_number']) && ! $invoice->is_recurring) {
@@ -426,13 +426,13 @@ class InvoiceRepository extends BaseRepository
 
         if (isset($data['terms']) && trim($data['terms'])) {
             $invoice->terms = trim($data['terms']);
-        } elseif ($isNew && ! $invoice->is_recurring && $account->{"{$entityType}_terms"}) {
-            $invoice->terms = $account->{"{$entityType}_terms"};
+        } elseif ($isNew && ! $invoice->is_recurring && $company->{"{$entityType}_terms"}) {
+            $invoice->terms = $company->{"{$entityType}_terms"};
         } else {
             $invoice->terms = '';
         }
 
-        $invoice->invoice_footer = (isset($data['invoice_footer']) && trim($data['invoice_footer'])) ? trim($data['invoice_footer']) : (! $publicId && $account->invoice_footer ? $account->invoice_footer : '');
+        $invoice->invoice_footer = (isset($data['invoice_footer']) && trim($data['invoice_footer'])) ? trim($data['invoice_footer']) : (! $publicId && $company->invoice_footer ? $company->invoice_footer : '');
         $invoice->public_notes = isset($data['public_notes']) ? trim($data['public_notes']) : '';
 
         // process date variables if not recurring
@@ -446,7 +446,7 @@ class InvoiceRepository extends BaseRepository
             $invoice->po_number = trim($data['po_number']);
         }
 
-        $invoice->invoice_design_id = isset($data['invoice_design_id']) ? $data['invoice_design_id'] : $account->invoice_design_id;
+        $invoice->invoice_design_id = isset($data['invoice_design_id']) ? $data['invoice_design_id'] : $company->invoice_design_id;
 
         // provide backwards compatibility
         if (isset($data['tax_name']) && isset($data['tax_rate'])) {
@@ -506,13 +506,13 @@ class InvoiceRepository extends BaseRepository
         if (isset($data['custom_value1'])) {
             $invoice->custom_value1 = round($data['custom_value1'], 2);
             if ($isNew) {
-                $invoice->custom_taxes1 = $account->custom_invoice_taxes1 ?: false;
+                $invoice->custom_taxes1 = $company->custom_invoice_taxes1 ?: false;
             }
         }
         if (isset($data['custom_value2'])) {
             $invoice->custom_value2 = round($data['custom_value2'], 2);
             if ($isNew) {
-                $invoice->custom_taxes2 = $account->custom_invoice_taxes2 ?: false;
+                $invoice->custom_taxes2 = $company->custom_invoice_taxes2 ?: false;
             }
         }
 
@@ -619,7 +619,7 @@ class InvoiceRepository extends BaseRepository
             }
 
             if ($productKey = trim($item['product_key'])) {
-                if (\Auth::user()->account->update_products && ! $invoice->has_tasks && ! $invoice->has_expenses) {
+                if (\Auth::user()->company->update_products && ! $invoice->has_tasks && ! $invoice->has_expenses) {
                     $product = Product::findProductByKey($productKey);
                     if (! $product) {
                         if (Auth::user()->can('create', ENTITY_PRODUCT)) {
@@ -674,29 +674,29 @@ class InvoiceRepository extends BaseRepository
     public function cloneInvoice(Invoice $invoice, $quotePublicId = null)
     {
         $invoice->load('invitations', 'invoice_items');
-        $account = $invoice->account;
+        $company = $invoice->company;
 
         $clone = Invoice::createNew($invoice);
         $clone->balance = $invoice->amount;
 
         // if the invoice prefix is diff than quote prefix, use the same number for the invoice (if it's available)
         $invoiceNumber = false;
-        if ($account->hasInvoicePrefix() && $account->share_counter) {
+        if ($company->hasInvoicePrefix() && $company->share_counter) {
             $invoiceNumber = $invoice->invoice_number;
-            if ($account->quote_number_prefix && strpos($invoiceNumber, $account->quote_number_prefix) === 0) {
-                $invoiceNumber = substr($invoiceNumber, strlen($account->quote_number_prefix));
+            if ($company->quote_number_prefix && strpos($invoiceNumber, $company->quote_number_prefix) === 0) {
+                $invoiceNumber = substr($invoiceNumber, strlen($company->quote_number_prefix));
             }
-            $invoiceNumber = $account->invoice_number_prefix.$invoiceNumber;
-            if (Invoice::scope(false, $account->id)
+            $invoiceNumber = $company->invoice_number_prefix.$invoiceNumber;
+            if (Invoice::scope(false, $company->id)
                     ->withTrashed()
                     ->whereInvoiceNumber($invoiceNumber)
                     ->first()) {
                 $invoiceNumber = false;
             }
         }
-        $clone->invoice_number = $invoiceNumber ?: $account->getNextNumber($clone);
+        $clone->invoice_number = $invoiceNumber ?: $company->getNextNumber($clone);
         $clone->invoice_date = date_create()->format('Y-m-d');
-        $clone->due_date = $account->defaultDueDate($invoice->client);
+        $clone->due_date = $company->defaultDueDate($invoice->client);
 
         foreach ([
           'client_id',
@@ -731,10 +731,10 @@ class InvoiceRepository extends BaseRepository
         if ($quotePublicId) {
             $clone->invoice_type_id = INVOICE_TYPE_STANDARD;
             $clone->quote_id = $quotePublicId;
-            if ($account->invoice_terms) {
-                $clone->terms = $account->invoice_terms;
+            if ($company->invoice_terms) {
+                $clone->terms = $company->invoice_terms;
             }
-            if ($account->auto_convert_quote) {
+            if ($company->auto_convert_quote) {
                 $clone->is_public = true;
                 $clone->invoice_status_id = INVOICE_STATUS_SENT;
             }
@@ -844,7 +844,7 @@ class InvoiceRepository extends BaseRepository
             return false;
         }
 
-        $invoice->load('user', 'invoice_items', 'documents', 'invoice_design', 'account.country', 'client.contacts', 'client.country');
+        $invoice->load('user', 'invoice_items', 'documents', 'invoice_design', 'company.country', 'client.contacts', 'client.country');
         $client = $invoice->client;
 
         if (! $client || $client->is_deleted) {
@@ -887,7 +887,7 @@ class InvoiceRepository extends BaseRepository
      */
     public function createRecurringInvoice(Invoice $recurInvoice)
     {
-        $recurInvoice->load('account.timezone', 'invoice_items', 'client', 'user');
+        $recurInvoice->load('company.timezone', 'invoice_items', 'client', 'user');
 
         if ($recurInvoice->client->deleted_at) {
             return false;
@@ -906,15 +906,15 @@ class InvoiceRepository extends BaseRepository
         $invoice->invoice_type_id = INVOICE_TYPE_STANDARD;
         $invoice->client_id = $recurInvoice->client_id;
         $invoice->recurring_invoice_id = $recurInvoice->id;
-        $invoice->invoice_number = $recurInvoice->account->getNextNumber($invoice);
+        $invoice->invoice_number = $recurInvoice->company->getNextNumber($invoice);
         $invoice->amount = $recurInvoice->amount;
         $invoice->balance = $recurInvoice->amount;
         $invoice->invoice_date = date_create()->format('Y-m-d');
         $invoice->discount = $recurInvoice->discount;
         $invoice->po_number = $recurInvoice->po_number;
         $invoice->public_notes = Utils::processVariables($recurInvoice->public_notes);
-        $invoice->terms = Utils::processVariables($recurInvoice->terms ?: $recurInvoice->account->invoice_terms);
-        $invoice->invoice_footer = Utils::processVariables($recurInvoice->invoice_footer ?: $recurInvoice->account->invoice_footer);
+        $invoice->terms = Utils::processVariables($recurInvoice->terms ?: $recurInvoice->company->invoice_terms);
+        $invoice->invoice_footer = Utils::processVariables($recurInvoice->invoice_footer ?: $recurInvoice->company->invoice_footer);
         $invoice->tax_name1 = $recurInvoice->tax_name1;
         $invoice->tax_rate1 = $recurInvoice->tax_rate1;
         $invoice->tax_name2 = $recurInvoice->tax_name2;
@@ -961,7 +961,7 @@ class InvoiceRepository extends BaseRepository
         $recurInvoice->last_sent_date = date('Y-m-d');
         $recurInvoice->save();
 
-        if ($recurInvoice->getAutoBillEnabled() && ! $recurInvoice->account->auto_bill_on_due_date) {
+        if ($recurInvoice->getAutoBillEnabled() && ! $recurInvoice->company->auto_bill_on_due_date) {
             // autoBillInvoice will check for ACH, so we're not checking here
             if ($this->paymentService->autoBillInvoice($invoice)) {
                 // update the invoice reference to match its actual state
@@ -974,24 +974,24 @@ class InvoiceRepository extends BaseRepository
     }
 
     /**
-     * @param Account $account
+     * @param Company $company
      *
      * @return mixed
      */
-    public function findNeedingReminding(Account $account)
+    public function findNeedingReminding(Company $company)
     {
         $dates = [];
 
         for ($i = 1; $i <= 3; $i++) {
-            if ($date = $account->getReminderDate($i)) {
-                $field = $account->{"field_reminder{$i}"} == REMINDER_FIELD_DUE_DATE ? 'due_date' : 'invoice_date';
+            if ($date = $company->getReminderDate($i)) {
+                $field = $company->{"field_reminder{$i}"} == REMINDER_FIELD_DUE_DATE ? 'due_date' : 'invoice_date';
                 $dates[] = "$field = '$date'";
             }
         }
 
         $sql = implode(' OR ', $dates);
         $invoices = Invoice::invoiceType(INVOICE_TYPE_STANDARD)
-                    ->whereAccountId($account->id)
+                    ->whereCompanyId($company->id)
                     ->where('balance', '>', 0)
                     ->where('is_recurring', '=', false)
                     ->whereIsPublic(true)

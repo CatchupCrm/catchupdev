@@ -25,7 +25,7 @@ class TaxesRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('taxes')
-                    ->where('taxes.account_id', '=', \Auth::user()->account_id)
+                    ->where('taxes.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'taxes.public_id',

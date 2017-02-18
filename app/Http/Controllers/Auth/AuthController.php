@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Events\UserLoggedIn;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\CompanyRepository;
 use App\Services\AuthService;
 use Auth;
 use Event;
@@ -40,22 +40,22 @@ class AuthController extends Controller
     protected $authService;
 
     /**
-     * @var AccountRepository
+     * @var CompanyRepository
      */
-    protected $accountRepo;
+    protected $companyRepo;
 
     /**
      * Create a new authentication controller instance.
      *
-     * @param AccountRepository $repo
+     * @param CompanyRepository $repo
      * @param AuthService       $authService
      *
      * @internal param \Illuminate\Contracts\Auth\Guard $auth
      * @internal param \Illuminate\Contracts\Auth\Registrar $registrar
      */
-    public function __construct(AccountRepository $repo, AuthService $authService)
+    public function __construct(CompanyRepository $repo, AuthService $authService)
     {
-        $this->accountRepo = $repo;
+        $this->companyRepo = $repo;
         $this->authService = $authService;
     }
 
@@ -105,11 +105,11 @@ class AuthController extends Controller
      */
     public function authUnlink()
     {
-        $this->accountRepo->unlinkUserFromOauth(Auth::user());
+        $this->companyRepo->unlinkUserFromOauth(Auth::user());
 
         Session::flash('message', trans('texts.updated_settings'));
 
-        return redirect()->to('/settings/' . ACCOUNT_USER_DETAILS);
+        return redirect()->to('/settings/' . COMPANY_USER_DETAILS);
     }
 
     /**
@@ -147,18 +147,18 @@ class AuthController extends Controller
 
             /*
             $users = false;
-            // we're linking a new account
-            if ($request->link_accounts && $userId && Auth::user()->id != $userId) {
-                $users = $this->accountRepo->associateAccounts($userId, Auth::user()->id);
-                Session::flash('message', trans('texts.associated_accounts'));
-                // check if other accounts are linked
+            // we're linking a new company
+            if ($request->link_companies && $userId && Auth::user()->id != $userId) {
+                $users = $this->companyRepo->associateCompanys($userId, Auth::user()->id);
+                Session::flash('message', trans('texts.associated_companies'));
+                // check if other companies are linked
             } else {
-                $users = $this->accountRepo->loadAccounts(Auth::user()->id);
+                $users = $this->companyRepo->loadCompanys(Auth::user()->id);
             }
             */
 
-            $users = $this->accountRepo->loadAccounts(Auth::user()->id);
-            Session::put(SESSION_USER_ACCOUNTS, $users);
+            $users = $this->companyRepo->loadCompanys(Auth::user()->id);
+            Session::put(SESSION_USER_COMPANYS, $users);
         } elseif ($user) {
             $user->failed_logins = $user->failed_logins + 1;
             $user->save();
@@ -173,13 +173,13 @@ class AuthController extends Controller
     public function getLogoutWrapper()
     {
         if (Auth::check() && ! Auth::user()->registered) {
-            $account = Auth::user()->account;
-            $this->accountRepo->unlinkAccount($account);
+            $company = Auth::user()->company;
+            $this->companyRepo->unlinkCompany($company);
 
-            if (! $account->hasMultipleAccounts()) {
-                $account->company->forceDelete();
+            if (! $company->hasMultipleCompanys()) {
+                $company->corporation->forceDelete();
             }
-            $account->forceDelete();
+            $company->forceDelete();
         }
 
         $response = self::getLogout();

@@ -28,15 +28,15 @@ Route::get('/', 'HomeController@showIndex');
 Route::get('/log_error', 'HomeController@logError');
 Route::get('/invoice_now', 'HomeController@invoiceNow');
 Route::get('/keep_alive', 'HomeController@keepAlive');
-Route::post('/get_started', 'AccountController@getStarted');
+Route::post('/get_started', 'CompanyController@getStarted');
 
 
 Route::get('license', 'NinjaController@show_license_payment');
 Route::post('license', 'NinjaController@do_license_payment');
 Route::get('claim_license', 'NinjaController@claim_license');
 
-Route::post('signup/validate', 'AccountController@checkEmail');
-Route::post('signup/submit', 'AccountController@submitSignup');
+Route::post('signup/validate', 'CompanyController@checkEmail');
+Route::post('signup/submit', 'CompanyController@submitSignup');
 
 Route::get('/auth/{provider}', 'Auth\AuthController@authLogin');
 Route::get('/auth_unlink', 'Auth\AuthController@authUnlink');
@@ -45,7 +45,7 @@ Route::match(['GET', 'POST'], '/buy_now/{gateway_type?}', 'OnlinePaymentControll
 Route::post('/hook/email_bounced', 'AppController@emailBounced');
 Route::post('/hook/email_opened', 'AppController@emailOpened');
 Route::post('/hook/bot/{platform?}', 'BotController@handleMessage');
-Route::post('/payment_hook/{accountKey}/{gatewayId}', 'OnlinePaymentController@handlePaymentWebhook');
+Route::post('/payment_hook/{companyKey}/{gatewayId}', 'OnlinePaymentController@handlePaymentWebhook');
 
 // Laravel auth routes
 Route::get('/signup', ['as' => 'signup', 'uses' => 'Auth\AuthController@getRegister']);
@@ -60,9 +60,9 @@ Route::post('/password/reset', ['as' => 'forgot', 'uses' => 'Auth\PasswordContro
 Route::get('/user/confirm/{code}', 'UserController@confirm');
 
 if (Utils::isNinja()) {
-    Route::post('/signup/register', 'AccountController@doRegister');
+    Route::post('/signup/register', 'CompanyController@doRegister');
     Route::get('/news_feed/{user_type}/{version}/', 'HomeController@newsFeed');
-    Route::get('/demo', 'AccountController@demo');
+    Route::get('/demo', 'CompanyController@demo');
 }
 
 if (Utils::isReseller()) {

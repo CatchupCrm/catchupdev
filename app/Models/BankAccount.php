@@ -20,7 +20,7 @@ class BankAccount extends EntityModel
      */
     public function getEntityType()
     {
-        return ENTITY_BANK_ACCOUNT;
+        return ENTITY_BANK_COMPANY;
     }
 
     /**

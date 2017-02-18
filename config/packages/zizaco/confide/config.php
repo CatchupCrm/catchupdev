@@ -65,13 +65,13 @@ return array(
     |
     |  // To use app/views/email/confirmation.blade.php:
     |
-    | 'email_account_confirmation' => 'email.confirmation'
+    | 'email_company_confirmation' => 'email.confirmation'
     |
     |
     */
 
     'email_reset_password' =>       'emails.passwordreset_html', // with $user and $token.
-    'email_account_confirmation' => 'emails.confirm_html', // with $user
+    'email_company_confirmation' => 'emails.confirm_html', // with $user
 
     /*
     |--------------------------------------------------------------------------

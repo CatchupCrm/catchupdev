@@ -69,68 +69,39 @@ class Handler extends ExceptionHandler
      *
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
-    {
-        if ($e instanceof ModelNotFoundException) {
-            return Redirect::to('/');
-        }
-        if ($e instanceof \Illuminate\Session\TokenMismatchException) {
-            // prevent loop since the page auto-submits
-            if ($request->path() != 'get_started') {
-                // https://gist.github.com/jrmadsen67/bd0f9ad0ef1ed6bb594e
-                return redirect()
-                        ->back()
-                        ->withInput($request->except('password', '_token'))
-                        ->with([
-                            'warning' => trans('texts.token_expired'),
-                        ]);
-            }
+    public function render($request, Exception $e) {
+        if (config('app.debug') && ! $request->ajax()) {
+            $whoops = new \Whoops\Run;
+            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+
+            return $whoops->handleException($e);
         }
 
-        if ($this->isHttpException($e)) {
-            switch ($e->getStatusCode()) {
-                // not found
-                case 404:
-                    if ($request->header('X-Ninja-Token') != '') {
-                        //API request which has hit a route which does not exist
-
-                        $error['error'] = ['message' => 'Route does not exist'];
-                        $error = json_encode($error, JSON_PRETTY_PRINT);
-                        $headers = Utils::getApiHeaders();
-
-                        return response()->make($error, 404, $headers);
-                    }
-                    break;
-
-                // internal error
-                case '500':
-                    if ($request->header('X-Ninja-Token') != '') {
-                        //API request which produces 500 error
-
-                        $error['error'] = ['message' => 'Internal Server Error'];
-                        $error = json_encode($error, JSON_PRETTY_PRINT);
-                        $headers = Utils::getApiHeaders();
-
-                        return response()->make($error, 500, $headers);
-                    }
-                    break;
-
-            }
-        }
-
-        // In production, except for maintenance mode, we'll show a custom error screen
-        if (Utils::isNinjaProd()
-            && ! Utils::isDownForMaintenance()
-            && ! ($e instanceof HttpResponseException)
-            && ! ($e instanceof ValidationException)) {
-            $data = [
-                'error' => get_class($e),
-                'hideHeader' => true,
-            ];
-
-            return response()->view('error', $data);
-        } else {
-            return parent::render($request, $e);
-        }
+        return parent::render($request, $e);
     }
+
+    protected function convertExceptionToResponse(Exception $e)
+    {
+        if (config('app.debug')) {
+            $whoops = new \Whoops\Run;
+            if(request()->wantsJson())
+            {
+                $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler());
+            }
+            else
+            {
+                $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+            }
+
+            return response()->make(
+                $whoops->handleException($e),
+                method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500,
+                method_exists($e, 'getHeaders') ? $e->getHeaders() : []
+            );
+        }
+
+        return parent::convertExceptionToResponse($e);
+    }
+
+
 }

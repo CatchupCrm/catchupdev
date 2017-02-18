@@ -11,7 +11,7 @@ class AddPageSize extends Migration
      */
     public function up()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->string('page_size')->default('A4');
             $table->boolean('live_preview')->default(true);
             $table->smallInteger('invoice_number_padding')->default(4);
@@ -24,7 +24,7 @@ class AddPageSize extends Migration
         Schema::create('expense_categories', function ($table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('account_id')->index();
+            $table->unsignedInteger('company_id')->index();
             $table->timestamps();
             $table->softDeletes();
             $table->string('name')->nullable();
@@ -32,9 +32,9 @@ class AddPageSize extends Migration
         });
 
         Schema::table('expense_categories', function ($table) {
-            $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['account_id', 'public_id']);
+            $table->unique(['company_id', 'public_id']);
         });
 
         Schema::table('expenses', function ($table) {
@@ -53,7 +53,7 @@ class AddPageSize extends Migration
      */
     public function down()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->dropColumn('page_size');
             $table->dropColumn('live_preview');
             $table->dropColumn('invoice_number_padding');

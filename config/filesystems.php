@@ -78,9 +78,9 @@ return [
 
         'gcs' => [
            'driver'                               => 'gcs',
-           'service_account'                      => env('GCS_USERNAME', ''),
-           'service_account_certificate'          => storage_path() . '/credentials.p12',
-           'service_account_certificate_password' => env('GCS_PASSWORD', ''),
+           'service_company'                      => env('GCS_USERNAME', ''),
+           'service_company_certificate'          => storage_path() . '/credentials.p12',
+           'service_company_certificate_password' => env('GCS_PASSWORD', ''),
            'bucket'                               => env('GCS_BUCKET', 'cloud-storage-bucket'),
         ],
 	],

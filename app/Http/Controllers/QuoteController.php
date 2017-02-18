@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\InvoiceRequest;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Client;
 use App\Models\Country;
 use App\Models\Invitation;
@@ -58,10 +58,10 @@ class QuoteController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $companyId = Auth::user()->company_id;
         $search = Input::get('sSearch');
 
-        return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_QUOTE, $search);
+        return $this->invoiceService->getDatatable($companyId, $clientPublicId, ENTITY_QUOTE, $search);
     }
 
     public function create(InvoiceRequest $request, $clientPublicId = 0)
@@ -70,12 +70,12 @@ class QuoteController extends BaseController
             return Redirect::to('/invoices/create');
         }
 
-        $account = Auth::user()->account;
+        $company = Auth::user()->company;
         $clientId = null;
         if ($clientPublicId) {
             $clientId = Client::getPrivateId($clientPublicId);
         }
-        $invoice = $account->createInvoice(ENTITY_QUOTE, $clientId);
+        $invoice = $company->createInvoice(ENTITY_QUOTE, $clientId);
         $invoice->public_id = 0;
 
         $data = [
@@ -93,14 +93,14 @@ class QuoteController extends BaseController
 
     private static function getViewModel()
     {
-        $account = Auth::user()->account;
+        $company = Auth::user()->company;
 
         return [
           'entityType' => ENTITY_QUOTE,
-          'account' => $account,
+          'company' => $company,
           'products' => Product::scope()->orderBy('id')->get(['product_key', 'notes', 'cost', 'qty']),
-          'taxRateOptions' => $account->present()->taxRateOptions,
-          'defaultTax' => $account->default_tax_rate,
+          'taxRateOptions' => $company->present()->taxRateOptions,
+          'defaultTax' => $company->default_tax_rate,
           'countries' => Cache::get('countries'),
           'clients' => Client::scope()->with('contacts', 'country')->orderBy('name')->get(),
           'taxRates' => TaxRate::scope()->orderBy('name')->get(),
@@ -111,7 +111,7 @@ class QuoteController extends BaseController
           'industries' => Cache::get('industries'),
           'invoiceDesigns' => InvoiceDesign::getDesigns(),
           'invoiceFonts' => Cache::get('fonts'),
-          'invoiceLabels' => Auth::user()->account->getInvoiceLabels(),
+          'invoiceLabels' => Auth::user()->company->getInvoiceLabels(),
           'isRecurring' => false,
         ];
     }

@@ -41,14 +41,14 @@ class UserService extends BaseService
     }
 
     /**
-     * @param $accountId
+     * @param $companyId
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getDatatable($accountId)
+    public function getDatatable($companyId)
     {
         $datatable = new UserDatatable(false);
-        $query = $this->userRepo->find($accountId);
+        $query = $this->userRepo->find($companyId);
 
         return $this->datatableService->createDatatable($datatable, $query);
     }

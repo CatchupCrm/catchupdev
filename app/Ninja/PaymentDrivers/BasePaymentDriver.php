@@ -2,9 +2,9 @@
 
 namespace App\Ninja\PaymentDrivers;
 
-use App\Models\Account;
-use App\Models\AccountGatewaySettings;
-use App\Models\AccountGatewayToken;
+use App\Models\Company;
+use App\Models\CompanyGatewaySettings;
+use App\Models\CompanyGatewayToken;
 use App\Models\Country;
 use App\Models\GatewayType;
 use App\Models\License;
@@ -22,7 +22,7 @@ use Utils;
 class BasePaymentDriver
 {
     public $invitation;
-    public $accountGateway;
+    public $companyGateway;
 
     protected $gatewayType;
     protected $gateway;
@@ -38,16 +38,16 @@ class BasePaymentDriver
     protected $customerReferenceParam;
     protected $transactionReferenceParam;
 
-    public function __construct($accountGateway = false, $invitation = false, $gatewayType = false)
+    public function __construct($companyGateway = false, $invitation = false, $gatewayType = false)
     {
-        $this->accountGateway = $accountGateway;
+        $this->companyGateway = $companyGateway;
         $this->invitation = $invitation;
         $this->gatewayType = $gatewayType ?: $this->gatewayTypes()[0];
     }
 
     public function isGateway($gatewayId)
     {
-        return $this->accountGateway->gateway_id == $gatewayId;
+        return $this->companyGateway->gateway_id == $gatewayId;
     }
 
     public function isValid()
@@ -91,7 +91,7 @@ class BasePaymentDriver
 
     public function providerName()
     {
-        return strtolower($this->accountGateway->gateway->provider);
+        return strtolower($this->companyGateway->gateway->provider);
     }
 
     protected function invoice()
@@ -109,9 +109,9 @@ class BasePaymentDriver
         return $this->invoice()->client;
     }
 
-    protected function account()
+    protected function company()
     {
-        return $this->client()->account;
+        return $this->client()->company;
     }
 
     public function startPurchase($input = false, $sourceId = false)
@@ -123,7 +123,7 @@ class BasePaymentDriver
         Session::put($this->invitation->id . 'gateway_type', $this->gatewayType);
         Session::put($this->invitation->id . 'payment_ref', $this->invoice()->id . '_' . uniqid());
 
-        $gateway = $this->accountGateway->gateway;
+        $gateway = $this->companyGateway->gateway;
 
         if (! $this->meetsGatewayTypeLimits($this->gatewayType)) {
             // The customer must have hacked the URL
@@ -151,10 +151,10 @@ class BasePaymentDriver
 
         $data = [
             'details' => ! empty($input['details']) ? json_decode($input['details']) : false,
-            'accountGateway' => $this->accountGateway,
-            'acceptedCreditCardTypes' => $this->accountGateway->getCreditcardTypes(),
+            'companyGateway' => $this->companyGateway,
+            'acceptedCreditCardTypes' => $this->companyGateway->getCreditcardTypes(),
             'gateway' => $gateway,
-            'showAddress' => $this->accountGateway->show_address,
+            'showAddress' => $this->companyGateway->show_address,
             'showBreadcrumbs' => false,
             'url' => 'payment/' . $this->invitation->invitation_key,
             'amount' => $this->invoice()->getRequestedAmount(),
@@ -164,7 +164,7 @@ class BasePaymentDriver
             'gatewayType' => $this->gatewayType,
             'currencyId' => $this->client()->getCurrencyId(),
             'currencyCode' => $this->client()->getCurrencyCode(),
-            'account' => $this->account(),
+            'company' => $this->company(),
             'sourceId' => $sourceId,
             'tokenize' => $this->tokenize(),
             'transactionToken' => $this->createTransactionToken(),
@@ -219,7 +219,7 @@ class BasePaymentDriver
                 ]);
             }
 
-            if ($this->accountGateway->show_address) {
+            if ($this->companyGateway->show_address) {
                 $rules = array_merge($rules, [
                     'address1' => 'required',
                     'city' => 'required',
@@ -239,8 +239,8 @@ class BasePaymentDriver
             return $this->gateway;
         }
 
-        $this->gateway = Omnipay::create($this->accountGateway->gateway->provider);
-        $this->gateway->initialize((array) $this->accountGateway->getConfig());
+        $this->gateway = Omnipay::create($this->companyGateway->gateway->provider);
+        $this->gateway->initialize((array) $this->companyGateway->getConfig());
 
         return $this->gateway;
     }
@@ -302,8 +302,8 @@ class BasePaymentDriver
             $payment = $this->createPayment($ref, $paymentMethod);
 
             // TODO move this to stripe driver
-            if ($this->invitation->invoice->account->account_key == NINJA_ACCOUNT_KEY) {
-                Session::flash('trackEventCategory', '/account');
+            if ($this->invitation->invoice->company->company_key == NINJA_COMPANY_KEY) {
+                Session::flash('trackEventCategory', '/company');
                 Session::flash('trackEventAction', '/buy_pro_plan');
                 Session::flash('trackEventAmount', $payment->amount);
             }
@@ -340,7 +340,7 @@ class BasePaymentDriver
             $this->contact()->save();
         }
 
-        if (! $this->accountGateway->show_address || ! $this->accountGateway->update_address) {
+        if (! $this->companyGateway->show_address || ! $this->companyGateway->update_address) {
             return;
         }
 
@@ -374,7 +374,7 @@ class BasePaymentDriver
 
         if ($paymentMethod) {
             if ($this->customerReferenceParam) {
-                $data[$this->customerReferenceParam] = $paymentMethod->account_gateway_token->token;
+                $data[$this->customerReferenceParam] = $paymentMethod->company_gateway_token->token;
             }
             $data[$this->sourceReferenceParam] = $paymentMethod->source_reference;
         } elseif ($this->input) {
@@ -392,7 +392,7 @@ class BasePaymentDriver
         $client = $this->client();
 
         $data = [
-            'company' => $client->getDisplayName(),
+            'corporation' => $client->getDisplayName(),
             'firstName' => isset($input['first_name']) ? $input['first_name'] : null,
             'lastName' => isset($input['last_name']) ? $input['last_name'] : null,
             'email' => isset($input['email']) ? $input['email'] : null,
@@ -437,7 +437,7 @@ class BasePaymentDriver
 
         return [
             'email' => $contact->email,
-            'company' => $client->getDisplayName(),
+            'corporation' => $client->getDisplayName(),
             'firstName' => $contact->first_name,
             'lastName' => $contact->last_name,
             'billingAddress1' => $client->address1,
@@ -467,7 +467,7 @@ class BasePaymentDriver
             return false;
         }
 
-        if ($this->account()->token_billing_type_id == TOKEN_BILLING_ALWAYS) {
+        if ($this->company()->token_billing_type_id == TOKEN_BILLING_ALWAYS) {
             return true;
         }
 
@@ -497,7 +497,7 @@ class BasePaymentDriver
             $clientId = $this->client()->id;
         }
 
-        $this->customer = AccountGatewayToken::clientAndGateway($clientId, $this->accountGateway->id)
+        $this->customer = CompanyGatewayToken::clientAndGateway($clientId, $this->companyGateway->id)
                             ->with('payment_methods')
                             ->first();
 
@@ -531,13 +531,13 @@ class BasePaymentDriver
 
     public function createToken()
     {
-        $account = $this->account();
+        $company = $this->company();
 
         if (! $customer = $this->customer()) {
-            $customer = new AccountGatewayToken();
-            $customer->account_id = $account->id;
+            $customer = new CompanyGatewayToken();
+            $customer->company_id = $company->id;
             $customer->contact_id = $this->invitation->contact_id;
-            $customer->account_gateway_id = $this->accountGateway->id;
+            $customer->company_gateway_id = $this->companyGateway->id;
             $customer->client_id = $this->client()->id;
             $customer = $this->creatingCustomer($customer);
             $customer->save();
@@ -572,8 +572,8 @@ class BasePaymentDriver
         $paymentMethod = PaymentMethod::createNew($this->invitation);
         $paymentMethod->contact_id = $this->contact()->id;
         $paymentMethod->ip = Request::ip();
-        $paymentMethod->account_gateway_token_id = $customer->id;
-        $paymentMethod->setRelation('account_gateway_token', $customer);
+        $paymentMethod->company_gateway_token_id = $customer->id;
+        $paymentMethod->setRelation('company_gateway_token', $customer);
         $paymentMethod = $this->creatingPaymentMethod($paymentMethod);
 
         if ($paymentMethod) {
@@ -609,7 +609,7 @@ class BasePaymentDriver
 
         $payment = Payment::createNew($invitation);
         $payment->invitation_id = $invitation->id;
-        $payment->account_gateway_id = $this->accountGateway->id;
+        $payment->company_gateway_id = $this->companyGateway->id;
         $payment->invoice_id = $invoice->id;
         $payment->amount = $invoice->getRequestedAmount();
         $payment->client_id = $invoice->client_id;
@@ -632,13 +632,13 @@ class BasePaymentDriver
 
         $payment->save();
 
-        $accountKey = $invoice->account->account_key;
+        $companyKey = $invoice->company->company_key;
 
-        if ($accountKey == env('NINJA_LICENSE_ACCOUNT_KEY')) {
+        if ($companyKey == env('NINJA_LICENSE_COMPANY_KEY')) {
             $this->createLicense($payment);
         // TODO move this code
         // enable pro plan for hosted users
-        } elseif ($accountKey == NINJA_ACCOUNT_KEY) {
+        } elseif ($companyKey == NINJA_COMPANY_KEY) {
             foreach ($invoice->invoice_items as $invoice_item) {
                 // Hacky, but invoices don't have meta fields to allow us to store this easily
                 if (1 == preg_match('/^Plan - (.+) \((.+)\)$/', $invoice_item->product_key, $matches)) {
@@ -659,43 +659,43 @@ class BasePaymentDriver
             }
 
             if (! empty($plan)) {
-                $account = Account::with('users')->find($invoice->client->public_id);
-                $company = $account->company;
+                $company = Company::with('users')->find($invoice->client->public_id);
+                $corporation = $company->corporation;
 
                 if (
-                    $company->plan != $plan
-                    || DateTime::createFromFormat('Y-m-d', $account->company->plan_expires) <= date_create('-7 days')
+                    $corporation->plan != $plan
+                    || DateTime::createFromFormat('Y-m-d', $company->corporation->plan_expires) <= date_create('-7 days')
                 ) {
                     // Either this is a different plan, or the subscription expired more than a week ago
                     // Reset any grandfathering
-                    $company->plan_started = date_create()->format('Y-m-d');
+                    $corporation->plan_started = date_create()->format('Y-m-d');
                 }
 
                 if (
-                    $company->plan == $plan
-                    && $company->plan_term == $term
-                    && DateTime::createFromFormat('Y-m-d', $company->plan_expires) >= date_create()
+                    $corporation->plan == $plan
+                    && $corporation->plan_term == $term
+                    && DateTime::createFromFormat('Y-m-d', $corporation->plan_expires) >= date_create()
                 ) {
                     // This is a renewal; mark it paid as of when this term expires
-                    $company->plan_paid = $company->plan_expires;
+                    $corporation->plan_paid = $corporation->plan_expires;
                 } else {
-                    $company->plan_paid = date_create()->format('Y-m-d');
+                    $corporation->plan_paid = date_create()->format('Y-m-d');
                 }
 
-                $company->payment_id = $payment->id;
-                $company->plan = $plan;
-                $company->plan_term = $term;
-                $company->plan_price = $price;
-                $company->num_users = $numUsers;
-                $company->plan_expires = DateTime::createFromFormat('Y-m-d', $account->company->plan_paid)
+                $corporation->payment_id = $payment->id;
+                $corporation->plan = $plan;
+                $corporation->plan_term = $term;
+                $corporation->plan_price = $price;
+                $corporation->num_users = $numUsers;
+                $corporation->plan_expires = DateTime::createFromFormat('Y-m-d', $company->corporation->plan_paid)
                     ->modify($term == PLAN_TERM_MONTHLY ? '+1 month' : '+1 year')->format('Y-m-d');
 
-                if ($company->hasActivePromo()) {
-                    $company->discount_expires = date_create()->modify('1 year')->format('Y-m-d');
-                    $company->promo_expires = null;
-                }
+                /*if ($corporation->hasActivePromo()) {
+                    $corporation->discount_expires = date_create()->modify('1 year')->format('Y-m-d');
+                    $corporation->promo_expires = null;
+                }*/
 
-                $company->save();
+                $corporation->save();
             }
         }
 
@@ -813,7 +813,7 @@ class BasePaymentDriver
         }
 
         // check this isn't a duplicate transaction reference
-        if (Payment::whereAccountId($this->invitation->account_id)
+        if (Payment::whereCompanyId($this->invitation->company_id)
                 ->whereTransactionReference($ref)
                 ->first()) {
             throw new Exception(trans('texts.payment_error_code', ['code' => 'DT']));
@@ -880,7 +880,7 @@ class BasePaymentDriver
 
             if ($gatewayTypeId == GATEWAY_TYPE_CUSTOM) {
                 $url = 'javascript:showCustomModal();';
-                $label = e($this->accountGateway->getConfigField('name'));
+                $label = e($this->companyGateway->getConfigField('name'));
             } else {
                 $url = $this->paymentUrl($gatewayTypeAlias);
                 $label = trans("texts.{$gatewayTypeAlias}");
@@ -902,17 +902,17 @@ class BasePaymentDriver
             return true;
         }
 
-        $accountGatewaySettings = AccountGatewaySettings::scope(false, $this->invitation->account_id)
-            ->where('account_gateway_settings.gateway_type_id', '=', $gatewayTypeId)->first();
+        $companyGatewaySettings = CompanyGatewaySettings::scope(false, $this->invitation->company_id)
+            ->where('company_gateway_settings.gateway_type_id', '=', $gatewayTypeId)->first();
 
-        if ($accountGatewaySettings) {
+        if ($companyGatewaySettings) {
             $invoice = $this->invoice();
 
-            if ($accountGatewaySettings->min_limit !== null && $invoice->balance < $accountGatewaySettings->min_limit) {
+            if ($companyGatewaySettings->min_limit !== null && $invoice->balance < $companyGatewaySettings->min_limit) {
                 return false;
             }
 
-            if ($accountGatewaySettings->max_limit !== null && $invoice->balance > $accountGatewaySettings->max_limit) {
+            if ($companyGatewaySettings->max_limit !== null && $invoice->balance > $companyGatewaySettings->max_limit) {
                 return false;
             }
         }
@@ -922,7 +922,7 @@ class BasePaymentDriver
 
     protected function paymentUrl($gatewayTypeAlias)
     {
-        $account = $this->account();
+        $company = $this->company();
         $url = URL::to("/payment/{$this->invitation->invitation_key}/{$gatewayTypeAlias}");
 
         $gatewayTypeId = GatewayType::getIdFromAlias($gatewayTypeAlias);
@@ -931,7 +931,7 @@ class BasePaymentDriver
         if ($gatewayTypeId === GATEWAY_TYPE_PAYPAL) {
             $url .= '#braintree_paypal';
 
-            if ($account->iframe_url) {
+            if ($company->iframe_url) {
                 return 'javascript:window.open("' . $url . '", "_blank")';
             }
         }

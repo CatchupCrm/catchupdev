@@ -25,7 +25,7 @@ class ProductsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('products')
-                    ->where('products.account_id', '=', \Auth::user()->account_id)
+                    ->where('products.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'products.public_id',

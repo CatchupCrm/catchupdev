@@ -4,7 +4,7 @@
     @parent
 
     @include('money_script')
-    @foreach (Auth::user()->account->getFontFolders() as $font)
+    @foreach (Auth::user()->company->getFontFolders() as $font)
         <script src="{{ asset('js/vfs_fonts/'.$font.'.js') }}" type="text/javascript"></script>
     @endforeach
     <script src="{{ asset('pdf.built.js') }}?no_cache={{ NINJA_VERSION }}" type="text/javascript"></script>
@@ -19,7 +19,7 @@
         function getPDFString(cb) {
 
             invoice.is_statement = true;
-            invoice.image = window.accountLogo;
+            invoice.image = window.companyLogo;
             invoice.features = {
                   customize_invoice_design:{{ Auth::user()->hasFeature(FEATURE_CUSTOMIZE_INVOICE_DESIGN) ? 'true' : 'false' }},
                   remove_created_by:{{ Auth::user()->hasFeature(FEATURE_REMOVE_CREATED_BY) ? 'true' : 'false' }},
@@ -69,6 +69,6 @@
     <p>&nbsp;</p>
     <p>&nbsp;</p>
 
-    @include('invoices.pdf', ['account' => Auth::user()->account, 'pdfHeight' => 800])
+    @include('invoices.pdf', ['company' => Auth::user()->company, 'pdfHeight' => 800])
 
 @stop

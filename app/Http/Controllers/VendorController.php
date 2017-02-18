@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateVendorRequest;
 use App\Http\Requests\UpdateVendorRequest;
 use App\Http\Requests\VendorRequest;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Vendor;
 use App\Ninja\Datatables\VendorDatatable;
 use App\Ninja\Repositories\VendorRepository;
@@ -137,9 +137,9 @@ class VendorController extends BaseController
 
         $data = array_merge($data, self::getViewModel());
 
-        if (Auth::user()->account->isNinjaAccount()) {
-            if ($account = Account::whereId($client->public_id)->first()) {
-                $data['planDetails'] = $account->getPlanDetails(false, false);
+        if (Auth::user()->company->isNinjaCompany()) {
+            if ($company = Company::whereId($client->public_id)->first()) {
+                $data['planDetails'] = $company->getPlanDetails(false, false);
             }
         }
 
@@ -150,7 +150,7 @@ class VendorController extends BaseController
     {
         return [
             'data' => Input::old('data'),
-            'account' => Auth::user()->account,
+            'company' => Auth::user()->company,
             'currencies' => Cache::get('currencies'),
             'countries' => Cache::get('countries'),
         ];

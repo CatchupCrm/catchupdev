@@ -25,7 +25,7 @@ class BankingRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('banking')
-                    ->where('banking.account_id', '=', \Auth::user()->account_id)
+                    ->where('banking.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'banking.public_id',

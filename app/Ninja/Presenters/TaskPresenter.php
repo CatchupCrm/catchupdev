@@ -34,12 +34,12 @@ class TaskPresenter extends EntityPresenter
     }
 
     /**
-     * @param $account
+     * @param $company
      * @param mixed $showProject
      *
      * @return mixed
      */
-    public function invoiceDescription($account, $showProject)
+    public function invoiceDescription($company, $showProject)
     {
         $str = '';
 
@@ -62,8 +62,8 @@ class TaskPresenter extends EntityPresenter
                 $end = $part[1];
             }
 
-            $start = $account->formatDateTime("@{$start}");
-            $end = $account->formatTime("@{$end}");
+            $start = $company->formatDateTime("@{$start}");
+            $end = $company->formatTime("@{$end}");
 
             $times[] = "### {$start} - {$end}";
         }

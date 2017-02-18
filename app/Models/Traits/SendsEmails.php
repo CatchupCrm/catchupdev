@@ -21,7 +21,7 @@ trait SendsEmails
             $entityType = 'reminder';
         }
 
-        return trans("texts.{$entityType}_subject", ['invoice' => '$invoice', 'account' => '$account']);
+        return trans("texts.{$entityType}_subject", ['invoice' => '$invoice', 'company' => '$company']);
     }
 
     /**
@@ -114,7 +114,7 @@ trait SendsEmails
             // Add line breaks if HTML isn't already being used
             return strip_tags($this->email_footer) == $this->email_footer ? nl2br($this->email_footer) : $this->email_footer;
         } else {
-            return '<p><div>' . trans('texts.email_signature') . "\n<br>\$account</div></p>";
+            return '<p><div>' . trans('texts.email_signature') . "\n<br>\$company</div></p>";
         }
     }
 

@@ -24,7 +24,7 @@ class ClientTransformer extends BaseTransformer
         return new Item($data, function ($data) {
             return [
                 'name' => $this->getString($data, 'customer_name'),
-                'id_number' => $this->getString($data, 'account_number'),
+                'id_number' => $this->getString($data, 'company_number'),
                 'work_phone' => $this->getString($data, 'phone'),
                 'website' => $this->getString($data, 'website'),
                 'address1' => $this->getString($data, 'address_line_1'),

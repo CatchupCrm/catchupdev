@@ -25,7 +25,7 @@ class LeadsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('leads')
-                    ->where('leads.account_id', '=', \Auth::user()->account_id)
+                    ->where('leads.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'leads.public_id',

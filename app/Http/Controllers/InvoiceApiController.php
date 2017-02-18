@@ -208,8 +208,8 @@ class InvoiceApiController extends BaseAPIController
 
     private function prepareData($data, $client)
     {
-        $account = Auth::user()->account;
-        $account->loadLocalizationSettings($client);
+        $company = Auth::user()->company;
+        $company->loadLocalizationSettings($client);
 
         // set defaults for optional fields
         $fields = [
@@ -219,7 +219,7 @@ class InvoiceApiController extends BaseAPIController
             'invoice_footer' => '',
             'public_notes' => '',
             'po_number' => '',
-            'invoice_design_id' => $account->invoice_design_id,
+            'invoice_design_id' => $company->invoice_design_id,
             'invoice_items' => [],
             'custom_value1' => 0,
             'custom_value2' => 0,

@@ -25,9 +25,8 @@ class BalancesheetRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('balancesheet')
-                    ->where('balancesheet.account_id', '=', \Auth::user()->account_id)
+                    ->where('balancesheet.company_id', '=', \Auth::user()->company_id)
                     ->select(
-                        
                         'balancesheet.public_id',
                         'balancesheet.deleted_at',
                         'balancesheet.created_at',

@@ -12,17 +12,17 @@ class ClientPresenter extends EntityPresenter
     public function balance()
     {
         $client = $this->entity;
-        $account = $client->account;
+        $company = $client->company;
 
-        return $account->formatMoney($client->balance, $client);
+        return $company->formatMoney($client->balance, $client);
     }
 
     public function paid_to_date()
     {
         $client = $this->entity;
-        $account = $client->account;
+        $company = $client->company;
 
-        return $account->formatMoney($client->paid_to_date, $client);
+        return $company->formatMoney($client->paid_to_date, $client);
     }
 
     public function paymentTerms()

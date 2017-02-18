@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AccountToken;
+use App\Models\CompanyToken;
 use App\Services\TokenService;
 use Auth;
 use Input;
@@ -39,7 +39,7 @@ class TokenController extends BaseController
      */
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . COMPANY_API_TOKENS);
     }
 
     /**
@@ -57,7 +57,7 @@ class TokenController extends BaseController
      */
     public function edit($publicId)
     {
-        $token = AccountToken::where('account_id', '=', Auth::user()->account_id)
+        $token = CompanyToken::where('company_id', '=', Auth::user()->company_id)
                         ->where('public_id', '=', $publicId)->firstOrFail();
 
         $data = [
@@ -67,7 +67,7 @@ class TokenController extends BaseController
             'title' => trans('texts.edit_token'),
         ];
 
-        return View::make('accounts.token', $data);
+        return View::make('companies.token', $data);
     }
 
     /**
@@ -100,7 +100,7 @@ class TokenController extends BaseController
           'title' => trans('texts.add_token'),
         ];
 
-        return View::make('accounts.token', $data);
+        return View::make('companies.token', $data);
     }
 
     /**
@@ -114,7 +114,7 @@ class TokenController extends BaseController
 
         Session::flash('message', trans('texts.archived_token'));
 
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . COMPANY_API_TOKENS);
     }
 
     /**
@@ -124,13 +124,13 @@ class TokenController extends BaseController
      */
     public function save($tokenPublicId = false)
     {
-        if (Auth::user()->account->hasFeature(FEATURE_API)) {
+        if (Auth::user()->company->hasFeature(FEATURE_API)) {
             $rules = [
                 'name' => 'required',
             ];
 
             if ($tokenPublicId) {
-                $token = AccountToken::where('account_id', '=', Auth::user()->account_id)
+                $token = CompanyToken::where('company_id', '=', Auth::user()->company_id)
                             ->where('public_id', '=', $tokenPublicId)->firstOrFail();
             }
 
@@ -143,7 +143,7 @@ class TokenController extends BaseController
             if ($tokenPublicId) {
                 $token->name = trim(Input::get('name'));
             } else {
-                $token = AccountToken::createNew();
+                $token = CompanyToken::createNew();
                 $token->name = trim(Input::get('name'));
                 $token->token = str_random(RANDOM_KEY_LENGTH);
             }
@@ -159,6 +159,6 @@ class TokenController extends BaseController
             Session::flash('message', $message);
         }
 
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . COMPANY_API_TOKENS);
     }
 }

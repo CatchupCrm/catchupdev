@@ -10,7 +10,7 @@
                 ->rules(['email' => 'required|email', 'password' => 'required'])
                 ->addClass('form-signin') !!}
 
-        <h2 class="form-signin-heading">{{ trans('texts.account_login') }}</h2>
+        <h2 class="form-signin-heading">{{ trans('texts.company_login') }}</h2>
         <hr class="green">
 
         @if (count($errors->all()))
@@ -48,7 +48,7 @@
                     ->large()->submit()->block() !!}
 
         @if (Utils::isOAuthEnabled())
-            <div class="row existing-accounts">
+            <div class="row existing-companies">
                 <p>{{ trans('texts.login_or_existing') }}</p>
                 @foreach (App\Services\AuthService::$providers as $provider)
                     <div class="col-md-3 col-xs-6">
@@ -75,11 +75,11 @@
         </div>
         {!! Former::close() !!}
 
-        @if(Utils::allowNewAccounts())
+        @if(Utils::allowNewCompanys())
             <div class="row sign-up">
                 <div class="col-md-3 col-md-offset-3 col-xs-12">
                     <h3>{{trans('texts.not_a_member_yet')}}</h3>
-                    <p>{{trans('texts.login_create_an_account')}}</p>
+                    <p>{{trans('texts.login_create_an_company')}}</p>
                 </div>
                 <div class="col-md-3 col-xs-12">
                     {!! Button::primary(trans('texts.sign_up_now'))->asLinkTo(URL::to('/invoice_now?sign_up=true'))->withAttributes(['class' => 'blue'])->large()->submit()->block() !!}

@@ -69,7 +69,7 @@ class CheckData extends Command
         $this->checkBalances();
 
         if (! $this->option('client_id')) {
-            $this->checkAccountData();
+            $this->checkCompanyData();
         }
 
         $this->logMessage('Done');
@@ -105,7 +105,7 @@ class CheckData extends Command
         $this->logMessage($count . ' activities with blank invoice backup');
     }
 
-    private function checkAccountData()
+    private function checkCompanyData()
     {
         $tables = [
             'activities' => [
@@ -159,19 +159,19 @@ class CheckData extends Command
                 $tableName = Utils::pluralizeEntityType($entityType);
                 $records = DB::table($table)
                                 ->join($tableName, "{$tableName}.id", '=', "{$table}.{$entityType}_id")
-                                ->where("{$table}.account_id", '!=', DB::raw("{$tableName}.account_id"))
+                                ->where("{$table}.company_id", '!=', DB::raw("{$tableName}.company_id"))
                                 ->get(["{$table}.id"]);
 
                 if (count($records)) {
                     $this->isValid = false;
-                    $this->logMessage(count($records) . " {$table} records with incorrect {$entityType} account id");
+                    $this->logMessage(count($records) . " {$table} records with incorrect {$entityType} company id");
 
                     if ($this->option('fix') == 'true') {
                         foreach ($records as $record) {
                             DB::table($table)
                                 ->where('id', $record->id)
                                 ->update([
-                                    'account_id' => $record->account_id,
+                                    'company_id' => $record->company_id,
                                     'user_id' => $record->user_id,
                                 ]);
                         }
@@ -214,8 +214,8 @@ class CheckData extends Command
         // find all clients where the balance doesn't equal the sum of the outstanding invoices
         $clients = DB::table('clients')
                     ->join('invoices', 'invoices.client_id', '=', 'clients.id')
-                    ->join('accounts', 'accounts.id', '=', 'clients.account_id')
-                    ->where('accounts.id', '!=', 20432)
+                    ->join('companies', 'companies.id', '=', 'clients.company_id')
+                    ->where('companies.id', '!=', 20432)
                     ->where('clients.is_deleted', '=', 0)
                     ->where('invoices.is_deleted', '=', 0)
                     ->where('invoices.is_public', '=', 1)
@@ -228,8 +228,8 @@ class CheckData extends Command
         }
 
         $clients = $clients->groupBy('clients.id', 'clients.balance', 'clients.created_at')
-                ->orderBy('accounts.company_id', 'DESC')
-                ->get(['accounts.company_id', 'clients.account_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
+                ->orderBy('companies.company_id', 'DESC')
+                ->get(['companies.company_id', 'clients.company_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
         $this->logMessage(count($clients) . ' clients with incorrect balance/activities');
 
         if (count($clients) > 0) {
@@ -237,7 +237,7 @@ class CheckData extends Command
         }
 
         foreach ($clients as $client) {
-            $this->logMessage("=== Company: {$client->company_id} Account:{$client->account_id} Client:{$client->id} Balance:{$client->balance} Actual Balance:{$client->actual_balance} ===");
+            $this->logMessage("=== Corporation: {$client->company_id} Company:{$client->company_id} Client:{$client->id} Balance:{$client->balance} Actual Balance:{$client->actual_balance} ===");
             $foundProblem = false;
             $lastBalance = 0;
             $lastAdjustment = 0;
@@ -291,7 +291,7 @@ class CheckData extends Command
                         && $invoice->amount > 0;
 
                     // **Fix for ninja invoices which didn't have the invoice_type_id value set
-                    if ($noAdjustment && $client->account_id == 20432) {
+                    if ($noAdjustment && $client->company_id == 20432) {
                         $this->logMessage('No adjustment for ninja invoice');
                         $foundProblem = true;
                         $clientFix += $invoice->amount;
@@ -385,7 +385,7 @@ class CheckData extends Command
                     DB::table('activities')->insert([
                             'created_at' => new Carbon(),
                             'updated_at' => new Carbon(),
-                            'account_id' => $client->account_id,
+                            'company_id' => $client->company_id,
                             'client_id' => $client->id,
                             'adjustment' => $client->actual_balance - $activity->balance,
                             'balance' => $client->actual_balance,

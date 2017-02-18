@@ -1,7 +1,7 @@
 @extends('master')
 
 @section('head')
-    @if (!empty($clientauth) && $fontsUrl = Utils::getAccountFontsUrl())
+    @if (!empty($clientauth) && $fontsUrl = Utils::getCompanyFontsUrl())
         <link href="{!! $fontsUrl !!}" rel="stylesheet" type="text/css">
     @endif
     <link href="{{ asset('css/built.public.css') }}?no_cache={{ NINJA_VERSION }}" rel="stylesheet" type="text/css"/>

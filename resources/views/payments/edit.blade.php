@@ -53,7 +53,7 @@
              @endif
             @endif
 
-            @if (!$payment || !$payment->account_gateway_id)
+            @if (!$payment || !$payment->company_gateway_id)
 			 {!! Former::select('payment_type_id')
                     ->addOption('','')
                     ->fromQuery($paymentTypes, 'name', 'id')

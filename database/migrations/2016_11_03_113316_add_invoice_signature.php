@@ -27,12 +27,12 @@ class AddInvoiceSignature extends Migration
 
             if (Utils::isNinja()) {
                 Schema::table('payment_methods', function ($table) {
-                    $table->unsignedInteger('account_gateway_token_id')->nullable()->change();
-                    $table->dropForeign('payment_methods_account_gateway_token_id_foreign');
+                    $table->unsignedInteger('company_gateway_token_id')->nullable()->change();
+                    $table->dropForeign('payment_methods_company_gateway_token_id_foreign');
                 });
 
                 Schema::table('payment_methods', function ($table) {
-                    $table->foreign('account_gateway_token_id')->references('id')->on('account_gateway_tokens')->onDelete('cascade');
+                    $table->foreign('company_gateway_token_id')->references('id')->on('company_gateway_tokens')->onDelete('cascade');
                 });
 
                 Schema::table('payments', function ($table) {

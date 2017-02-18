@@ -4,7 +4,7 @@
     @parent
 
     @include('money_script')
-@foreach (Auth::user()->account->getFontFolders() as $font)
+@foreach (Auth::user()->company->getFontFolders() as $font)
   <script src="{{ asset('js/vfs_fonts/'.$font.'.js') }}" type="text/javascript"></script>
 @endforeach
   <script src="{{ asset('pdf.built.js') }}?no_cache={{ NINJA_VERSION }}" type="text/javascript"></script>
@@ -31,7 +31,7 @@
             }
         @endif
 
-        invoice.image = window.accountLogo;
+        invoice.image = window.companyLogo;
 
         var invoiceDesignId = parseInt(invoice.invoice_design_id);
         var invoiceDesign = _.findWhere(invoiceDesigns, {id: invoiceDesignId});
@@ -70,9 +70,9 @@
         <br/>&nbsp;<br/>
     @endif
 
-    @include('invoices.pdf', ['account' => Auth::user()->account, 'pdfHeight' => 800])
+    @include('invoices.pdf', ['company' => Auth::user()->company, 'pdfHeight' => 800])
 
-    @if (Utils::hasFeature(FEATURE_DOCUMENTS) && $invoice->account->invoice_embed_documents)
+    @if (Utils::hasFeature(FEATURE_DOCUMENTS) && $invoice->company->invoice_embed_documents)
         @foreach ($invoice->documents as $document)
             @if($document->isPDFEmbeddable())
                 <script src="{{ $document->getVFSJSUrl() }}" type="text/javascript" async></script>

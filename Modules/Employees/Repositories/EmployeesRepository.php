@@ -25,7 +25,7 @@ class EmployeesRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('employees')
-                    ->where('employees.account_id', '=', \Auth::user()->account_id)
+                    ->where('employees.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'employees.public_id',

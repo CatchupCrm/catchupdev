@@ -3,14 +3,14 @@
 @section('head')
     @parent
 
-    @if ($accountGateway->getPublishableStripeKey())
+    @if ($companyGateway->getPublishableStripeKey())
         <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
         <script type="text/javascript">
-            Stripe.setPublishableKey('{{ $accountGateway->getPublishableStripeKey() }}');
+            Stripe.setPublishableKey('{{ $companyGateway->getPublishableStripeKey() }}');
             $(function() {
                 var countries = {!! Cache::get('countries')->pluck('iso_3166_2','id') !!};
                 $('.payment-form').unbind('submit').submit(function(event) {
-                    if($('[name=plaidAccountId]').length)return;
+                    if($('[name=plaidCompanyId]').length)return;
 
                     var $form = $(this);
 

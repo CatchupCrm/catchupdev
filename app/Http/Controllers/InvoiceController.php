@@ -6,7 +6,7 @@ use App\Http\Requests\CreateInvoiceRequest;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Jobs\SendInvoiceEmail;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Expense;
@@ -67,31 +67,31 @@ class InvoiceController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $companyId = Auth::user()->company_id;
         $search = Input::get('sSearch');
 
-        return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_INVOICE, $search);
+        return $this->invoiceService->getDatatable($companyId, $clientPublicId, ENTITY_INVOICE, $search);
     }
 
     public function getRecurringDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $companyId = Auth::user()->company_id;
         $search = Input::get('sSearch');
 
-        return $this->recurringInvoiceService->getDatatable($accountId, $clientPublicId, ENTITY_RECURRING_INVOICE, $search);
+        return $this->recurringInvoiceService->getDatatable($companyId, $clientPublicId, ENTITY_RECURRING_INVOICE, $search);
     }
 
     public function edit(InvoiceRequest $request, $publicId, $clone = false)
     {
-        $account = Auth::user()->account;
-        $invoice = $request->entity()->load('invitations', 'account.country', 'client.contacts', 'client.country', 'invoice_items', 'documents', 'expenses', 'expenses.documents', 'payments');
+        $company = Auth::user()->company;
+        $invoice = $request->entity()->load('invitations', 'company.country', 'client.contacts', 'client.country', 'invoice_items', 'documents', 'expenses', 'expenses.documents', 'payments');
 
         $entityType = $invoice->getEntityType();
 
         $contactIds = DB::table('invitations')
             ->join('contacts', 'contacts.id', '=', 'invitations.contact_id')
             ->where('invitations.invoice_id', '=', $invoice->id)
-            ->where('invitations.account_id', '=', Auth::user()->account_id)
+            ->where('invitations.company_id', '=', Auth::user()->company_id)
             ->where('invitations.deleted_at', '=', null)
             ->select('contacts.public_id')->lists('public_id');
 
@@ -100,7 +100,7 @@ class InvoiceController extends BaseController
         if ($clone) {
             $invoice->id = $invoice->public_id = null;
             $invoice->is_public = false;
-            $invoice->invoice_number = $account->getNextNumber($invoice);
+            $invoice->invoice_number = $company->getNextNumber($invoice);
             $invoice->balance = $invoice->amount;
             $invoice->invoice_status_id = 0;
             $invoice->invoice_date = date_create()->format('Y-m-d');
@@ -182,7 +182,7 @@ class InvoiceController extends BaseController
 
     public function create(InvoiceRequest $request, $clientPublicId = 0, $isRecurring = false)
     {
-        $account = Auth::user()->account;
+        $company = Auth::user()->company;
 
         $entityType = $isRecurring ? ENTITY_RECURRING_INVOICE : ENTITY_INVOICE;
         $clientId = null;
@@ -191,7 +191,7 @@ class InvoiceController extends BaseController
             $clientId = Client::getPrivateId($request->client_id);
         }
 
-        $invoice = $account->createInvoice($entityType, $clientId);
+        $invoice = $company->createInvoice($entityType, $clientId);
         $invoice->public_id = 0;
 
         $clients = Client::scope()->with('contacts', 'country')->orderBy('name');
@@ -219,7 +219,7 @@ class InvoiceController extends BaseController
 
     private static function getViewModel($invoice)
     {
-        $account = Auth::user()->account;
+        $company = Auth::user()->company;
 
         $recurringHelp = '';
         $recurringDueDateHelp = '';
@@ -296,10 +296,10 @@ class InvoiceController extends BaseController
 
         return [
             'data' => Input::old('data'),
-            'account' => Auth::user()->account->load('country'),
+            'company' => Auth::user()->company->load('country'),
             'products' => Product::scope()->with('default_tax_rate')->orderBy('product_key')->get(),
-            'taxRateOptions' => $account->present()->taxRateOptions,
-            'defaultTax' => $account->default_tax_rate,
+            'taxRateOptions' => $company->present()->taxRateOptions,
+            'defaultTax' => $company->default_tax_rate,
             'currencies' => Cache::get('currencies'),
             'sizes' => Cache::get('sizes'),
             'paymentTerms' => Cache::get('paymentTerms'),
@@ -309,7 +309,7 @@ class InvoiceController extends BaseController
             'recurringDueDates' => $recurringDueDates,
             'recurringHelp' => $recurringHelp,
             'recurringDueDateHelp' => $recurringDueDateHelp,
-            'invoiceLabels' => Auth::user()->account->getInvoiceLabels(),
+            'invoiceLabels' => Auth::user()->company->getInvoiceLabels(),
             'tasks' => Session::get('tasks') ? json_encode(Session::get('tasks')) : null,
             'expenseCurrencyId' => Session::get('expenseCurrencyId') ?: null,
             'expenses' => Session::get('expenses') ? Expense::scope(Session::get('expenses'))->with('documents', 'expense_category')->get() : [],
@@ -387,8 +387,8 @@ class InvoiceController extends BaseController
         $entityType = $invoice->getEntityType();
 
         if (filter_var(Input::get('save_as_default'), FILTER_VALIDATE_BOOLEAN)) {
-            $account = Auth::user()->account;
-            $account->setTemplateDefaults(Input::get('template_type'), $template['subject'], $template['body']);
+            $company = Auth::user()->company;
+            $company->setTemplateDefaults(Input::get('template_type'), $template['subject'], $template['body']);
         }
 
         if (! Auth::user()->confirmed) {
@@ -422,8 +422,8 @@ class InvoiceController extends BaseController
     {
         if (! $invoice->shouldSendToday()) {
             if ($date = $invoice->getNextSendDate()) {
-                $date = $invoice->account->formatDate($date);
-                $date .= ' ' . DEFAULT_SEND_RECURRING_HOUR . ':00 am ' . $invoice->account->getTimezone();
+                $date = $invoice->company->formatDate($date);
+                $date .= ' ' . DEFAULT_SEND_RECURRING_HOUR . ':00 am ' . $invoice->company->getTimezone();
 
                 return trans('texts.recurring_too_soon', ['date' => $date]);
             } else {
@@ -514,7 +514,7 @@ class InvoiceController extends BaseController
         $invoice = $request->entity();
         $paymentId = $request->payment_id ? Payment::getPrivateId($request->payment_id) : false;
 
-        $invoice->load('user', 'invoice_items', 'documents', 'expenses', 'expenses.documents', 'account.country', 'client.contacts', 'client.country');
+        $invoice->load('user', 'invoice_items', 'documents', 'expenses', 'expenses.documents', 'company.country', 'client.contacts', 'client.country');
         $invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
         $invoice->due_date = Utils::fromSqlDate($invoice->due_date);
         $invoice->features = [
@@ -524,7 +524,7 @@ class InvoiceController extends BaseController
         ];
         $invoice->invoice_type_id = intval($invoice->invoice_type_id);
 
-        $activities = Activity::scope(false, $invoice->account_id);
+        $activities = Activity::scope(false, $invoice->company_id);
         if ($paymentId) {
             $activities->whereIn('activity_type_id', [ACTIVITY_TYPE_CREATE_PAYMENT])
                        ->where('payment_id', '=', $paymentId);
@@ -549,7 +549,7 @@ class InvoiceController extends BaseController
                     'invoice_settings' => Auth::user()->hasFeature(FEATURE_INVOICE_SETTINGS),
                 ];
                 $backup->invoice_type_id = isset($backup->invoice_type_id) && intval($backup->invoice_type_id) == INVOICE_TYPE_QUOTE;
-                $backup->account = $invoice->account->toArray();
+                $backup->company = $invoice->company->toArray();
 
                 $versionsJson[$paymentId ? 0 : $activity->id] = $backup;
                 $key = Utils::timestampToDateTimeString(strtotime($activity->created_at)) . ' - ' . $activity->user->getDisplayName();

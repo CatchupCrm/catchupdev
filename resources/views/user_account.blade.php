@@ -1,7 +1,7 @@
 <li style="margin-top: 4px; margin-bottom: 4px; min-width: 220px; cursor: pointer">
     @if (Utils::isAdmin())
         @if (isset($user_id) && $user_id != Auth::user()->id)
-            <a href="{{ URL::to("/switch_account/{$user_id}") }}">
+            <a href="{{ URL::to("/switch_company/{$user_id}") }}">
         @else 
             <a href="{{ URL::to("/settings/company_details") }}">
         @endif
@@ -21,7 +21,7 @@
             <b>
         @endif
 
-        <div class="account" style="padding-right:90px">{{ $account_name }}</div>
+        <div class="company" style="padding-right:90px">{{ $company_name }}</div>
         <div class="user" style="padding-right:90px">{{ $user_name }}</div>
 
         @if (isset($selected) && $selected)            

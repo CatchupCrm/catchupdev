@@ -42,7 +42,7 @@ class InvoiceEventHandler
 
     private function sendNotifications($invoice, $type, $payment = null)
     {
-        foreach ($invoice->account->users as $user) {
+        foreach ($invoice->company->users as $user) {
             if ($user->{'notify_' . $type}) {
                 $this->userMailer->sendNotification($user, $invoice, $type, $payment);
             }

@@ -2,13 +2,13 @@
 
 namespace App\Ninja\Repositories;
 
-use App\Models\Account;
+use App\Models\Company;
 
 class ReferralRepository
 {
     public function getCounts($userId)
     {
-        $accounts = Account::where('referral_user_id', $userId)->get();
+        $companies = Company::where('referral_user_id', $userId)->get();
 
         $counts = [
             'free' => 0,
@@ -16,9 +16,9 @@ class ReferralRepository
             'enterprise' => 0,
         ];
 
-        foreach ($accounts as $account) {
+        foreach ($companies as $company) {
             $counts['free']++;
-            $plan = $account->getPlanDetails(false, false);
+            $plan = $company->getPlanDetails(false, false);
 
             if ($plan) {
                 $counts['pro']++;

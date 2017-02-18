@@ -29,9 +29,9 @@ class PaymentMethod extends EntityModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function account()
+    public function company()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Company');
     }
 
     /**
@@ -45,9 +45,9 @@ class PaymentMethod extends EntityModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function account_gateway_token()
+    public function company_gateway_token()
     {
-        return $this->belongsTo('App\Models\AccountGatewayToken');
+        return $this->belongsTo('App\Models\CompanyGatewayToken');
     }
 
     /**
@@ -239,12 +239,12 @@ class PaymentMethod extends EntityModel
 }
 
 PaymentMethod::deleting(function ($paymentMethod) {
-    $accountGatewayToken = $paymentMethod->account_gateway_token;
-    if ($accountGatewayToken->default_payment_method_id == $paymentMethod->id) {
-        $newDefault = $accountGatewayToken->payment_methods->first(function ($i, $paymentMethdod) use ($accountGatewayToken) {
-            return $paymentMethdod->id != $accountGatewayToken->default_payment_method_id;
+    $companyGatewayToken = $paymentMethod->company_gateway_token;
+    if ($companyGatewayToken->default_payment_method_id == $paymentMethod->id) {
+        $newDefault = $companyGatewayToken->payment_methods->first(function ($i, $paymentMethdod) use ($companyGatewayToken) {
+            return $paymentMethdod->id != $companyGatewayToken->default_payment_method_id;
         });
-        $accountGatewayToken->default_payment_method_id = $newDefault ? $newDefault->id : null;
-        $accountGatewayToken->save();
+        $companyGatewayToken->default_payment_method_id = $newDefault ? $newDefault->id : null;
+        $companyGatewayToken->save();
     }
 });

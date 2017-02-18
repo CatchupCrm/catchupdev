@@ -134,7 +134,7 @@ class ActivityListener
             return;
         }
 
-        $backupInvoice = Invoice::with('invoice_items', 'client.account', 'client.contacts')
+        $backupInvoice = Invoice::with('invoice_items', 'client.company', 'client.contacts')
                             ->withTrashed()
                             ->find($event->invoice->id);
 
@@ -242,7 +242,7 @@ class ActivityListener
             return;
         }
 
-        $backupQuote = Invoice::with('invoice_items', 'client.account', 'client.contacts')
+        $backupQuote = Invoice::with('invoice_items', 'client.company', 'client.contacts')
                             ->withTrashed()
                             ->find($event->quote->id);
 

@@ -9,7 +9,7 @@ class IndustrySeeder extends Seeder
         Eloquent::unguard();
 
         $industries = [
-            ['name' => 'Accounting & Legal'],
+            ['name' => 'Companying & Legal'],
             ['name' => 'Advertising'],
             ['name' => 'Aerospace'],
             ['name' => 'Agriculture'],

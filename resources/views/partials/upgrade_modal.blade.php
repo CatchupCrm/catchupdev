@@ -139,9 +139,7 @@
     <label for="plan_term_year" class="radio-inline">
       <input value="year" id="plan_term_year" type="radio" name="plan_term">Annually</label>
   </h4>
-  @if (Auth::user()->account->company->hasActivePromo())
-    <h4>{{ Auth::user()->account->company->present()->promoMessage }}</h4><br/>
-  @endif
+
 </div>
 <div class="col-md-4 col-md-offset-2 text-center">
   <h2>{{ trans('texts.pro_upgrade_title') }}</h2>
@@ -226,10 +224,7 @@
       }
       var label = "{{ trans('texts.freq_annually') }}";
     }
-    @if (Auth::user()->account->company->hasActivePromo())
-        proPrice = proPrice - (proPrice * {{ Auth::user()->account->company->discount }});
-        enterprisePrice = enterprisePrice - (enterprisePrice * {{ Auth::user()->account->company->discount }});
-    @endif
+
     $('#upgrade_pro_price').text(proPrice);
     $('#upgrade_enterprise_price').text(enterprisePrice);
     $('span.upgrade_frequency').text(label);
@@ -242,9 +237,7 @@
 
   $(function() {
 
-    @if (Auth::user()->account->company->hasActivePromo())
-        updateUpgradePrices();
-    @endif
+
 
     $(document).keyup(function(e) {
          if (e.keyCode == 27) { // escape key maps to keycode `27`

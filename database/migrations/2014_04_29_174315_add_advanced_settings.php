@@ -11,7 +11,7 @@ class AddAdvancedSettings extends Migration
      */
     public function up()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->string('primary_color')->nullable();
             $table->string('secondary_color')->nullable();
         });
@@ -29,7 +29,7 @@ class AddAdvancedSettings extends Migration
      */
     public function down()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->dropColumn('primary_color');
             $table->dropColumn('secondary_color');
         });

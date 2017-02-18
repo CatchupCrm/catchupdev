@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\UserSignedUp;
 use App\Ninja\Mailers\UserMailer;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\CompanyRepository;
 use Auth;
 use Utils;
 
@@ -14,9 +14,9 @@ use Utils;
 class HandleUserSignedUp
 {
     /**
-     * @var AccountRepository
+     * @var CompanyRepository
      */
-    protected $accountRepo;
+    protected $companyRepo;
 
     /**
      * @var UserMailer
@@ -26,12 +26,12 @@ class HandleUserSignedUp
     /**
      * Create the event handler.
      *
-     * @param AccountRepository $accountRepo
+     * @param CompanyRepository $companyRepo
      * @param UserMailer        $userMailer
      */
-    public function __construct(AccountRepository $accountRepo, UserMailer $userMailer)
+    public function __construct(CompanyRepository $companyRepo, UserMailer $userMailer)
     {
-        $this->accountRepo = $accountRepo;
+        $this->companyRepo = $companyRepo;
         $this->userMailer = $userMailer;
     }
 
@@ -51,7 +51,7 @@ class HandleUserSignedUp
         } elseif (Utils::isNinjaDev()) {
             // do nothing
         } else {
-            $this->accountRepo->registerNinjaUser($user);
+            $this->companyRepo->registerNinjaUser($user);
         }
 
         session([SESSION_COUNTER => -1]);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AccountToken;
+use App\Models\CompanyToken;
 use Auth;
 use Cache;
 use Closure;
@@ -48,7 +48,7 @@ class ApiCheck
             }
         } else {
             // check for a valid token
-            $token = AccountToken::where('token', '=', Request::header('X-Ninja-Token'))->first(['id', 'user_id']);
+            $token = CompanyToken::where('token', '=', Request::header('X-Ninja-Token'))->first(['id', 'user_id']);
 
             // check if user is archived
             if ($token && $token->user) {
@@ -71,7 +71,7 @@ class ApiCheck
 
             return Response::json($error, 403, $headers);
         } else {
-            $key = Auth::check() ? Auth::user()->account->id : $request->getClientIp();
+            $key = Auth::check() ? Auth::user()->company->id : $request->getClientIp();
 
             // http://stackoverflow.com/questions/1375501/how-do-i-throttle-my-sites-api-users
             $hour = 60 * 60;

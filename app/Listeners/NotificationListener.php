@@ -51,7 +51,7 @@ class NotificationListener
      */
     private function sendEmails($invoice, $type, $payment = null)
     {
-        foreach ($invoice->account->users as $user) {
+        foreach ($invoice->company->users as $user) {
             if ($user->{"notify_{$type}"}) {
                 $this->userMailer->sendNotification($user, $invoice, $type, $payment);
             }
@@ -117,7 +117,7 @@ class NotificationListener
     public function createdPayment(PaymentWasCreated $event)
     {
         // only send emails for online payments
-        if (! $event->payment->account_gateway_id) {
+        if (! $event->payment->company_gateway_id) {
             return;
         }
 

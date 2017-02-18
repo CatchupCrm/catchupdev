@@ -9,16 +9,16 @@ class TokenRepository extends BaseRepository
 {
     public function getClassName()
     {
-        return 'App\Models\AccountToken';
+        return 'App\Models\CompanyToken';
     }
 
     public function find($userId)
     {
-        $query = DB::table('account_tokens')
-                  ->where('account_tokens.user_id', '=', $userId)
-                  ->whereNull('account_tokens.deleted_at');
+        $query = DB::table('company_tokens')
+                  ->where('company_tokens.user_id', '=', $userId)
+                  ->whereNull('company_tokens.deleted_at');
         ;
 
-        return $query->select('account_tokens.public_id', 'account_tokens.name', 'account_tokens.token', 'account_tokens.public_id', 'account_tokens.deleted_at');
+        return $query->select('company_tokens.public_id', 'company_tokens.name', 'company_tokens.token', 'company_tokens.public_id', 'company_tokens.deleted_at');
     }
 }

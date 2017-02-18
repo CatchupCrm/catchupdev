@@ -100,7 +100,7 @@ class StartupCheck
             }
         }
 
-        // Check if we're requesting to change the account's language
+        // Check if we're requesting to change the company's language
         if (Input::has('lang')) {
             $locale = Input::get('lang');
             App::setLocale($locale);
@@ -108,19 +108,19 @@ class StartupCheck
 
             if (Auth::check()) {
                 if ($language = Language::whereLocale($locale)->first()) {
-                    $account = Auth::user()->account;
-                    $account->language_id = $language->id;
-                    $account->save();
+                    $company = Auth::user()->company;
+                    $company->language_id = $language->id;
+                    $company->save();
                 }
             }
         } elseif (Auth::check()) {
-            $locale = Auth::user()->account->language ? Auth::user()->account->language->locale : DEFAULT_LOCALE;
+            $locale = Auth::user()->company->language ? Auth::user()->company->language->locale : DEFAULT_LOCALE;
             App::setLocale($locale);
         } elseif (session(SESSION_LOCALE)) {
             App::setLocale(session(SESSION_LOCALE));
         }
 
-        // Make sure the account/user localization settings are in the session
+        // Make sure the company/user localization settings are in the session
         if (Auth::check() && ! Session::has(SESSION_TIMEZONE)) {
             Event::fire(new UserLoggedIn());
         }
@@ -150,13 +150,13 @@ class StartupCheck
                     }
                 } elseif ($productId == PRODUCT_WHITE_LABEL) {
                     if ($data && $data != RESULT_FAILURE) {
-                        $company = Auth::user()->account->company;
-                        $company->plan_term = PLAN_TERM_YEARLY;
-                        $company->plan_paid = $data;
-                        $date = max(date_create($data), date_create($company->plan_expires));
-                        $company->plan_expires = $date->modify('+1 year')->format('Y-m-d');
-                        $company->plan = PLAN_WHITE_LABEL;
-                        $company->save();
+                        $corporation = Auth::user()->company->corporation;
+                        $corporation->plan_term = PLAN_TERM_YEARLY;
+                        $corporation->plan_paid = $data;
+                        $date = max(date_create($data), date_create($corporation->plan_expires));
+                        $corporation->plan_expires = $date->modify('+1 year')->format('Y-m-d');
+                        $corporation->plan = PLAN_WHITE_LABEL;
+                        $corporation->save();
 
                         Session::flash('message', trans('texts.bought_white_label'));
                     } else {

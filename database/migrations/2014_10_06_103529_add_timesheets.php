@@ -14,7 +14,7 @@ class AddTimesheets extends Migration
         Schema::create('projects', function ($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('company_id')->index();
             $t->unsignedInteger('client_id')->nullable();
             $t->timestamps();
             $t->softDeletes();
@@ -23,15 +23,15 @@ class AddTimesheets extends Migration
             $t->string('description');
             
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $t->foreign('account_id')->references('id')->on('accounts');
+            $t->foreign('company_id')->references('id')->on('companies');
             
-            $t->unique(['account_id', 'name']);
+            $t->unique(['company_id', 'name']);
         });
         
         Schema::create('project_codes', function ($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('company_id')->index();
             $t->unsignedInteger('project_id');
             $t->timestamps();
             $t->softDeletes();
@@ -40,17 +40,17 @@ class AddTimesheets extends Migration
             $t->string('description');
            
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $t->foreign('account_id')->references('id')->on('accounts');
+            $t->foreign('company_id')->references('id')->on('companies');
             $t->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             
-            $t->unique(['account_id', 'name']);
+            $t->unique(['company_id', 'name']);
         });
         
         
         Schema::create('timesheets', function ($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('company_id')->index();
             $t->timestamps();
             $t->softDeletes();
                        
@@ -61,16 +61,16 @@ class AddTimesheets extends Migration
             $t->decimal('hours');
             
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $t->foreign('account_id')->references('id')->on('accounts');
+            $t->foreign('company_id')->references('id')->on('companies');
             
             $t->unsignedInteger('public_id');
-            $t->unique(['account_id', 'public_id']);
+            $t->unique(['company_id', 'public_id']);
         });
         
         Schema::create('timesheet_event_sources', function ($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('company_id')->index();
             $t->timestamps();
             $t->softDeletes();
             
@@ -82,14 +82,14 @@ class AddTimesheets extends Migration
             $t->dateTime('from_date')->nullable();
             $t->dateTime('to_date')->nullable();
             
-            $t->foreign('account_id')->references('id')->on('accounts');
+            $t->foreign('company_id')->references('id')->on('companies');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
         
         Schema::create('timesheet_events', function ($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('company_id')->index();
             $t->unsignedInteger('timesheet_event_source_id');
             $t->unsignedInteger('timesheet_id')->nullable()->index();
             $t->unsignedInteger('project_id')->nullable()->index();
@@ -126,7 +126,7 @@ class AddTimesheets extends Migration
             $t->text('updated_data')->nullable();
             $t->timeStamp('updated_data_at')->default('0000-00-00T00:00:00');
             
-            $t->foreign('account_id')->references('id')->on('accounts');
+            $t->foreign('company_id')->references('id')->on('companies');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $t->foreign('timesheet_event_source_id')->references('id')->on('timesheet_event_sources')->onDelete('cascade');
 

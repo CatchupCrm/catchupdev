@@ -56,11 +56,11 @@ class UserMailer extends Mailer
 
         $entityType = $invoice->getEntityType();
         $view = ($notificationType == 'approved' ? ENTITY_QUOTE : ENTITY_INVOICE) . "_{$notificationType}";
-        $account = $user->account;
+        $company = $user->company;
         $client = $invoice->client;
 
-        if ($account->hasMultipleAccounts()) {
-            $link = url(sprintf('/account/%s?redirect_to=%s', $account->account_key, $invoice->present()->path));
+        if ($company->hasMultipleCompanys()) {
+            $link = url(sprintf('/company/%s?redirect_to=%s', $company->company_key, $invoice->present()->path));
         } else {
             $link = $invoice->present()->url;
         }
@@ -68,17 +68,17 @@ class UserMailer extends Mailer
         $data = [
             'entityType' => $entityType,
             'clientName' => $client->getDisplayName(),
-            'accountName' => $account->getDisplayName(),
+            'companyName' => $company->getDisplayName(),
             'userName' => $user->getDisplayName(),
-            'invoiceAmount' => $account->formatMoney($invoice->getRequestedAmount(), $client),
+            'invoiceAmount' => $company->formatMoney($invoice->getRequestedAmount(), $client),
             'invoiceNumber' => $invoice->invoice_number,
             'invoiceLink' => $link,
-            'account' => $account,
+            'company' => $company,
         ];
 
         if ($payment) {
             $data['payment'] = $payment;
-            $data['paymentAmount'] = $account->formatMoney($payment->amount, $client);
+            $data['paymentAmount'] = $company->formatMoney($payment->amount, $client);
         }
 
         $subject = trans("texts.notification_{$entityType}_{$notificationType}_subject", [
@@ -95,7 +95,7 @@ class UserMailer extends Mailer
     public function sendEmailBounced(Invitation $invitation)
     {
         $user = $invitation->user;
-        $account = $user->account;
+        $company = $user->company;
         $invoice = $invitation->invoice;
         $entityType = $invoice->getEntityType();
 

@@ -4,11 +4,11 @@
 {!! link_to('https://www.invoiceninja.com/?utm_source=powered_by', 'InvoiceNinja.com', ['target' => '_blank', 'title' => trans('texts.created_by', ['name' => 'Hillel Coren'])]) !!} -
 {!! link_to(RELEASES_URL, 'v' . NINJA_VERSION, ['target' => '_blank', 'title' => trans('texts.trello_roadmap')]) !!} |
 
-@if (Auth::user()->account->hasFeature(FEATURE_WHITE_LABEL))
+@if (Auth::user()->company->hasFeature(FEATURE_WHITE_LABEL))
   {{ trans('texts.white_labeled') }}
-  @if (false && $company->hasActivePlan() && $company->daysUntilPlanExpires() <= 10)
+  @if (false && $corporation->hasActivePlan() && $corporation->daysUntilPlanExpires() <= 10)
     - <b>{!! trans('texts.license_expiring', [
-        'count' => $company->daysUntilPlanExpires(),
+        'count' => $corporation->daysUntilPlanExpires(),
         'link' => '<a href="#" onclick="buyWhiteLabel()">' . trans('texts.click_here') . '</a>',
     ]) !!}</b>
   @endif
@@ -85,7 +85,7 @@
 
     function buyProduct(affiliateKey, productId) {
         window.open('{{ Utils::isNinjaDev() ? '' : NINJA_APP_URL }}/license?affiliate_key=' + affiliateKey + '&product_id=' + productId + '&return_url=' + window.location);
-        //window.open('{{ Utils::isNinjaDev() ? '' : NINJA_APP_URL }}/buy_now/?account_key={{ env('NINJA_LICENSE_ACCOUNT_KEY') }}&product_id=' + productId + '&contact_key={{ Auth::user()->primaryAccount()->account_key }}' + '&return_url=' + window.location);
+        //window.open('{{ Utils::isNinjaDev() ? '' : NINJA_APP_URL }}/buy_now/?company_key={{ env('NINJA_LICENSE_COMPANY_KEY') }}&product_id=' + productId + '&contact_key={{ Auth::user()->primaryCompany()->company_key }}' + '&return_url=' + window.location);
     }
 
     function showApplyLicense() {

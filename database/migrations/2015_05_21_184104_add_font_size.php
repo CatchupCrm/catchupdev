@@ -11,7 +11,7 @@ class AddFontSize extends Migration
      */
     public function up()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->smallInteger('font_size')->default(DEFAULT_FONT_SIZE);
         });
     }
@@ -23,7 +23,7 @@ class AddFontSize extends Migration
      */
     public function down()
     {
-        Schema::table('accounts', function ($table) {
+        Schema::table('companies', function ($table) {
             $table->dropColumn('font_size');
         });
     }

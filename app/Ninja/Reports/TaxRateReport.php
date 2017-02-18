@@ -17,7 +17,7 @@ class TaxRateReport extends AbstractReport
 
     public function run()
     {
-        $account = Auth::user()->account;
+        $company = Auth::user()->company;
 
         $clients = Client::scope()
                         ->withArchived()
@@ -46,7 +46,7 @@ class TaxRateReport extends AbstractReport
                         }]);
 
         foreach ($clients->get() as $client) {
-            $currencyId = $client->currency_id ?: Auth::user()->account->getCurrencyId();
+            $currencyId = $client->currency_id ?: Auth::user()->company->getCurrencyId();
 
             foreach ($client->invoices as $invoice) {
                 $taxTotals = [];
@@ -69,8 +69,8 @@ class TaxRateReport extends AbstractReport
                             $invoice->present()->link,
                             $tax['name'],
                             $tax['rate'] . '%',
-                            $account->formatMoney($tax['amount'], $client),
-                            $account->formatMoney($tax['paid'], $client),
+                            $company->formatMoney($tax['amount'], $client),
+                            $company->formatMoney($tax['paid'], $client),
                         ];
 
                         $this->addToTotals($client->currency_id, 'amount', $tax['amount']);

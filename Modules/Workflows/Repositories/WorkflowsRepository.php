@@ -25,7 +25,7 @@ class WorkflowsRepository extends BaseRepository
     public function find($filter = null, $userId = false)
     {
         $query = DB::table('workflows')
-                    ->where('workflows.account_id', '=', \Auth::user()->account_id)
+                    ->where('workflows.company_id', '=', \Auth::user()->company_id)
                     ->select(
                         
                         'workflows.public_id',

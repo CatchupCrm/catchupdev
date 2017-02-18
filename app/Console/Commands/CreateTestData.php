@@ -35,10 +35,10 @@ class CreateTestData extends Command
     /**
      * CreateTestData constructor.
      *
-     * @param ClientRepository  $clientRepo
+     * @param ClientRepository $clientRepo
      * @param InvoiceRepository $invoiceRepo
      * @param PaymentRepository $paymentRepo
-     * @param VendorRepository  $vendorRepo
+     * @param VendorRepository $vendorRepo
      * @param ExpenseRepository $expenseRepo
      */
     public function __construct(
@@ -68,7 +68,7 @@ class CreateTestData extends Command
             return false;
         }
 
-        $this->info(date('Y-m-d').' Running CreateTestData...');
+        $this->info(date('Y-m-d') . ' Running CreateTestData...');
 
         Auth::loginUsingId(1);
         $this->count = $this->argument('count');

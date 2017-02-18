@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Models\Corporation;
 use App\Ninja\Mailers\ContactMailer as Mailer;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\CompanyRepository;
 use Illuminate\Console\Command;
 use Utils;
 
@@ -29,59 +29,59 @@ class SendRenewalInvoices extends Command
     protected $mailer;
 
     /**
-     * @var AccountRepository
+     * @var CompanyRepository
      */
-    protected $accountRepo;
+    protected $companyRepo;
 
     /**
      * SendRenewalInvoices constructor.
      *
      * @param Mailer            $mailer
-     * @param AccountRepository $repo
+     * @param CompanyRepository $repo
      */
-    public function __construct(Mailer $mailer, AccountRepository $repo)
+    public function __construct(Mailer $mailer, CompanyRepository $repo)
     {
         parent::__construct();
 
         $this->mailer = $mailer;
-        $this->accountRepo = $repo;
+        $this->companyRepo = $repo;
     }
 
     public function fire()
     {
         $this->info(date('Y-m-d').' Running SendRenewalInvoices...');
 
-        // get all accounts with plans expiring in 10 days
-        $companies = Company::whereRaw("datediff(plan_expires, curdate()) = 10 and (plan = 'pro' or plan = 'enterprise')")
+        // get all companies with plans expiring in 10 days
+        $companies = Corporation::whereRaw("datediff(plan_expires, curdate()) = 10 and (plan = 'pro' or plan = 'enterprise')")
                         ->orderBy('id')
                         ->get();
         $this->info(count($companies).' companies found renewing in 10 days');
 
-        foreach ($companies as $company) {
-            if (! count($company->accounts)) {
+        foreach ($companies as $corporation) {
+            if (! count($corporation->companies)) {
                 continue;
             }
 
-            $account = $company->accounts->sortBy('id')->first();
+            $company = $corporation->companies->sortBy('id')->first();
             $plan = [];
-            $plan['plan'] = $company->plan;
-            $plan['term'] = $company->plan_term;
-            $plan['num_users'] = $company->num_users;
-            $plan['price'] = min($company->plan_price, Utils::getPlanPrice($plan));
+            $plan['plan'] = $corporation->plan;
+            $plan['term'] = $corporation->plan_term;
+            $plan['num_users'] = $corporation->num_users;
+            $plan['price'] = min($corporation->plan_price, Utils::getPlanPrice($plan));
 
-            if ($company->pending_plan) {
-                $plan['plan'] = $company->pending_plan;
-                $plan['term'] = $company->pending_term;
-                $plan['num_users'] = $company->pending_num_users;
-                $plan['price'] = min($company->pending_plan_price, Utils::getPlanPrice($plan));
+            if ($corporation->pending_plan) {
+                $plan['plan'] = $corporation->pending_plan;
+                $plan['term'] = $corporation->pending_term;
+                $plan['num_users'] = $corporation->pending_num_users;
+                $plan['price'] = min($corporation->pending_plan_price, Utils::getPlanPrice($plan));
             }
 
             if ($plan['plan'] == PLAN_FREE || ! $plan['plan'] || ! $plan['term'] || ! $plan['price']) {
                 continue;
             }
 
-            $client = $this->accountRepo->getNinjaClient($account);
-            $invitation = $this->accountRepo->createNinjaInvoice($client, $account, $plan, 0, false);
+            $client = $this->companyRepo->getNinjaClient($company);
+            $invitation = $this->companyRepo->createNinjaInvoice($client, $company, $plan, 0, false);
 
             // set the due date to 10 days from now
             $invoice = $invitation->invoice;

@@ -20,7 +20,7 @@ class CreateProjectsTable extends Migration
 
             $table->unsignedInteger('projectid')->index();
 
-			      $table->string('name')->nullable();
+            $table->string('name')->nullable();
 
             $table->unsignedInteger('user_id')->index();
 
@@ -29,15 +29,14 @@ class CreateProjectsTable extends Migration
             $table->boolean('is_deleted')->default(false);
 
 
-
             $table->timestamps();
 
-            $table->foreign('company_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('relaton_id')->references('id')->on('clients')->onDelete('cascade');
 
 
-            $table->unique( ['company_id', 'public_id'], 'projects_account_id_public_id_unique' );
+            $table->unique(['company_id', 'public_id'], 'projects_company_id_public_id_unique');
         });
     }
 

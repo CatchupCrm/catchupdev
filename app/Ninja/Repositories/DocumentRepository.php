@@ -25,13 +25,13 @@ class DocumentRepository extends BaseRepository
 
     public function find()
     {
-        $accountid = \Auth::user()->account_id;
+        $companyid = \Auth::user()->company_id;
         $query = DB::table('clients')
-                    ->join('accounts', 'accounts.id', '=', 'clients.account_id')
+                    ->join('companies', 'companies.id', '=', 'clients.company_id')
                     ->leftjoin('clients', 'clients.id', '=', 'clients.client_id')
-                    ->where('documents.account_id', '=', $accountid)
+                    ->where('documents.company_id', '=', $companyid)
                     ->select(
-                        'documents.account_id',
+                        'documents.company_id',
                         'documents.path',
                         'documents.deleted_at',
                         'documents.size',
@@ -82,7 +82,7 @@ class DocumentRepository extends BaseRepository
         }
 
         $hash = sha1_file($filePath);
-        $filename = \Auth::user()->account->account_key.'/'.$hash.'.'.$documentType;
+        $filename = \Auth::user()->company->company_key.'/'.$hash.'.'.$documentType;
 
         $document = Document::createNew();
         $document->fill($data);
@@ -124,7 +124,7 @@ class DocumentRepository extends BaseRepository
                     $previewType = 'png';
                 }
 
-                $document->preview = \Auth::user()->account->account_key.'/'.$hash.'.'.$documentType.'.x'.DOCUMENT_PREVIEW_SIZE.'.'.$previewType;
+                $document->preview = \Auth::user()->company->company_key.'/'.$hash.'.'.$documentType.'.x'.DOCUMENT_PREVIEW_SIZE.'.'.$previewType;
                 if (! $disk->exists($document->preview)) {
                     // We haven't created a preview yet
                     $imgManager = new ImageManager($imgManagerConfig);
@@ -180,7 +180,7 @@ class DocumentRepository extends BaseRepository
     public function getClientDatatable($contactId, $entityType, $search)
     {
         $query = DB::table('invitations')
-          ->join('accounts', 'accounts.id', '=', 'invitations.account_id')
+          ->join('companies', 'companies.id', '=', 'invitations.company_id')
           ->join('invoices', 'invoices.id', '=', 'invitations.invoice_id')
           ->join('documents', 'documents.invoice_id', '=', 'invitations.invoice_id')
           ->join('clients', 'clients.id', '=', 'invoices.client_id')
