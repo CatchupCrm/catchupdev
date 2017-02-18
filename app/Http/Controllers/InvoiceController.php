@@ -294,6 +294,9 @@ class InvoiceController extends BaseController
             }
         }
 
+        //Auth::user()->company_id;
+        //dd(Auth::user()->company_id);
+
         return [
             'data' => Input::old('data'),
             'company' => Auth::user()->company->load('country'),

@@ -137,6 +137,10 @@ class CompanyPresenter extends Presenter
     public function taxRateOptions()
     {
         $rates = TaxRate::scope()->orderBy('name')->get();
+
+dd($rates);
+
+
         $options = [];
 
         foreach ($rates as $rate) {
