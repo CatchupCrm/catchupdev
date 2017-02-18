@@ -1,13 +1,15 @@
-<?php namespace App\Models;
+<?php
 
-use Utils;
-use DB;
+namespace App\Models;
+
 use Carbon;
-use Laracasts\Presenter\PresentableTrait;
+use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laracasts\Presenter\PresentableTrait;
+use Utils;
 
 /**
- * Class Client
+ * Class Client.
  */
 class Client extends EntityModel
 {
@@ -100,17 +102,17 @@ class Client extends EntityModel
     public static function getImportColumns()
     {
         return [
-            Client::$fieldName,
-            Client::$fieldPhone,
-            Client::$fieldAddress1,
-            Client::$fieldAddress2,
-            Client::$fieldCity,
-            Client::$fieldState,
-            Client::$fieldPostalCode,
-            Client::$fieldCountry,
-            Client::$fieldNotes,
-            Client::$fieldWebsite,
-            Client::$fieldVatNumber,
+            self::$fieldName,
+            self::$fieldPhone,
+            self::$fieldAddress1,
+            self::$fieldAddress2,
+            self::$fieldCity,
+            self::$fieldState,
+            self::$fieldPostalCode,
+            self::$fieldCountry,
+            self::$fieldNotes,
+            self::$fieldWebsite,
+            self::$fieldVatNumber,
             Contact::$fieldFirstName,
             Contact::$fieldLastName,
             Contact::$fieldPhone,
@@ -258,12 +260,13 @@ class Client extends EntityModel
      */
     public function expenses()
     {
-        return $this->hasMany('App\Models\Expense','client_id','id')->withTrashed();
+        return $this->hasMany('App\Models\Expense', 'client_id', 'id')->withTrashed();
     }
 
     /**
      * @param $data
      * @param bool $isPrimary
+     *
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function addContact($data, $isPrimary = false)
@@ -283,10 +286,10 @@ class Client extends EntityModel
             }
         }
 
-        if (Utils::hasFeature(FEATURE_CLIENT_PORTAL_PASSWORD) && $this->account->enable_portal_password){
-            if(!empty($data['password']) && $data['password']!='-%unchanged%-'){
+        if (Utils::hasFeature(FEATURE_CLIENT_PORTAL_PASSWORD) && $this->account->enable_portal_password) {
+            if (! empty($data['password']) && $data['password'] != '-%unchanged%-') {
                 $contact->password = bcrypt($data['password']);
-            } else if(empty($data['password'])){
+            } elseif (empty($data['password'])) {
                 $contact->password = null;
             }
         }
@@ -359,7 +362,7 @@ class Client extends EntityModel
             return $this->name;
         }
 
-        if ( ! count($this->contacts)) {
+        if (! count($this->contacts)) {
             return '';
         }
 
@@ -374,6 +377,7 @@ class Client extends EntityModel
     public function getCityState()
     {
         $swap = $this->country && $this->country->swap_postal_code;
+
         return Utils::cityStateZip($this->city, $this->state, $this->postal_code, $swap);
     }
 
@@ -435,7 +439,7 @@ class Client extends EntityModel
     {
         $accountGateway = $this->account->getGatewayByType(GATEWAY_TYPE_TOKEN);
 
-        if ( ! $accountGateway) {
+        if (! $accountGateway) {
             return false;
         }
 
@@ -487,7 +491,7 @@ class Client extends EntityModel
             return $this->currency_id;
         }
 
-        if (!$this->account) {
+        if (! $this->account) {
             $this->load('account');
         }
 
@@ -503,7 +507,7 @@ class Client extends EntityModel
             return $this->currency->code;
         }
 
-        if (!$this->account) {
+        if (! $this->account) {
             $this->load('account');
         }
 
@@ -512,6 +516,7 @@ class Client extends EntityModel
 
     /**
      * @param $isQuote
+     *
      * @return mixed
      */
     public function getCounter($isQuote)
@@ -528,8 +533,14 @@ class Client extends EntityModel
     /**
      * @return bool
      */
-    public function hasAutoBillConfigurableInvoices(){
+    public function hasAutoBillConfigurableInvoices()
+    {
         return $this->invoices()->whereIn('auto_bill', [AUTO_BILL_OPT_IN, AUTO_BILL_OPT_OUT])->count() > 0;
+    }
+
+    public function defaultDaysDue()
+    {
+        return $this->payment_terms == -1 ? 0 : $this->payment_terms;
     }
 }
 

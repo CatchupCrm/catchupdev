@@ -641,13 +641,17 @@ function ContactModel(data) {
     self.displayName = ko.computed(function() {
         var str = '';
         if (self.first_name() || self.last_name()) {
-            str += (self.first_name() || '') + ' ' + (self.last_name() || '') + '\n';
+            str += (self.first_name() || '') + ' ' + (self.last_name() || '') + ' ';
         }
         if (self.email()) {
-            str += self.email() + '\n';
+            if (str) {
+                str += '&lt;' + self.email() + '&gt;';
+            } else {
+                str += self.email();
+            }
         }
 
-        return str;
+        return str + '<br/>';
     });
 
     self.email.display = ko.computed(function() {
@@ -892,9 +896,9 @@ ko.bindingHandlers.productTypeahead = {
             name: 'data',
             display: allBindings.key,
             limit: 50,
-            //templates: {
-            //    suggestion: function(item) { return '<div>' + item.product_key + '<div class="pull-right">' + item.cost + '</div>' }
-            //},
+            templates: {
+                suggestion: function(item) { return '<div title="' + item.product_key + '">' + item.product_key + '</div>' }
+            },
             source: searchData(allBindings.items, allBindings.key)
         }).on('typeahead:select', function(element, datum, name) {
             @if (Auth::user()->account->fill_products)
