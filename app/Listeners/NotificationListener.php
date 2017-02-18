@@ -1,17 +1,19 @@
-<?php namespace App\Listeners;
+<?php
 
-use App\Ninja\Mailers\UserMailer;
-use App\Ninja\Mailers\ContactMailer;
-use App\Events\InvoiceWasEmailed;
-use App\Events\QuoteWasEmailed;
+namespace App\Listeners;
+
 use App\Events\InvoiceInvitationWasViewed;
-use App\Events\QuoteInvitationWasViewed;
-use App\Events\QuoteInvitationWasApproved;
+use App\Events\InvoiceWasEmailed;
 use App\Events\PaymentWasCreated;
+use App\Events\QuoteInvitationWasApproved;
+use App\Events\QuoteInvitationWasViewed;
+use App\Events\QuoteWasEmailed;
+use App\Ninja\Mailers\ContactMailer;
+use App\Ninja\Mailers\UserMailer;
 use App\Services\PushService;
 
 /**
- * Class NotificationListener
+ * Class NotificationListener.
  */
 class NotificationListener
 {
@@ -30,9 +32,10 @@ class NotificationListener
 
     /**
      * NotificationListener constructor.
-     * @param UserMailer $userMailer
+     *
+     * @param UserMailer    $userMailer
      * @param ContactMailer $contactMailer
-     * @param PushService $pushService
+     * @param PushService   $pushService
      */
     public function __construct(UserMailer $userMailer, ContactMailer $contactMailer, PushService $pushService)
     {
@@ -48,10 +51,8 @@ class NotificationListener
      */
     private function sendEmails($invoice, $type, $payment = null)
     {
-        foreach ($invoice->account->users as $user)
-        {
-            if ($user->{"notify_{$type}"})
-            {
+        foreach ($invoice->account->users as $user) {
+            if ($user->{"notify_{$type}"}) {
                 $this->userMailer->sendNotification($user, $invoice, $type, $payment);
             }
         }
@@ -80,7 +81,7 @@ class NotificationListener
      */
     public function viewedInvoice(InvoiceInvitationWasViewed $event)
     {
-        if ( ! floatval($event->invoice->balance)) {
+        if (! floatval($event->invoice->balance)) {
             return;
         }
 
@@ -116,7 +117,7 @@ class NotificationListener
     public function createdPayment(PaymentWasCreated $event)
     {
         // only send emails for online payments
-        if ( ! $event->payment->account_gateway_id) {
+        if (! $event->payment->account_gateway_id) {
             return;
         }
 
@@ -125,5 +126,4 @@ class NotificationListener
 
         $this->pushService->sendNotification($event->payment->invoice, 'paid');
     }
-
 }

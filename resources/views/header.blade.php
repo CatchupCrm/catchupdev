@@ -225,6 +225,12 @@
   }
 
   $(function() {
+    // auto-logout after 8 hours
+    window.setTimeout(function() {
+        window.location = '{{ URL::to('/logout?reason=inactivity') }}';
+    }, 1000 * 60 * 60 * 8);
+
+    // auto-hide status alerts
     window.setTimeout(function() {
         $(".alert-hide").fadeOut();
     }, 3000);
@@ -501,25 +507,25 @@
                 'expenses',
                 'vendors',
             ] as $option)
-            @if (in_array($option, ['dashboard', 'settings'])
-                || Auth::user()->can('view', substr($option, 0, -1))
-                || Auth::user()->can('create', substr($option, 0, -1)))
-                @include('partials.navigation_option')
-            @endif
-        @endforeach
-        @if ( ! Utils::isNinjaProd())
-            @foreach (Module::all() as $module)
-                @include('partials.navigation_option', [
-                    'option' => $module->getAlias(),
-                    'icon' => $module->get('icon', 'th-large'),
-                ])
+                @if (in_array($option, ['dashboard', 'settings'])
+                    || Auth::user()->can('view', substr($option, 0, -1))
+                    || Auth::user()->can('create', substr($option, 0, -1)))
+                    @include('partials.navigation_option')
+                @endif
             @endforeach
-        @endif
-        @if (Auth::user()->is_admin)
-            @include('partials.navigation_option', ['option' => 'reports'])
-        @endif
-        @include('partials.navigation_option', ['option' => 'settings'])
-        <li style="width:100%;">
+            @if ( ! Utils::isNinjaProd())
+                @foreach (Module::all() as $module)
+                    @include('partials.navigation_option', [
+                        'option' => $module->getAlias(),
+                        'icon' => $module->get('icon', 'th-large'),
+                    ])
+                @endforeach
+            @endif
+            @if (Auth::user()->hasPermission('view_all'))
+                @include('partials.navigation_option', ['option' => 'reports'])
+            @endif
+            @include('partials.navigation_option', ['option' => 'settings'])
+            <li style="width:100%;">
                 <div class="nav-footer">
                     <a href="javascript:showContactUs()" target="_blank" title="{{ trans('texts.contact_us') }}">
                         <i class="fa fa-envelope"></i>

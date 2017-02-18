@@ -11,6 +11,8 @@
 	<script src="{{ asset('pdf.built.js') }}?no_cache={{ NINJA_VERSION }}" type="text/javascript"></script>
     <script src="{{ asset('js/lightbox.min.js') }}" type="text/javascript"></script>
     <link href="{{ asset('css/lightbox.css') }}" rel="stylesheet" type="text/css"/>
+	<link href="{{ asset('css/quill.snow.css') }}" rel="stylesheet" type="text/css"/>
+	<script src="{{ asset('js/quill.min.js') }}" type="text/javascript"></script>
 
     <style type="text/css">
         select.tax-select {
@@ -18,9 +20,9 @@
             float: left;
         }
 
-        .btn-info:disabled {
-            background-color: #e89259;
-            border-color: #e89259;
+		.btn-info:disabled {
+            background-color: #e89259 !important;
+            border-color: #e89259 !important;
         }
 
         #scrollable-dropdown-menu .tt-menu {
@@ -51,7 +53,11 @@
 			<li>{!! link_to(($entityType == ENTITY_QUOTE ? 'quotes' : 'invoices'), trans('texts.' . ($entityType == ENTITY_QUOTE ? 'quotes' : 'invoices'))) !!}</li>
 			<li class="active">{{ $invoice->invoice_number }}</li>
 		@endif
-		{!! $invoice->present()->statusLabel !!}
+		@if ($invoice->is_recurring && $invoice->isSent() && (! $invoice->last_sent_date || $invoice->last_sent_date == '0000-00-00'))
+			{!! $invoice->present()->statusLabel(trans('texts.active')) !!}
+		@else
+			{!! $invoice->present()->statusLabel !!}
+		@endif
 		</ol>
 	@endif
 
@@ -149,7 +155,7 @@
 				{!! Former::text('invoice_date')->data_bind("datePicker: invoice_date, valueUpdate: 'afterkeydown'")->label(trans("texts.{$entityType}_date"))
 							->data_date_format(Session::get(SESSION_DATE_PICKER_FORMAT, DEFAULT_DATE_PICKER_FORMAT))->appendIcon('calendar')->addGroupClass('invoice_date') !!}
 				{!! Former::text('due_date')->data_bind("datePicker: due_date, valueUpdate: 'afterkeydown'")->label(trans("texts.{$entityType}_due_date"))
-							->placeholder($invoice->exists ? ' ' : $account->present()->dueDatePlaceholder())
+							->placeholder($invoice->exists || $invoice->isQuote() ? ' ' : $account->present()->dueDatePlaceholder())
 							->data_date_format(Session::get(SESSION_DATE_PICKER_FORMAT, DEFAULT_DATE_PICKER_FORMAT))->appendIcon('calendar')->addGroupClass('due_date') !!}
 
                 {!! Former::text('partial')->data_bind("value: partial, valueUpdate: 'afterkeydown'")->onkeyup('onPartialChange()')
@@ -168,7 +174,7 @@
             @endif
 
             @if ($account->showCustomField('custom_invoice_text_label1', $invoice))
-                {!! Former::text('custom_text_value1')->label($account->custom_invoice_text_label1)->data_bind("value: custom_text_value1, valueUpdate: 'afterkeydown'") !!}
+                {!! Former::text('custom_text_value1')->label($account->custom_invoice_text_label1 ?: ' ')->data_bind("value: custom_text_value1, valueUpdate: 'afterkeydown'") !!}
             @endif
 		</div>
 
@@ -215,7 +221,7 @@
 			) !!}
 
             @if ($account->showCustomField('custom_invoice_text_label2', $invoice))
-                {!! Former::text('custom_text_value2')->label($account->custom_invoice_text_label2)->data_bind("value: custom_text_value2, valueUpdate: 'afterkeydown'") !!}
+                {!! Former::text('custom_text_value2')->label($account->custom_invoice_text_label2 ?: ' ')->data_bind("value: custom_text_value2, valueUpdate: 'afterkeydown'") !!}
             @endif
 
             @if ($entityType == ENTITY_INVOICE)
@@ -247,7 +253,7 @@
 		<thead>
 			<tr>
 				<th style="min-width:32px;" class="hide-border"></th>
-				<th style="width:25%">{{ $invoiceLabels['item'] }}</th>
+				<th style="min-width:120px;width:26%">{{ $invoiceLabels['item'] }}</th>
 				<th style="width:100%">{{ $invoiceLabels['description'] }}</th>
                 @if ($account->showCustomField('custom_invoice_item_label1'))
                     <th style="min-width:120px">{{ $account->custom_invoice_item_label1 }}</th>
@@ -559,7 +565,7 @@
 						{!! Button::success(trans("texts.save_{$entityType}"))->withAttributes(array('id' => 'saveButton', 'onclick' => 'onSaveClick()'))->appendIcon(Icon::create('floppy-disk')) !!}
 					@else
 						{!! Button::normal(trans("texts.save_draft"))->withAttributes(array('id' => 'draftButton', 'onclick' => 'onSaveDraftClick()'))->appendIcon(Icon::create('floppy-disk')) !!}
-						{!! Button::success(trans("texts.mark_sent"))->withAttributes(array('id' => 'saveButton', 'onclick' => 'onMarkSentClick()'))->appendIcon(Icon::create('globe')) !!}
+						{!! Button::success(trans($invoice->is_recurring ? "texts.mark_active" : "texts.mark_sent"))->withAttributes(array('id' => 'saveButton', 'onclick' => 'onMarkSentClick()'))->appendIcon(Icon::create('globe')) !!}
 					@endif
         		    {!! Button::info(trans("texts.email_{$entityType}"))->withAttributes(array('id' => 'emailButton', 'onclick' => 'onEmailClick()'))->appendIcon(Icon::create('send')) !!}
                     @if (!$invoice->trashed())
@@ -744,7 +750,7 @@
         </div>
         </div>
 
-         <div class="modal-footer" style="margin-top: 0px; padding-top:0px;">
+         <div class="modal-footer" style="margin-top: 0px; padding-top:0px; padding-right:20px">
             <span class="error-block" id="emailError" style="display:none;float:left;font-weight:bold">{{ trans('texts.provide_name_or_email') }}</span><span>&nbsp;</span>
             <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('texts.cancel') }}</button>
             <button type="button" class="btn btn-default" data-bind="click: $root.showMoreFields, text: $root.showMore() ? '{{ trans('texts.less_fields') }}' : '{{ trans('texts.more_fields') }}'"></button>
@@ -794,6 +800,9 @@
 	    </div>
 	  </div>
 	</div>
+
+	@include('partials.email_templates')
+	@include('invoices.email')
 
     {!! Former::close() !!}
     </form>
@@ -1192,13 +1201,14 @@
         return invoice;
 	}
 
-    window.generatedPDF = false;
 	function getPDFString(cb, force) {
+		@if ( ! $account->live_preview)
+			return;
+		@endif
         var invoice = createInvoiceModel();
 		var design  = getDesignJavascript();
 		if (!design) return;
         generatePDF(invoice, design, force, cb);
-        window.generatedPDF = true;
 	}
 
 	function getDesignJavascript() {
@@ -1245,13 +1255,16 @@
         var invoice = model.invoice();
         if (invoice.is_recurring()) {
             var recurring = false;
-            var label = "{{ trans('texts.enable_recurring')}}";
+            var enableLabel = "{{ trans('texts.enable_recurring')}}";
+			var actionLabel = "{{ trans('texts.mark_sent') }}";
         } else {
             var recurring = true;
-            var label = "{{ trans('texts.disable_recurring')}}";
+            var enableLabel = "{{ trans('texts.disable_recurring')}}";
+			var actionLabel = "{{ trans('texts.mark_active') }}";
         }
         invoice.is_recurring(recurring);
-        $('#recurrButton').html(label + "<span class='glyphicon glyphicon-repeat'></span>");
+        $('#recurrButton').html(enableLabel + "<span class='glyphicon glyphicon-repeat'></span>");
+		$('#saveButton').html(actionLabel + "<span class='glyphicon glyphicon-globe'></span>");
     }
 
 	function onEmailClick() {
@@ -1276,25 +1289,28 @@
             return;
         }
 
-		sweetConfirm(function() {
-			model.invoice().is_public(true);
-            var accountLanguageId = parseInt({{ $account->language_id ?: '0' }});
-            var clientLanguageId = parseInt(model.invoice().client().language_id()) || 0;
-            var attachPDF = {{ $account->attachPDF() ? 'true' : 'false' }};
+		showEmailModal();
+	}
 
-            // if they aren't attaching the pdf no need to generate it
-            if ( ! attachPDF) {
-                submitAction('email');
-            // if the client's language is different then we can't use the browser version of the PDF
-            } else if (clientLanguageId && clientLanguageId != accountLanguageId) {
-                submitAction('email');
-			// if queues are enabled we need to use PhantomJS
-			} else if ({{ config('queue.default') != 'sync' ? 'true' : 'false' }}) {
-				submitAction('email');
-            } else {
-                preparePdfData('email');
-            }
-		}, getSendToEmails());
+	function onConfirmEmailClick() {
+		$('#emailModal div.modal-footer button').attr('disabled', true);
+		model.invoice().is_public(true);
+		var accountLanguageId = parseInt({{ $account->language_id ?: '0' }});
+		var clientLanguageId = parseInt(model.invoice().client().language_id()) || 0;
+		var attachPDF = {{ $account->attachPDF() ? 'true' : 'false' }};
+
+		// if they aren't attaching the pdf no need to generate it
+		if ( ! attachPDF) {
+			submitAction('email');
+		// if the client's language is different then we can't use the browser version of the PDF
+		} else if (clientLanguageId && clientLanguageId != accountLanguageId) {
+			submitAction('email');
+		// if queues are enabled we need to use PhantomJS
+		} else if ({{ config('queue.default') != 'sync' ? 'true' : 'false' }}) {
+			submitAction('email');
+		} else {
+			preparePdfData('email');
+		}
 	}
 
 	function onSaveDraftClick() {
@@ -1305,7 +1321,7 @@
 	function onMarkSentClick() {
 		if (model.invoice().is_recurring()) {
             // warn invoice will be emailed when saving new recurring invoice
-            var text = getSendToEmails() + '\n' + "{!! trans("texts.confirm_recurring_timing") !!}";
+            var text = '\n' + getSendToEmails() + '\n\n' + "{!! trans("texts.confirm_recurring_timing") !!}";
             var title = "{!! trans("texts.confirm_recurring_email_$entityType") !!}";
             sweetConfirm(function() {
 				model.invoice().is_public(true);
@@ -1416,6 +1432,7 @@
                 location.href = data;
             }).fail(function(data) {
                 $('#saveButton, #emailButton, #draftButton').attr('disabled', false);
+				$('#emailModal div.modal-footer button').attr('disabled', false);
                 var error = firstJSONError(data.responseJSON) || data.statusText;
                 swal("{!! trans('texts.invoice_save_error') !!}", error);
             });
@@ -1598,6 +1615,7 @@
         var number = '{{ $account->applyNumberPattern($invoice) }}';
         number = number.replace('{$custom1}', client.custom_value1 ? client.custom_value1 : '');
         number = number.replace('{$custom2}', client.custom_value2 ? client.custom_value1 : '');
+        number = number.replace('{$idNumber}', client.id_number ? client.id_number : '');
         model.invoice().invoice_number(number);
     }
 
