@@ -3,14 +3,14 @@
 $LANG = array(
 
     'banking' => 'Banking',
-    'banking_list' => 'Banking List',
-    'archive_banking' => 'Archive Banking',
-    'delete_banking' => 'Delete Banking',
-    'edit_banking' => 'Edit Banking',
-    'restore_banking' => 'Restore Banking',
-    'new_banking' => 'New Banking',
-    'created_banking' => 'Successfully created banking',
-    'updated_banking' => 'Successfully updated banking',
+    'banking_list' => 'Bankaccounts List',
+    'archive_banking' => 'Archive Bankaccount',
+    'delete_banking' => 'Delete Bankaccount',
+    'edit_banking' => 'Edit Bankaccount',
+    'restore_banking' => 'Restore Bankaccount',
+    'new_banking' => 'New Bankaccount',
+    'created_banking' => 'Successfully created bankaccount',
+    'updated_banking' => 'Successfully updated bankaccount',
 
 );
 

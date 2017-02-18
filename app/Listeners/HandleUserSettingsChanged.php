@@ -42,7 +42,7 @@ class HandleUserSettingsChanged
         $company->loadLocalizationSettings();
 
         $users = $this->companyRepo->loadCompanys(Auth::user()->id);
-        Session::put(SESSION_USER_COMPANYS, $users);
+        Session::put(SESSION_USER_ACCOUNTS, $users);
 
         if ($event->user && $event->user->isEmailBeingChanged()) {
             $this->userMailer->sendConfirmation($event->user);

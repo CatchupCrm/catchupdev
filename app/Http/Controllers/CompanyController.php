@@ -147,7 +147,7 @@ class CompanyController extends BaseController
 
             if ($prevUserId) {
                 $users = $this->companyRepo->associateCompanys($user->id, $prevUserId);
-                Session::put(SESSION_USER_COMPANYS, $users);
+                Session::put(SESSION_USER_ACCOUNTS, $users);
             }
         }
 

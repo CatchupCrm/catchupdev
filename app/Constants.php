@@ -216,7 +216,7 @@ if (! defined('APP_NAME')) {
     define('SESSION_DATETIME_FORMAT', 'datetimeFormat');
     define('SESSION_COUNTER', 'sessionCounter');
     define('SESSION_LOCALE', 'sessionLocale');
-    define('SESSION_USER_COMPANYS', 'userCompanys');
+    define('SESSION_USER_ACCOUNTS', 'userAccounts');
     define('SESSION_REFERRAL_CODE', 'referralCode');
     define('SESSION_LEFT_SIDEBAR', 'showLeftSidebar');
     define('SESSION_RIGHT_SIDEBAR', 'showRightSidebar');

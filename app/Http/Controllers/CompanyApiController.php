@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use App\Ninja\Repositories\CompanyRepository;
 use App\Ninja\Transformers\CompanyTransformer;
-use App\Ninja\Transformers\UserCompanyTransformer;
+use App\Ninja\Transformers\UserAccountTransformer;
 use App\Services\AuthService;
 use Auth;
 use Cache;
@@ -65,7 +65,7 @@ class CompanyApiController extends BaseAPIController
         $this->companyRepo->createTokens($user, $request->token_name);
 
         $users = $this->companyRepo->findUsers($user, 'company.company_tokens');
-        $transformer = new UserCompanyTransformer($user->company, $request->serializer, $request->token_name);
+        $transformer = new UserAccountTransformer($user->company, $request->serializer, $request->token_name);
         $data = $this->createCollection($users, $transformer, 'user_company');
 
         return $this->response($data);
@@ -95,7 +95,7 @@ class CompanyApiController extends BaseAPIController
         return $this->response($data);
     }
 
-    public function getUserCompanys(Request $request)
+    public function getUserAccounts(Request $request)
     {
         return $this->processLogin($request);
     }

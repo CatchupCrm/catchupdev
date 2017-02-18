@@ -237,7 +237,7 @@ class User extends Authenticatable
     public function clearSession()
     {
         $keys = [
-            SESSION_USER_COMPANYS,
+            SESSION_USER_ACCOUNTS,
             SESSION_TIMEZONE,
             SESSION_DATE_FORMAT,
             SESSION_DATE_PICKER_FORMAT,

@@ -49,7 +49,7 @@ class HandleUserLoggedIn
         $company->save();
 
         $users = $this->companyRepo->loadCompanys(Auth::user()->id);
-        Session::put(SESSION_USER_COMPANYS, $users);
+        Session::put(SESSION_USER_ACCOUNTS, $users);
         HistoryUtils::loadHistory($users ?: Auth::user()->id);
 
         $company->loadLocalizationSettings();

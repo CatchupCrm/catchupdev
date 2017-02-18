@@ -306,7 +306,7 @@ class UserController extends BaseController
     {
         $oldUserId = Auth::user()->id;
         $referer = Request::header('referer');
-        $company = $this->companyRepo->findUserCompanys($newUserId, $oldUserId);
+        $company = $this->companyRepo->findUserAccounts($newUserId, $oldUserId);
 
         if ($company) {
             if ($company->hasUserId($newUserId) && $company->hasUserId($oldUserId)) {
@@ -344,13 +344,13 @@ class UserController extends BaseController
         return redirect()->to($redirectTo);
     }
 
-    public function unlinkCompany($userCompanyId, $userId)
+    public function unlinkCompany($userAccountId, $userId)
     {
-        $this->companyRepo->unlinkUser($userCompanyId, $userId);
+        $this->companyRepo->unlinkUser($userAccountId, $userId);
         $referer = Request::header('referer');
 
         $users = $this->companyRepo->loadCompanys(Auth::user()->id);
-        Session::put(SESSION_USER_COMPANYS, $users);
+        Session::put(SESSION_USER_ACCOUNTS, $users);
 
         Session::flash('message', trans('texts.unlinked_company'));
 

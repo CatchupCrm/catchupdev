@@ -301,7 +301,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function () {
     Route::resource('tasks', 'TaskApiController');
     Route::post('hooks', 'IntegrationController@subscribe');
     Route::post('email_invoice', 'InvoiceApiController@emailInvoice');
-    Route::get('user_companies', 'CompanyApiController@getUserCompanys');
+    Route::get('user_companies', 'CompanyApiController@getUserAccounts');
     Route::resource('products', 'ProductApiController');
     Route::resource('tax_rates', 'TaxRateApiController');
     Route::resource('users', 'UserApiController');

@@ -4,7 +4,7 @@
 
 
 <center>
-    @if (!session(SESSION_USER_COMPANYS) || count(session(SESSION_USER_COMPANYS)) < 5)
+    @if (!session(SESSION_USER_ACCOUNTS) || count(session(SESSION_USER_ACCOUNTS)) < 5)
         {!! Button::success(trans('texts.add_company'))->asLinkTo(url('/invoice_now?new_company=true&sign_up=true')) !!}
     @endif
 </center>
@@ -21,7 +21,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
             <table class="table table-striped">
-            @foreach (Session::get(SESSION_USER_COMPANYS) as $company)
+            @foreach (Session::get(SESSION_USER_ACCOUNTS) as $company)
                 <tr>
                     <td>
                     @if (isset($company->logo_url))
@@ -70,9 +70,9 @@
 
 
     <script type="text/javascript">
-      function showUnlink(userCompanyId, userId) {
+      function showUnlink(userAccountId, userId) {
         NINJA.unlink = {
-            'userCompanyId': userCompanyId,
+            'userAccountId': userAccountId,
             'userId': userId
         };
         $('#unlinkModal').modal('show');
@@ -80,7 +80,7 @@
       }
 
       function unlinkCompany() {
-        window.location = '{{ URL::to('/unlink_company') }}' + '/' + NINJA.unlink.userCompanyId + '/' + NINJA.unlink.userId;
+        window.location = '{{ URL::to('/unlink_company') }}' + '/' + NINJA.unlink.userAccountId + '/' + NINJA.unlink.userId;
       }
 
     </script>

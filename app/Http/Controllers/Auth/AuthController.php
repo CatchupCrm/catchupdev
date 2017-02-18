@@ -158,7 +158,7 @@ class AuthController extends Controller
             */
 
             $users = $this->companyRepo->loadCompanys(Auth::user()->id);
-            Session::put(SESSION_USER_COMPANYS, $users);
+            Session::put(SESSION_USER_ACCOUNTS, $users);
         } elseif ($user) {
             $user->failed_logins = $user->failed_logins + 1;
             $user->save();

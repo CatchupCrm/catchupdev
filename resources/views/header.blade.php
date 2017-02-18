@@ -385,7 +385,7 @@
                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                         <div id="myCompanyButton" class="ellipsis"
                              style="max-width:{{ Utils::hasFeature(FEATURE_USERS) ? '130' : '100' }}px;">
-                            @if (session(SESSION_USER_COMPANYS) && count(session(SESSION_USER_COMPANYS)))
+                            @if (session(SESSION_USER_ACCOUNTS) && count(session(SESSION_USER_ACCOUNTS)))
                                 {{ Auth::user()->company->getDisplayName() }}
                             @else
                                 {{ Auth::user()->getDisplayName() }}
@@ -394,8 +394,8 @@
                         </div>
                     </button>
                     <ul class="dropdown-menu user-companies">
-                        @if (session(SESSION_USER_COMPANYS))
-                            @foreach (session(SESSION_USER_COMPANYS) as $item)
+                        @if (session(SESSION_USER_ACCOUNTS))
+                            @foreach (session(SESSION_USER_ACCOUNTS) as $item)
                                 @if ($item->user_id == Auth::user()->id)
                                     @include('user_company', [
                                         'user_company_id' => $item->id,
@@ -407,7 +407,7 @@
                                     ])
                                 @endif
                             @endforeach
-                            @foreach (session(SESSION_USER_COMPANYS) as $item)
+                            @foreach (session(SESSION_USER_ACCOUNTS) as $item)
                                 @if ($item->user_id != Auth::user()->id)
                                     @include('user_company', [
                                         'user_company_id' => $item->id,
@@ -429,9 +429,9 @@
                         @endif
                         <li class="divider"></li>
                         @if (Utils::isAdmin())
-                            @if (count(session(SESSION_USER_COMPANYS)) > 1)
+                            @if (count(session(SESSION_USER_ACCOUNTS)) > 1)
                                 <li>{!! link_to('/manage_corporations', trans('texts.manage_corporations')) !!}</li>
-                            @elseif (!session(SESSION_USER_COMPANYS) || count(session(SESSION_USER_COMPANYS)) < 5)
+                            @elseif (!session(SESSION_USER_ACCOUNTS) || count(session(SESSION_USER_ACCOUNTS)) < 5)
                                 <li>{!! link_to('/invoice_now?new_company=true&sign_up=true', trans('texts.add_company')) !!}</li>
                             @endif
                         @endif

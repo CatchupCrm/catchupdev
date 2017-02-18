@@ -5,7 +5,7 @@ namespace App\Ninja\Transformers;
 use App\Models\Company;
 use App\Models\User;
 
-class UserCompanyTransformer extends EntityTransformer
+class UserAccountTransformer extends EntityTransformer
 {
     protected $defaultIncludes = [
         'user',
